@@ -1,0 +1,4 @@
+title = "client-web gitleaks config"
+
+[extend]
+useDefault = true
