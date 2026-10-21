@@ -1,0 +1,69 @@
+:root {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--foreground);
+  --color-popover: var(--card);
+  --color-popover-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--primary);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--primary);
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.5rem;
+}
+
+.light {
+  color-scheme: light;
+
+  --background: #fafafa;
+  --foreground: #18181b;
+  --card: #fff;
+  --primary: #5b2a9e;
+  --primary-foreground: #fff;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --accent: #f0eaf8;
+  --destructive: #b42332;
+  --border: #e4e4e7;
+  --input: #d4d4d8;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --background: #09090b;
+  --foreground: #fafafa;
+  --card: #18181b;
+  --primary: #b18cf0;
+  --primary-foreground: #1e1330;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --accent: #281e39;
+  --destructive: #f87171;
+  --border: #27272a;
+  --input: #3f3f46;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  text-wrap: balance;
+}

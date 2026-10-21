@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    "composite": false,                           // Disables composite project support, which is not used by this application.
+    "target": "ES2022",                           // Sets the JavaScript version supported by the frontend toolchain.
+    "module": "ESNext",                           // Preserves ES module imports for the bundler.
+    "moduleResolution": "Bundler",                // Resolves packages with the same rules as the frontend bundler.
+    "esModuleInterop": true,                      // Allows CommonJS modules to be imported with ES module syntax.
+    "resolveJsonModule": true,                    // Allows importing JSON files as modules.
+    "allowSyntheticDefaultImports": true,         // Allows default imports from modules without a default export.
+
+    "jsx": "react-jsx",                           // Uses React's automatic JSX runtime.
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],     // Includes browser APIs and modern JavaScript APIs.
+    "useDefineForClassFields": true,              // Uses the standard JavaScript semantics for class fields.
+
+    "allowJs": false,                             // Disallows JavaScript files in application source.
+    "sourceMap": false,                           // Does not generate JavaScript source maps.
+    "declaration": false,                         // Does not generate type declaration files.
+    "declarationMap": false,                      // Does not generate declaration source maps.
+    "noEmit": true,                               // Leaves output generation to Rspack.
+
+    "noImplicitReturns": true,                    // Requires explicit return values from all function branches.
+    "allowUnreachableCode": false,                // Disallows unreachable code.
+    "noImplicitOverride": true,                   // Requires override on inherited members.
+    "noUnusedLocals": true,                       // Disallows unused local variables.
+    "noUnusedParameters": true,                   // Disallows unused function parameters.
+    "noFallthroughCasesInSwitch": true,           // Requires explicit exits from switch cases.
+
+    "skipLibCheck": false,                        // Enables type checking in declaration files.
+    "forceConsistentCasingInFileNames": true,     // Requires consistent casing in file names.
+
+    "isolatedModules": true,                      // Treats each file as a separate module for transpilation.
+    "incremental": true,                          // Enables incremental type checking.
+
+    "exactOptionalPropertyTypes": false,          // Keeps optional properties compatible with service conventions.
+    "noPropertyAccessFromIndexSignature": false,  // Allows property access through index signatures.
+
+    "strict": true,
+    /* Enables strict type checking
+      1. alwaysStrict - Enables strict mode in all files
+      2. strictNullChecks - Checks for null and undefined in types
+      3. strictFunctionTypes - Checks function type compatibility
+      4. strictPropertyInitialization - Checks class property initialization
+      5. strictBindCallApply - Checks bind, call, and apply methods
+      6. noImplicitAny - Disallows implicit any types
+      7. noImplicitThis - Checks this outside class and object literals
+      8. useUnknownInCatchVariables - Uses unknown for catch block variables
+    */
+  }
+}

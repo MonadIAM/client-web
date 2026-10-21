@@ -1,0 +1,15 @@
+{
+  "extends": "./configs/tsconfig.base.json", // Root config, better to avoid editing!
+  "compilerOptions": {
+    "types": ["react", "react-dom"],         // Only browser runtime types are needed by this application.
+    "rootDir": "./src",                      // Root directory of the source code
+  },
+  "include": [
+    "src/**/*",
+  ],
+  "exclude": [
+    "node_modules",
+    "configs",
+    "dist",
+  ]
+}
