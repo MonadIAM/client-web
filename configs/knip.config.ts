@@ -12,7 +12,6 @@ const config: KnipConfig = {
         // Used by generated API clients, which are excluded through .gitignore.
         "@tanstack/react-query",
         "axios",
-        "zod",
     ],
 };
 

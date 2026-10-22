@@ -1,7 +1,7 @@
 import { defineConfig } from "@hey-api/openapi-ts";
-import { config } from "dotenv";
+import { tsImport } from "tsx/esm/api";
 
-config({ path: ".env" });
+await tsImport("./src/env/validate.ts", import.meta.url);
 
 const service = process.env.OPENAPI_SERVICE;
 const tag = process.env.OPENAPI_TAG;

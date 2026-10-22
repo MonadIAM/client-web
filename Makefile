@@ -1,8 +1,10 @@
-.PHONY: env start build tsc lint lint-fix stylelint knip secrets-check api-gen clean
+.PHONY: env env-check start build tsc lint lint-fix stylelint knip secrets-check api-gen clean
 
 # Infrastructure
 env:
 	[ -f .env.example ] && cp -f .env.example .env || echo '.env.example not found'
+env-check:
+	pnpm run env:check
 
 # Development
 start:

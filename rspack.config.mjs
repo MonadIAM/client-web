@@ -1,7 +1,9 @@
 import { ReactRefreshRspackPlugin } from "@rspack/plugin-react-refresh";
 import { fileURLToPath } from "node:url";
+import { tsImport } from "tsx/esm/api";
 import { rspack } from "@rspack/core";
-import "dotenv/config";
+
+await tsImport("./env.schema.ts", import.meta.url);
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 

@@ -30,6 +30,7 @@ make start
 | Command              | Description                                    |
 | -------------------- | ---------------------------------------------- |
 | `make env`           | Copy `.env.example` to `.env`.                 |
+| `make env-check`     | Validate environment variables with Zod.       |
 | `make start`         | Start the development server.                  |
 | `make build`         | Build the production bundle.                   |
 | `make tsc`           | Check TypeScript types.                        |
