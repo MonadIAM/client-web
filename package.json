@@ -20,10 +20,14 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@tanstack/react-query": "5.104.5",
+    "axios": "1.20.0",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "zod": "4.6.7"
   },
   "devDependencies": {
+    "@hey-api/openapi-ts": "0.99.0",
     "@rspack/cli": "2.2.7",
     "@rspack/core": "2.2.7",
     "@rspack/plugin-react-refresh": "2.0.2",

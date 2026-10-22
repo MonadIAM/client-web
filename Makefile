@@ -1,4 +1,4 @@
-.PHONY: env start build tsc lint lint-fix stylelint knip secrets-check clean
+.PHONY: env start build tsc lint lint-fix stylelint knip secrets-check api-gen clean
 
 # Infrastructure
 env:
@@ -23,3 +23,5 @@ knip:
 	pnpm run knip
 secrets-check:
 	pnpm run secrets:check
+api-gen:
+	OPENAPI_SERVICE="$(or $(SERVICE),$(error SERVICE is required))" OPENAPI_TAG="$(TAG)" pnpm exec openapi-ts --file hey-api.config.mjs

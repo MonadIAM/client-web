@@ -27,17 +27,18 @@ make start
 <details>
 <summary><strong>Команды проекта</strong></summary>
 
-| Команда              | Описание                                            |
-| -------------------- | --------------------------------------------------- |
-| `make env`           | Скопировать `.env.example` в `.env`.                |
-| `make start`         | Запустить dev-сервер.                               |
-| `make build`         | Собрать production bundle.                          |
-| `make tsc`           | Проверить типы TypeScript.                          |
-| `make lint`          | Запустить ESLint и Stylelint.                       |
-| `make lint-fix`      | Применить доступные исправления ESLint и Stylelint. |
-| `make stylelint`     | Проверить CSS с помощью Stylelint.                  |
-| `make knip`          | Найти неиспользуемые файлы, экспорты и зависимости. |
-| `make secrets-check` | Проверить изменения на секреты с помощью Gitleaks.  |
-| `make clean`         | Удалить созданные файлы сборки и кэша.              |
+| Команда              | Описание                                             |
+| -------------------- | ---------------------------------------------------- |
+| `make env`           | Скопировать `.env.example` в `.env`.                 |
+| `make start`         | Запустить dev-сервер.                                |
+| `make build`         | Собрать production bundle.                           |
+| `make tsc`           | Проверить типы TypeScript.                           |
+| `make lint`          | Запустить ESLint и Stylelint.                        |
+| `make lint-fix`      | Применить доступные исправления ESLint и Stylelint.  |
+| `make stylelint`     | Проверить CSS с помощью Stylelint.                   |
+| `make knip`          | Найти неиспользуемые файлы, экспорты и зависимости.  |
+| `make api-gen`       | Сгенерировать API: `SERVICE` + необязательный `TAG`. |
+| `make secrets-check` | Проверить изменения на секреты с помощью Gitleaks.   |
+| `make clean`         | Удалить созданные файлы сборки и кэша.               |
 
 </details>

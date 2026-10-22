@@ -37,6 +37,7 @@ make start
 | `make lint-fix`      | Apply available ESLint and Stylelint fixes.    |
 | `make stylelint`     | Check CSS with Stylelint.                      |
 | `make knip`          | Find unused files, exports, and dependencies.  |
+| `make api-gen`       | Generate API: `SERVICE` + optional `TAG`.      |
 | `make secrets-check` | Scan staged changes for secrets with Gitleaks. |
 | `make clean`         | Remove generated build and cache files.        |
 
