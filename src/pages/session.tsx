@@ -1,9 +1,11 @@
 import { Button, FieldError, Spinner } from "@monadiam/ui-kit";
+import { useNavigate } from "react-router";
 import { useState, JSX } from "react";
 
-import { AuthClient, usePermission, useSession } from "~auth";
+import { AuthWorkerClient, usePermission, useSession } from "~auth";
 
 export function Session(): JSX.Element {
+    const navigate = useNavigate();
     const session = useSession();
     const permissions = usePermission();
     const [pending, setPending] = useState(false);
@@ -13,7 +15,8 @@ export function Session(): JSX.Element {
         setPending(true);
         setError("");
         try {
-            await AuthClient.logout();
+            await AuthWorkerClient.logout();
+            void navigate("/login", { replace: true });
         } catch (cause) {
             setError(cause instanceof Error ? cause.message : "Sign out failed");
         } finally {

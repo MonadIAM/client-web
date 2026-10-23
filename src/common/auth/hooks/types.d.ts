@@ -7,7 +7,7 @@ declare global {
         }
 
         namespace UsePermission {
-            type Props = Permission.Match.Options;
+            type Props = Permission.Manager.Match.Props["options"];
 
             type Result = UseQueryResult<API.AccessControl.Privileges, Error> & {
                 allowed: Optional<boolean>;

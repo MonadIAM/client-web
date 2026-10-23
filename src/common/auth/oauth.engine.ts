@@ -4,18 +4,19 @@ import { TokenGrantType } from "~api/generated/identity";
 
 import { OAuthSchema } from "./oauth.schema";
 
-export abstract class OAuthEngine {
-    private static discovery: Optional<Promise<Auth.OAuth.Metadata>>;
+class OAuthFlowEngine implements Auth.OAuth.Contract {
+    public static readonly instance = new OAuthFlowEngine();
 
-    private static keys: Optional<Auth.OAuth.KeySet>;
+    public discovery: Optional<Promise<Auth.OAuth.Metadata>>;
+    public keys: Optional<Auth.OAuth.KeySet>;
 
     private constructor() {}
 
-    public static randomValue(): string {
+    public randomValue(): Auth.OAuth.RandomValue.Result {
         return base64url.encode(crypto.getRandomValues(new Uint8Array(32)));
     }
 
-    public static async authorize(props: Auth.OAuth.Authorize.Props): Auth.OAuth.Authorize.Result {
+    public async authorize(props: Auth.OAuth.Authorize.Props): Auth.OAuth.Authorize.Result {
         const metadata = await this.getMetadata();
         const url = new URL(metadata.authorization_endpoint);
         const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(props.verifier));
@@ -32,7 +33,7 @@ export abstract class OAuthEngine {
         return url.href;
     }
 
-    public static async exchange(props: Auth.OAuth.Exchange.Props): Auth.OAuth.Exchange.Result {
+    public async exchange(props: Auth.OAuth.Exchange.Props): Auth.OAuth.Exchange.Result {
         const expected = new URL(process.env.OAUTH_REDIRECT_URI);
         const sameAddress = props.url.origin === expected.origin && props.url.pathname === expected.pathname;
         const sameState = props.url.searchParams.get("state") === props.transaction.state;
@@ -70,11 +71,11 @@ export abstract class OAuthEngine {
         }
     }
 
-    public static refresh(props: Auth.OAuth.Refresh.Props): Auth.OAuth.Refresh.Result {
+    public refresh(props: Auth.OAuth.Refresh.Props): Auth.OAuth.Refresh.Result {
         return this.requestToken({ grant_type: TokenGrantType.REFRESH_TOKEN, refresh_token: props.token });
     }
 
-    public static async revoke(props: Auth.OAuth.Revoke.Props): Auth.OAuth.Revoke.Result {
+    public async revoke(props: Auth.OAuth.Revoke.Props): Auth.OAuth.Revoke.Result {
         const metadata = await this.getMetadata();
         const response = await fetch(metadata.revocation_endpoint, {
             method: "POST",
@@ -90,7 +91,7 @@ export abstract class OAuthEngine {
         }
     }
 
-    private static getMetadata(): Promise<Auth.OAuth.Metadata> {
+    public getMetadata(): Auth.OAuth.MetadataAction.Result {
         this.discovery ??= this.discover().catch((error: unknown) => {
             this.discovery = undefined;
             throw error;
@@ -98,7 +99,7 @@ export abstract class OAuthEngine {
         return this.discovery;
     }
 
-    private static async discover(): Promise<Auth.OAuth.Metadata> {
+    public async discover(): Auth.OAuth.Discover.Result {
         const response = await fetch(new URL("/.well-known/openid-configuration", process.env.OAUTH_ISSUER), {
             signal: AbortSignal.timeout(Number(process.env.AUTH_REQUEST_TIMEOUT_MS)),
         });
@@ -123,7 +124,7 @@ export abstract class OAuthEngine {
         }
     }
 
-    private static async requestToken(props: Auth.OAuth.RequestToken.Props): Auth.OAuth.RequestToken.Result {
+    public async requestToken(props: Auth.OAuth.RequestToken.Props): Auth.OAuth.RequestToken.Result {
         const metadata = await this.getMetadata();
         const response = await fetch(metadata.token_endpoint, {
             method: "POST",
@@ -151,7 +152,7 @@ export abstract class OAuthEngine {
         }
     }
 
-    private static async validateIdentity(props: Auth.OAuth.ValidateIdentity.Props): Auth.OAuth.ValidateIdentity.Result {
+    public async validateIdentity(props: Auth.OAuth.ValidateIdentity.Props): Auth.OAuth.ValidateIdentity.Result {
         const metadata = await this.getMetadata();
         this.keys ??= createRemoteJWKSet(new URL(metadata.jwks_uri), {
             timeoutDuration: Number(process.env.AUTH_REQUEST_TIMEOUT_MS),
@@ -184,3 +185,5 @@ export abstract class OAuthEngine {
         }
     }
 }
+
+export const OAuthEngine: Auth.OAuth.PublicContract = OAuthFlowEngine.instance;

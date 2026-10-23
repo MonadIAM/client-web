@@ -1,2 +1,2 @@
-export { SessionStorage } from "./session-storage";
-export { Session } from "./session";
+export { SessionRepository } from "./session.repository";
+export { SessionManager } from "./session.manager";

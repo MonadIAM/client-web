@@ -15,17 +15,73 @@ declare global {
         export import Hr = HrTypes;
 
         namespace Transport {
+            type Request = InternalAxiosRequestConfig<unknown>;
             type Response = AxiosResponse<unknown>;
 
-            type Request = InternalAxiosRequestConfig<unknown>;
+            interface Contract extends PublicContract, PrivateContract {}
+
+            interface PublicContract {
+                identityPublic: AxiosInstance;
+
+                initialize: Initialize.Signature;
+            }
+
+            namespace Initialize {
+                type Result = void;
+
+                type Signature = () => Result;
+            }
+
+            interface PrivateContract {
+                initialized: boolean;
+
+                createTransport: Transport.CreateTransport.Signature;
+                authorize: Transport.Authorize.Signature;
+                accept: Transport.Accept.Signature;
+                recover: Transport.Recover.Signature;
+                retry: Transport.Retry.Signature;
+            }
+
+            namespace CreateTransport {
+                type Props = {
+                    origin: string;
+                };
+
+                type Result = AxiosInstance;
+
+                type Signature = (props: Props) => Result;
+            }
+
+            namespace Authorize {
+                type Props = {
+                    config: Request;
+                    origin: string;
+                };
+
+                type Result = Promise<Request>;
+
+                type Signature = (props: Props) => Result;
+            }
 
             namespace Recover {
                 type Props = {
-                    error: unknown;
                     transport: AxiosInstance;
+                    error: unknown;
                 };
 
                 type Result = Promise<Response>;
+
+                type Signature = (props: Props) => Result;
+            }
+
+            namespace Accept {
+                type Props = {
+                    response: Response;
+                };
+
+                type Result = Response;
+
+                type Signature = (props: Props) => Result;
             }
 
             namespace Retry {
@@ -36,6 +92,8 @@ declare global {
                 };
 
                 type Result = Promise<Response>;
+
+                type Signature = (props: Props) => Result;
             }
         }
     }

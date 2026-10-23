@@ -1,36 +1,43 @@
 import { WorkerSchema } from "./worker.schema";
 
-export abstract class AuthClient {
-    private static current: Auth.Session.Snapshot = { status: "initializing", revision: "", claims: null };
-    private static authorization: Optional<Promise<Auth.Client.Authorization>>;
-    private static initialization: Optional<Promise<void>>;
-    private static worker: Nullable<SharedWorker> = null;
-    private static initialized = false;
-    private static readonly pending = new Map<string, Auth.Client.Pending>();
-    private static readonly permissionListeners = new Set<Auth.Listener>();
-    private static readonly listeners = new Set<Auth.Listener>();
+class WorkerClient implements Auth.WorkerClient.Contract {
+    public static readonly instance = new WorkerClient();
+
+    public current: Auth.Session.Snapshot = { status: "initializing", revision: "", claims: null };
+    public authorization: Optional<Promise<Auth.WorkerClient.Authorization>>;
+    public initialization: Optional<Promise<void>>;
+    public worker: Nullable<SharedWorker> = null;
+    public initialized = false;
+
+    public readonly pending = new Map<string, Auth.WorkerClient.Pending>();
+    public readonly permissionListeners = new Set<Auth.Listener>();
+    public readonly listeners = new Set<Auth.Listener>();
 
     private constructor() {}
 
-    public static getSnapshot(): Auth.Session.Snapshot {
+    public getSnapshot(): Auth.WorkerClient.GetSnapshot.Result {
         return this.current;
     }
 
-    public static subscribe(listener: Auth.Listener): Auth.Unsubscribe {
+    public subscribe(props: Auth.WorkerClient.Subscribe.Props): Auth.WorkerClient.Subscribe.Result {
+        const listener = props.listener;
         this.listeners.add(listener);
         return () => {
             this.listeners.delete(listener);
         };
     }
 
-    public static subscribePermissions(listener: Auth.Listener): Auth.Unsubscribe {
+    public subscribePermissions(
+        props: Auth.WorkerClient.SubscribePermissions.Props,
+    ): Auth.WorkerClient.SubscribePermissions.Result {
+        const listener = props.listener;
         this.permissionListeners.add(listener);
         return () => {
             this.permissionListeners.delete(listener);
         };
     }
 
-    public static authorize(): Promise<Auth.Client.Authorization> {
+    public authorize(): Auth.WorkerClient.Authorize.Result {
         this.authorization ??= this.send({ command: "authorize" })
             .then((response) => WorkerSchema.authorizeResult.parse(response).value)
             .then(
@@ -43,16 +50,16 @@ export abstract class AuthClient {
         return this.authorization;
     }
 
-    public static retryAuthorization(): void {
+    public retryAuthorization(): Auth.WorkerClient.RetryAuthorization.Result {
         this.authorization = undefined;
     }
 
-    public static async getToken(props: Auth.Session.GetToken.Props): Auth.Session.GetToken.Result {
+    public async getToken(props: Auth.WorkerClient.GetToken.Props): Auth.WorkerClient.GetToken.Result {
         const response = await this.send({ command: "token", props });
         return WorkerSchema.tokenResult.parse(response).value;
     }
 
-    public static async logout(): Promise<void> {
+    public async logout(): Auth.WorkerClient.Logout.Result {
         try {
             await this.send({ command: "logout" });
         } catch (error) {
@@ -61,17 +68,17 @@ export abstract class AuthClient {
         }
     }
 
-    public static async invalidatePermissions(): Promise<void> {
+    public async invalidatePermissions(): Auth.WorkerClient.InvalidatePermissions.Result {
         await this.send({ command: "invalidatePermissions" });
     }
 
-    public static initialize(): Promise<void> {
+    public initialize(): Auth.WorkerClient.Initialize.Result {
         this.attachLifecycle();
         this.initialization ??= this.initializeSession();
         return this.initialization;
     }
 
-    private static async initializeSession(): Promise<void> {
+    public async initializeSession(): Auth.WorkerClient.InitializeSession.Result {
         try {
             const url = new URL(location.href);
             const expected = new URL(process.env.OAUTH_REDIRECT_URI);
@@ -99,25 +106,25 @@ export abstract class AuthClient {
         }
     }
 
-    private static async synchronize(): Promise<void> {
+    public async synchronize(): Auth.WorkerClient.Synchronize.Result {
         try {
             const response = await this.send({ command: "snapshot" });
             const snapshot = WorkerSchema.snapshotResult.parse(response).value;
             this.publish({ ...snapshot, error: this.current.error });
         } catch (error) {
             this.publish({
+                error: error instanceof Error ? error.message : "Session synchronization failed",
                 status: "unavailable",
                 revision: "",
                 claims: null,
-                error: error instanceof Error ? error.message : "Session synchronization failed",
             });
         }
     }
 
-    private static attachLifecycle(): void {
+    public attachLifecycle(): Auth.WorkerClient.AttachLifecycle.Result {
         if (this.initialized === false) {
             this.initialized = true;
-            window.addEventListener("pagehide", () => this.disconnect(new Error("The page was suspended")));
+            window.addEventListener("pagehide", () => this.disconnect({ error: new Error("The page was suspended") }));
             window.addEventListener("pageshow", (event) => {
                 if (event.persisted) {
                     this.initialization = undefined;
@@ -128,14 +135,15 @@ export abstract class AuthClient {
         }
     }
 
-    private static publish(value: Auth.Session.Snapshot): void {
+    public publish(props: Auth.WorkerClient.Publish.Props): Auth.WorkerClient.Publish.Result {
+        const value = props;
         this.current = value;
         for (const listener of this.listeners) {
             listener();
         }
     }
 
-    private static connect(): SharedWorker {
+    public connect(): Auth.WorkerClient.Connect.Result {
         if (this.worker) {
             return this.worker;
         } else {
@@ -148,13 +156,13 @@ export abstract class AuthClient {
                 if (response.success) {
                     this.receive(response.data);
                 } else {
-                    this.disconnect(new Error("Invalid response from the session worker"));
+                    this.disconnect({ error: new Error("Invalid response from the session worker") });
                     this.publish({ status: "unavailable", revision: "", claims: null, error: "Invalid worker response" });
                 }
             };
             worker.onerror = () => {
                 const error = new Error("The session worker could not be started");
-                this.disconnect(error);
+                this.disconnect({ error });
                 this.publish({ status: "unavailable", revision: "", claims: null, error: error.message });
             };
             worker.port.start();
@@ -163,7 +171,8 @@ export abstract class AuthClient {
         }
     }
 
-    private static disconnect(error: Error): void {
+    public disconnect(props: Auth.WorkerClient.Disconnect.Props): Auth.WorkerClient.Disconnect.Result {
+        const error = props.error;
         this.worker?.port.postMessage("disconnect");
         this.worker?.port.close();
         this.worker = null;
@@ -174,7 +183,7 @@ export abstract class AuthClient {
         this.pending.clear();
     }
 
-    private static receive(props: Auth.Client.Receive.Props): Auth.Client.Receive.Result {
+    public receive(props: Auth.WorkerClient.Receive.Props): Auth.WorkerClient.Receive.Result {
         if (props.kind === "session") {
             this.publish(props.value);
         } else if (props.kind === "permissions") {
@@ -195,7 +204,7 @@ export abstract class AuthClient {
         }
     }
 
-    private static send(props: Auth.Client.Send.Props): Auth.Client.Send.Result {
+    public send(props: Auth.WorkerClient.Send.Props): Auth.WorkerClient.Send.Result {
         const port = this.connect().port;
         const id = crypto.randomUUID();
         const message: Auth.Worker.Request = { id, payload: props };
@@ -209,3 +218,5 @@ export abstract class AuthClient {
         });
     }
 }
+
+export const AuthWorkerClient: Auth.WorkerClient.PublicContract = WorkerClient.instance;

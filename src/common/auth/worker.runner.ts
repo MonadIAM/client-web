@@ -1,13 +1,15 @@
 import { WorkerSchema } from "./worker.schema";
-import { Session } from "./session";
+import { SessionManager } from "./session";
 
-abstract class WorkerRunner {
-    private static readonly ports = new Set<MessagePort>();
+class SharedWorkerRunner implements Auth.WorkerRunner.Contract {
+    public static readonly instance = new SharedWorkerRunner();
+
+    public readonly ports = new Set<MessagePort>();
 
     private constructor() {}
 
-    public static initialize(): void {
-        Session.subscribe(() => this.broadcast({ kind: "session", value: Session.snapshot() }));
+    public initialize(): Auth.WorkerRunner.Initialize.Result {
+        SessionManager.subscribe({ listener: () => this.broadcast({ kind: "session", value: SessionManager.snapshot() }) });
         globalThis.addEventListener("connect", (event: Event) => {
             if (event instanceof MessageEvent) {
                 const port = event.ports[0];
@@ -19,12 +21,15 @@ abstract class WorkerRunner {
                     } else {
                         const request = WorkerSchema.request.parse(message.data);
                         void this.execute(request.payload).then(
-                            (payload) => this.reply(port, { kind: "result", id: request.id, payload }),
+                            (payload) => this.reply({ port, response: { kind: "result", id: request.id, payload } }),
                             (error: unknown) =>
-                                this.reply(port, {
-                                    kind: "error",
-                                    id: request.id,
-                                    message: error instanceof Error ? error.message : "Authentication failed",
+                                this.reply({
+                                    port,
+                                    response: {
+                                        kind: "error",
+                                        id: request.id,
+                                        message: error instanceof Error ? error.message : "Authentication failed",
+                                    },
                                 }),
                         );
                     }
@@ -34,48 +39,48 @@ abstract class WorkerRunner {
         });
     }
 
-    private static reply(port: MessagePort, response: Auth.Worker.Response): void {
-        port.postMessage(response);
+    public reply(props: Auth.WorkerRunner.Reply.Props): Auth.WorkerRunner.Reply.Result {
+        props.port.postMessage(props.response);
     }
 
-    private static broadcast(response: Auth.Worker.Response): void {
+    public broadcast(props: Auth.WorkerRunner.Broadcast.Props): Auth.WorkerRunner.Broadcast.Result {
         for (const port of this.ports) {
-            this.reply(port, response);
+            this.reply({ port, response: props });
         }
     }
 
-    private static async execute(props: Auth.Worker.Execute.Props): Auth.Worker.Execute.Result {
-        await Session.restore();
+    public async execute(props: Auth.WorkerRunner.Execute.Props): Auth.WorkerRunner.Execute.Result {
+        await SessionManager.restore();
         switch (props.command) {
             case "callback": {
-                await Session.callback({ address: props.address });
+                await SessionManager.callback({ address: props.address });
                 return {
-                    value: Session.snapshot(),
+                    value: SessionManager.snapshot(),
                     command: props.command,
                 };
             }
             case "token": {
                 return {
-                    value: await Session.getToken(props.props),
+                    value: await SessionManager.getToken(props.props),
                     command: props.command,
                 };
             }
             case "authorize": {
                 return {
-                    value: await Session.authorize(),
+                    value: await SessionManager.authorize(),
                     command: props.command,
                 };
             }
             case "snapshot": {
                 return {
-                    value: Session.snapshot(),
+                    value: SessionManager.snapshot(),
                     command: props.command,
                 };
             }
             case "logout": {
-                await Session.logout();
+                await SessionManager.logout();
                 return {
-                    value: Session.snapshot(),
+                    value: SessionManager.snapshot(),
                     command: props.command,
                 };
             }
@@ -90,5 +95,7 @@ abstract class WorkerRunner {
         }
     }
 }
+
+export const WorkerRunner: Auth.WorkerRunner.PublicContract = SharedWorkerRunner.instance;
 
 WorkerRunner.initialize();

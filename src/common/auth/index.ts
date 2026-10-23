@@ -1,4 +1,4 @@
 export { usePermission, useSession } from "./hooks";
-export { PermissionStorage } from "./permission";
-export { SessionStorage } from "./session";
-export { AuthClient } from "./client";
+export { AuthWorkerClient } from "./worker.client";
+export { PermissionStore } from "./permission";
+export { SessionRepository } from "./session";

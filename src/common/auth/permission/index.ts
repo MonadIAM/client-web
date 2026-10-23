@@ -1,2 +1,2 @@
-export { PermissionStorage } from "./permission-storage";
-export { Permission } from "./permission";
+export { PermissionManager } from "./permission.manager";
+export { PermissionStore } from "./permission.store";

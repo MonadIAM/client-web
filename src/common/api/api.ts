@@ -1,6 +1,6 @@
-import axios, { AxiosError, CanceledError, AxiosInstance } from "axios";
+import axios, { AxiosError, CanceledError } from "axios";
 
-import { AuthClient } from "~auth/client";
+import { AuthWorkerClient } from "~common/auth/worker.client";
 
 import { client as accessControl } from "./generated/access-control/client.gen";
 import { client as notification } from "./generated/notification/client.gen";
@@ -8,56 +8,60 @@ import { client as organization } from "./generated/organization/client.gen";
 import { client as identity } from "./generated/identity/client.gen";
 import { client as hr } from "./generated/hr/client.gen";
 
-export abstract class API {
-    public static readonly identityPublic = axios.create({
+class ApiTransport implements API.Transport.Contract {
+    public static readonly instance = new ApiTransport();
+
+    public readonly identityPublic = axios.create({
         timeout: Number(process.env.API_REQUEST_TIMEOUT_MS),
         withCredentials: true,
     });
 
-    private static initialized = false;
+    public initialized = false;
 
     private constructor() {}
 
-    public static initialize(): void {
+    public initialize(): void {
         if (this.initialized === false) {
             this.initialized = true;
             accessControl.setConfig({
-                axios: this.createTransport(process.env.ACCESS_CONTROL_ORIGIN),
+                axios: this.createTransport({ origin: process.env.ACCESS_CONTROL_ORIGIN }),
                 baseURL: process.env.ACCESS_CONTROL_ORIGIN,
             });
             identity.setConfig({
-                axios: this.createTransport(process.env.IDENTITY_ORIGIN),
+                axios: this.createTransport({ origin: process.env.IDENTITY_ORIGIN }),
                 baseURL: process.env.IDENTITY_ORIGIN,
             });
             notification.setConfig({
-                axios: this.createTransport(process.env.NOTIFICATION_ORIGIN),
+                axios: this.createTransport({ origin: process.env.NOTIFICATION_ORIGIN }),
                 baseURL: process.env.NOTIFICATION_ORIGIN,
             });
             organization.setConfig({
-                axios: this.createTransport(process.env.ORGANIZATION_ORIGIN),
+                axios: this.createTransport({ origin: process.env.ORGANIZATION_ORIGIN }),
                 baseURL: process.env.ORGANIZATION_ORIGIN,
             });
             hr.setConfig({
-                axios: this.createTransport(process.env.HR_ORIGIN),
+                axios: this.createTransport({ origin: process.env.HR_ORIGIN }),
                 baseURL: process.env.HR_ORIGIN,
             });
         }
     }
 
-    private static createTransport(origin: string): AxiosInstance {
+    public createTransport(props: API.Transport.CreateTransport.Props): API.Transport.CreateTransport.Result {
+        const origin = props.origin;
         const transport = axios.create({ timeout: Number(process.env.API_REQUEST_TIMEOUT_MS) });
-        transport.interceptors.request.use((config) => this.authorize(config, origin));
+        transport.interceptors.request.use((config) => this.authorize({ config, origin }));
         transport.interceptors.response.use(
-            (response: API.Transport.Response) => this.accept(response),
+            (response: API.Transport.Response) => this.accept({ response }),
             (error: unknown) => this.recover({ error, transport }),
         );
         return transport;
     }
 
-    private static async authorize(config: API.Transport.Request, origin: string): Promise<API.Transport.Request> {
+    public async authorize(props: API.Transport.Authorize.Props): API.Transport.Authorize.Result {
+        const { config, origin } = props;
         const url = new URL(config.url ?? "", origin);
         if (url.origin === new URL(origin).origin) {
-            const credential = await AuthClient.getToken({ revision: config.authSession?.revision });
+            const credential = await AuthWorkerClient.getToken({ revision: config.authSession?.revision });
             if (config.signal?.aborted) {
                 throw new CanceledError();
             } else {
@@ -70,9 +74,10 @@ export abstract class API {
         }
     }
 
-    private static accept(response: API.Transport.Response): API.Transport.Response {
+    public accept(props: API.Transport.Accept.Props): API.Transport.Accept.Result {
+        const response = props.response;
         const credential = response.config.authSession;
-        const current = AuthClient.getSnapshot();
+        const current = AuthWorkerClient.getSnapshot();
         if (credential?.revision === current.revision && current.status === "authenticated") {
             return response;
         } else {
@@ -80,7 +85,7 @@ export abstract class API {
         }
     }
 
-    private static recover(props: API.Transport.Recover.Props): API.Transport.Recover.Result {
+    public recover(props: API.Transport.Recover.Props): API.Transport.Recover.Result {
         if (props.error instanceof AxiosError) {
             const config = props.error.config;
             const challenge = String(props.error.response?.headers["www-authenticate"] ?? "");
@@ -97,8 +102,8 @@ export abstract class API {
         }
     }
 
-    private static async retry(props: API.Transport.Retry.Props): API.Transport.Retry.Result {
-        const credential = await AuthClient.getToken({
+    public async retry(props: API.Transport.Retry.Props): API.Transport.Retry.Result {
+        const credential = await AuthWorkerClient.getToken({
             revision: props.credential.revision,
             rejectedToken: props.credential.token,
         });
@@ -109,3 +114,5 @@ export abstract class API {
         }
     }
 }
+
+export const API: API.Transport.PublicContract = ApiTransport.instance;

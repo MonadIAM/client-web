@@ -5,7 +5,7 @@ import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 
 import { OAuthSchema } from "~auth/oauth.schema";
-import { AuthClient, useSession } from "~auth";
+import { AuthWorkerClient, useSession } from "~auth";
 import { Identity } from "~api/sdk";
 import { API } from "~api";
 
@@ -21,7 +21,7 @@ export function Login(): JSX.Element {
     const available = session.status === "anonymous" || session.status === "unavailable";
     const retryAllowed = session.error === undefined || attempt > 0;
     const shouldAuthorize = missingRequest && available && retryAllowed;
-    const authorization = shouldAuthorize ? use(AuthClient.authorize()) : undefined;
+    const authorization = shouldAuthorize ? use(AuthWorkerClient.authorize()) : undefined;
 
     useEffect(() => {
         if (authorization?.url && redirecting.current === false) {
@@ -146,7 +146,7 @@ export function Login(): JSX.Element {
                 <Button
                     onClick={() => {
                         setError("");
-                        AuthClient.retryAuthorization();
+                        AuthWorkerClient.retryAuthorization();
                         setAttempt((value) => value + 1);
                     }}>
                     Retry
