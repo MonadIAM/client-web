@@ -1,7 +1,7 @@
 import { defineConfig } from "@hey-api/openapi-ts";
 import { tsImport } from "tsx/esm/api";
 
-await tsImport("./src/env/validate.ts", import.meta.url);
+await tsImport("./env.schema.ts", import.meta.url);
 
 const service = process.env.OPENAPI_SERVICE;
 const tag = process.env.OPENAPI_TAG;
@@ -19,7 +19,7 @@ const origin = origins[service];
 export default defineConfig({
     input: new URL("/docs/openapi.json", origin).href,
     output: {
-        path: `./src/api/generated/${tag ? `${service}/${tag}` : service}`,
+        path: `./src/common/api/generated/${tag ? `${service}/${tag}` : service}`,
         clean: Boolean(tag),
     },
     ...(tag && {

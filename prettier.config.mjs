@@ -1,5 +1,5 @@
-import tslint from "typescript-eslint";
 import prettier from "eslint-plugin-prettier";
+import tslint from "typescript-eslint";
 import globals from "globals";
 
 const prettierConfig = [
@@ -7,12 +7,12 @@ const prettierConfig = [
         ignores: [
             "dist/**/*",
             ".cache/**/*",
-            "src/api/generated/**/*",
             "configs/**/*",
             "coverage/**/*",
             "node_modules/**/*",
             "./*.config.{mjs,ts}",
             "./configs/*.config.{mjs,ts}",
+            "./src/common/api/generated/**/*",
             "**/migrations/*.ts",
             "**/*.generated.ts",
         ]

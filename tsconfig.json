@@ -1,6 +1,18 @@
 {
   "extends": "./configs/tsconfig.base.json", // Root config, better to avoid editing!
   "compilerOptions": {
+    "paths": {
+      "~common/*": ["./src/common/*"],
+      "~api": ["./src/common/api"],
+      "~api/*": ["./src/common/api/*"],
+      "~auth": ["./src/common/auth"],
+      "~auth/*": ["./src/common/auth/*"],
+      "~pages/*": ["./src/pages/*"],
+      "~router": ["./src/router"],
+      "~router/*": ["./src/router/*"],
+      "~assets/*": ["./src/assets/*"],
+      "~root/*": ["./*"]
+    },
     "types": ["react", "react-dom", "node"], // React types and Node.js types used by environment validation.
     "rootDir": ".",                          // Includes application source and the root environment schema.
   },

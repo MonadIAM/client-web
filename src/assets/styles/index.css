@@ -1,3 +1,13 @@
-@import url("./fonts.css");
-@import url("./reset.css");
-@import url("./themes.css");
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "./fonts.css";
+@import "./reset.css";
+@import "./themes.css";
+@import "@monadiam/ui-kit/styles.css";
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@source "../../";
+@source not "../../common/api/generated";
+
+@custom-variant dark (&:where(.dark, .dark *));
