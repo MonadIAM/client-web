@@ -40,7 +40,6 @@ const enabledRules = {
     "no-restricted-syntax": [
         "error",
         { selector: "TSImportType", message: "Use a top-level import type declaration." },
-        { selector: "ImportExpression", message: "Use a static import declaration." },
         {
             selector: "ReturnStatement[argument=null]",
             message: "Return statements without a value are not allowed.",

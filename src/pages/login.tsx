@@ -1,5 +1,5 @@
-import { Button, Field, FieldError, FieldGroup, FieldLabel, FieldLegend, FieldSet, Input, Spinner } from "@monadiam/ui-kit";
-import { JSX, useEffect, useState } from "react";
+import { Button, Field, FieldError, FieldGroup, FieldLabel, FieldLegend, FieldSet, Input } from "@monadiam/ui-kit";
+import { JSX, use, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
@@ -13,38 +13,22 @@ export function Login(): JSX.Element {
     const session = useSession();
     const [attempt, setAttempt] = useState(0);
     const [error, setError] = useState(session.error ?? "");
+    const redirecting = useRef(false);
 
     const [parameters] = useSearchParams();
     const authorizationRequest = parameters.get("authorizationRequest");
+    const missingRequest = authorizationRequest === null || authorizationRequest === "";
+    const available = session.status === "anonymous" || session.status === "unavailable";
+    const retryAllowed = session.error === undefined || attempt > 0;
+    const shouldAuthorize = missingRequest && available && retryAllowed;
+    const authorization = shouldAuthorize ? use(AuthClient.authorize()) : undefined;
 
     useEffect(() => {
-        let active = true;
-        const missingRequest = authorizationRequest === null || authorizationRequest === "";
-        const available = session.status === "anonymous" || session.status === "unavailable";
-        const retryAllowed = session.error === undefined || attempt > 0;
-
-        function cleanup(): void {
-            active = false;
+        if (authorization?.url && redirecting.current === false) {
+            redirecting.current = true;
+            location.replace(authorization.url);
         }
-
-        if (missingRequest && available && retryAllowed) {
-            void AuthClient.authorize().then(
-                (url) => {
-                    if (active) {
-                        location.replace(url);
-                    }
-                },
-                (cause: unknown) => {
-                    if (active) {
-                        setError(cause instanceof Error ? cause.message : "Authorization failed");
-                    }
-                },
-            );
-            return cleanup;
-        } else {
-            return cleanup;
-        }
-    }, [authorizationRequest, session.status, session.error, attempt]);
+    }, [authorization]);
 
     const form = useForm({
         defaultValues: { identifier: "", password: "" },
@@ -77,9 +61,9 @@ export function Login(): JSX.Element {
             const response = await Identity.authnControllerPassword({
                 axios: API.identityPublic,
                 body: {
-                    authorizationRequest,
                     identifier: values.identifier,
                     password: values.password,
+                    authorizationRequest,
                 },
                 throwOnError: true,
             });
@@ -158,18 +142,17 @@ export function Login(): JSX.Element {
                         )}
                     </form.Subscribe>
                 </form>
-            ) : error ? (
+            ) : error || authorization?.error ? (
                 <Button
                     onClick={() => {
                         setError("");
+                        AuthClient.retryAuthorization();
                         setAttempt((value) => value + 1);
                     }}>
                     Retry
                 </Button>
-            ) : (
-                <Spinner />
-            )}
-            {error && <FieldError>{error}</FieldError>}
+            ) : null}
+            {(error || authorization?.error) && <FieldError>{error || authorization?.error}</FieldError>}
         </main>
     );
 }

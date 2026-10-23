@@ -2,6 +2,8 @@ import { WorkerSchema } from "./worker.schema";
 
 export abstract class AuthClient {
     private static current: Auth.Session.Snapshot = { status: "initializing", revision: "", claims: null };
+    private static authorization: Optional<Promise<Auth.Client.Authorization>>;
+    private static initialization: Optional<Promise<void>>;
     private static worker: Nullable<SharedWorker> = null;
     private static initialized = false;
     private static readonly pending = new Map<string, Auth.Client.Pending>();
@@ -28,9 +30,21 @@ export abstract class AuthClient {
         };
     }
 
-    public static async authorize(): Promise<string> {
-        const response = await this.send({ command: "authorize" });
-        return WorkerSchema.authorizeResult.parse(response).value;
+    public static authorize(): Promise<Auth.Client.Authorization> {
+        this.authorization ??= this.send({ command: "authorize" })
+            .then((response) => WorkerSchema.authorizeResult.parse(response).value)
+            .then(
+                (url) => ({ url, error: undefined }),
+                (cause: unknown) => ({
+                    url: undefined,
+                    error: cause instanceof Error ? cause.message : "Authorization failed",
+                }),
+            );
+        return this.authorization;
+    }
+
+    public static retryAuthorization(): void {
+        this.authorization = undefined;
     }
 
     public static async getToken(props: Auth.Session.GetToken.Props): Auth.Session.GetToken.Result {
@@ -51,8 +65,13 @@ export abstract class AuthClient {
         await this.send({ command: "invalidatePermissions" });
     }
 
-    public static async initialize(): Promise<void> {
+    public static initialize(): Promise<void> {
         this.attachLifecycle();
+        this.initialization ??= this.initializeSession();
+        return this.initialization;
+    }
+
+    private static async initializeSession(): Promise<void> {
         try {
             const url = new URL(location.href);
             const expected = new URL(process.env.OAUTH_REDIRECT_URI);
@@ -101,6 +120,8 @@ export abstract class AuthClient {
             window.addEventListener("pagehide", () => this.disconnect(new Error("The page was suspended")));
             window.addEventListener("pageshow", (event) => {
                 if (event.persisted) {
+                    this.initialization = undefined;
+                    this.publish({ ...this.current, status: "initializing" });
                     void this.initialize();
                 }
             });

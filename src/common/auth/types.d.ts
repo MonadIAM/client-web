@@ -97,6 +97,11 @@ declare global {
         }
 
         namespace Client {
+            type Authorization = {
+                url: Optional<string>;
+                error: Optional<string>;
+            };
+
             type Pending = {
                 timeout: ReturnType<typeof setTimeout>;
                 resolve(payload: Worker.Payload): void;
