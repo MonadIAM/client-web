@@ -1,5 +1,5 @@
 const warnRules = {
-    "no-console": "warn",               // Warn on console.* usage (console.log, console.error, etc.)
+    "no-console": ["warn", { allow: ["error"] }],
     "no-useless-computed-key": "warn",  // Warn when key can be used instead of ["key"] in objects
 };
 

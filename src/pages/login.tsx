@@ -1,26 +1,25 @@
-import { Button, Field, FieldError, FieldGroup, FieldLabel, FieldLegend, FieldSet, Input } from "@monadiam/ui-kit";
+import { Button, Field, Form } from "@monadiam/ui-kit";
 import { JSX, use, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 
-import { OAuthSchema } from "~auth/oauth.schema";
+import { NotificationManager } from "~common/notifications";
 import { AuthWorkerClient, useSession } from "~auth";
+import { OAuthSchema } from "~auth/oauth.schema";
 import { Identity } from "~api/sdk";
 import { API } from "~api";
 
 export function Login(): JSX.Element {
     const session = useSession();
     const [attempt, setAttempt] = useState(0);
-    const [error, setError] = useState(session.error ?? "");
     const redirecting = useRef(false);
 
     const [parameters] = useSearchParams();
     const authorizationRequest = parameters.get("authorizationRequest");
-    const missingRequest = authorizationRequest === null || authorizationRequest === "";
     const available = session.status === "anonymous" || session.status === "unavailable";
     const retryAllowed = session.error === undefined || attempt > 0;
-    const shouldAuthorize = missingRequest && available && retryAllowed;
+    const shouldAuthorize = !authorizationRequest && available && retryAllowed;
     const authorization = shouldAuthorize ? use(AuthWorkerClient.authorize()) : undefined;
 
     useEffect(() => {
@@ -33,7 +32,6 @@ export function Login(): JSX.Element {
     const form = useForm({
         defaultValues: { identifier: "", password: "" },
         onSubmit: async ({ value, formApi }) => {
-            setError("");
             try {
                 const result = await authenticate(value);
                 if (result.authorizationUrl) {
@@ -49,7 +47,7 @@ export function Login(): JSX.Element {
                     throw new Error("Identity did not return the next authentication step");
                 }
             } catch (cause) {
-                setError(cause instanceof Error ? cause.message : "Authentication failed");
+                NotificationManager.error({ cause, title: "Sign in failed" });
             }
         },
     });
@@ -60,11 +58,7 @@ export function Login(): JSX.Element {
         if (authorizationRequest) {
             const response = await Identity.authnControllerPassword({
                 axios: API.identityPublic,
-                body: {
-                    identifier: values.identifier,
-                    password: values.password,
-                    authorizationRequest,
-                },
+                body: { identifier: values.identifier, password: values.password, authorizationRequest },
                 throwOnError: true,
             });
             return OAuthSchema.authentication.parse(response.data);
@@ -77,82 +71,41 @@ export function Login(): JSX.Element {
         <main className="mx-auto my-16 grid w-full max-w-lg gap-6 px-6">
             <h1 className="text-2xl font-semibold">MonadIAM</h1>
             {authorizationRequest ? (
-                <form
-                    onSubmit={(event) => {
-                        event.preventDefault();
-                        void form.handleSubmit();
-                    }}>
-                    <form.Subscribe selector={(state) => state.isSubmitting}>
-                        {(isSubmitting) => (
-                            <FieldSet disabled={isSubmitting}>
-                                <FieldLegend>Sign in</FieldLegend>
-                                <FieldGroup>
-                                    <form.Field
-                                        name="identifier"
-                                        validators={{ onChange: z.string().min(1, "Enter your identifier") }}>
-                                        {(field) => (
-                                            <Field data-invalid={field.state.meta.errors.length > 0}>
-                                                <FieldLabel htmlFor={field.name}>Identifier</FieldLabel>
-                                                <Input
-                                                    id={field.name}
-                                                    name={field.name}
-                                                    autoComplete="username"
-                                                    value={field.state.value}
-                                                    onBlur={field.handleBlur}
-                                                    onChange={(event) => field.handleChange(event.target.value)}
-                                                    aria-invalid={field.state.meta.errors.length > 0}
-                                                    aria-describedby={`${field.name}-error`}
-                                                    required
-                                                />
-                                                <FieldError id={`${field.name}-error`}>
-                                                    {field.state.meta.errors.map((issue) => issue?.message).join(" ")}
-                                                </FieldError>
-                                            </Field>
-                                        )}
-                                    </form.Field>
-                                    <form.Field
-                                        name="password"
-                                        validators={{ onChange: z.string().min(1, "Enter your password") }}>
-                                        {(field) => (
-                                            <Field data-invalid={field.state.meta.errors.length > 0}>
-                                                <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-                                                <Input
-                                                    id={field.name}
-                                                    name={field.name}
-                                                    type="password"
-                                                    autoComplete="current-password"
-                                                    value={field.state.value}
-                                                    onBlur={field.handleBlur}
-                                                    onChange={(event) => field.handleChange(event.target.value)}
-                                                    aria-invalid={field.state.meta.errors.length > 0}
-                                                    aria-describedby={`${field.name}-error`}
-                                                    required
-                                                />
-                                                <FieldError id={`${field.name}-error`}>
-                                                    {field.state.meta.errors.map((issue) => issue?.message).join(" ")}
-                                                </FieldError>
-                                            </Field>
-                                        )}
-                                    </form.Field>
-                                    <Button type="submit" loading={isSubmitting}>
-                                        Sign in
-                                    </Button>
-                                </FieldGroup>
-                            </FieldSet>
-                        )}
-                    </form.Subscribe>
-                </form>
-            ) : error || authorization?.error ? (
+                <Form form={form} legend="Sign in">
+                    {({ isSubmitting }) => (
+                        <>
+                            <Field
+                                form={form}
+                                name="identifier"
+                                label="Identifier"
+                                autoComplete="username"
+                                validators={{ onChange: z.string().min(1, "Enter your identifier") }}
+                                required
+                            />
+                            <Field
+                                form={form}
+                                name="password"
+                                label="Password"
+                                type="password"
+                                autoComplete="current-password"
+                                validators={{ onChange: z.string().min(1, "Enter your password") }}
+                                required
+                            />
+                            <Button type="submit" loading={isSubmitting}>
+                                Sign in
+                            </Button>
+                        </>
+                    )}
+                </Form>
+            ) : session.error || authorization?.error ? (
                 <Button
                     onClick={() => {
-                        setError("");
                         AuthWorkerClient.retryAuthorization();
                         setAttempt((value) => value + 1);
                     }}>
                     Retry
                 </Button>
             ) : null}
-            {(error || authorization?.error) && <FieldError>{error || authorization?.error}</FieldError>}
         </main>
     );
 }

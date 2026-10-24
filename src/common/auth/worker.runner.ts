@@ -22,7 +22,8 @@ class SharedWorkerRunner implements Auth.WorkerRunner.Contract {
                         const request = WorkerSchema.request.parse(message.data);
                         void this.execute(request.payload).then(
                             (payload) => this.reply({ port, response: { kind: "result", id: request.id, payload } }),
-                            (error: unknown) =>
+                            (error: unknown) => {
+                                console.error(error);
                                 this.reply({
                                     port,
                                     response: {
@@ -30,7 +31,8 @@ class SharedWorkerRunner implements Auth.WorkerRunner.Contract {
                                         id: request.id,
                                         message: error instanceof Error ? error.message : "Authentication failed",
                                     },
-                                }),
+                                });
+                            },
                         );
                     }
                 };
@@ -54,35 +56,20 @@ class SharedWorkerRunner implements Auth.WorkerRunner.Contract {
         switch (props.command) {
             case "callback": {
                 await SessionManager.callback({ address: props.address });
-                return {
-                    value: SessionManager.snapshot(),
-                    command: props.command,
-                };
+                return { value: SessionManager.snapshot(), command: props.command };
             }
             case "token": {
-                return {
-                    value: await SessionManager.getToken(props.props),
-                    command: props.command,
-                };
+                return { value: await SessionManager.getToken(props.props), command: props.command };
             }
             case "authorize": {
-                return {
-                    value: await SessionManager.authorize(),
-                    command: props.command,
-                };
+                return { value: await SessionManager.authorize(), command: props.command };
             }
             case "snapshot": {
-                return {
-                    value: SessionManager.snapshot(),
-                    command: props.command,
-                };
+                return { value: SessionManager.snapshot(), command: props.command };
             }
             case "logout": {
                 await SessionManager.logout();
-                return {
-                    value: SessionManager.snapshot(),
-                    command: props.command,
-                };
+                return { value: SessionManager.snapshot(), command: props.command };
             }
             case "invalidatePermissions": {
                 this.broadcast({ kind: "permissions" });

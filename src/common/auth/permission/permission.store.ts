@@ -1,4 +1,6 @@
-import { QueryClient, queryOptions } from "@tanstack/react-query";
+import { MutationCache, QueryCache, QueryClient, queryOptions } from "@tanstack/react-query";
+
+import { NotificationManager } from "~common/notifications";
 
 import { PermissionManager } from "./permission.manager";
 import { AuthWorkerClient } from "../worker.client";
@@ -7,10 +9,13 @@ class Store {
     public static readonly instance = new Store();
 
     public readonly client = new QueryClient({
-        defaultOptions: {
-            mutations: { retry: false },
-            queries: { retry: false },
-        },
+        defaultOptions: { mutations: { retry: false }, queries: { retry: false } },
+        queryCache: new QueryCache({
+            onError: (cause) => NotificationManager.error({ cause }),
+        }),
+        mutationCache: new MutationCache({
+            onError: (cause) => NotificationManager.error({ cause }),
+        }),
     });
 
     public initialized = false;
@@ -32,9 +37,7 @@ class Store {
             });
             AuthWorkerClient.subscribePermissions({
                 listener: () => {
-                    void this.client.invalidateQueries({
-                        queryKey: ["permissions"],
-                    });
+                    void this.client.invalidateQueries({ queryKey: ["permissions"] });
                 },
             });
         }

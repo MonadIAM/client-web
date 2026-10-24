@@ -1,9 +1,23 @@
-declare namespace Router {
-    type Props = {
-        initialization: Promise<void>;
-    };
+import type { ReactNode } from "react";
 
-    type NotFoundProps = {
-        rootPath: string;
-    };
+declare global {
+    namespace Router {
+        type Props = {
+            initialization: Promise<void>;
+        };
+
+        type NotFoundProps = {
+            rootPath: string;
+        };
+
+        namespace PageErrorBoundary {
+            type Props = {
+                children: ReactNode;
+            };
+
+            type State = {
+                failed: boolean;
+            };
+        }
+    }
 }

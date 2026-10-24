@@ -1,24 +1,23 @@
-import { Button, FieldError, Spinner } from "@monadiam/ui-kit";
+import { Button, Spinner } from "@monadiam/ui-kit";
 import { useNavigate } from "react-router";
 import { useState, JSX } from "react";
 
 import { AuthWorkerClient, usePermission, useSession } from "~auth";
+import { NotificationManager } from "~common/notifications";
 
 export function Session(): JSX.Element {
     const navigate = useNavigate();
     const session = useSession();
     const permissions = usePermission();
     const [pending, setPending] = useState(false);
-    const [error, setError] = useState("");
 
     async function logout(): Promise<void> {
         setPending(true);
-        setError("");
         try {
             await AuthWorkerClient.logout();
             void navigate("/login", { replace: true });
         } catch (cause) {
-            setError(cause instanceof Error ? cause.message : "Sign out failed");
+            NotificationManager.error({ cause, title: "Sign out failed" });
         } finally {
             setPending(false);
         }
@@ -40,7 +39,7 @@ export function Session(): JSX.Element {
                     {permissions.isSuccess ? (
                         Object.keys(permissions.data.data).length
                     ) : permissions.isError ? (
-                        "Unavailable"
+                        "—"
                     ) : (
                         <Spinner variant="inline" className="text-primary" />
                     )}
@@ -49,7 +48,6 @@ export function Session(): JSX.Element {
             <Button loading={pending} onClick={() => void logout()}>
                 Sign out
             </Button>
-            {(error || session.error) && <FieldError>{error || session.error}</FieldError>}
         </main>
     );
 }

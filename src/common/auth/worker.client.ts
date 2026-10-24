@@ -1,3 +1,7 @@
+import { CanceledError } from "axios";
+
+import { NotificationManager } from "~common/notifications";
+
 import { WorkerSchema } from "./worker.schema";
 
 class WorkerClient implements Auth.WorkerClient.Contract {
@@ -42,10 +46,10 @@ class WorkerClient implements Auth.WorkerClient.Contract {
             .then((response) => WorkerSchema.authorizeResult.parse(response).value)
             .then(
                 (url) => ({ url, error: undefined }),
-                (cause: unknown) => ({
-                    url: undefined,
-                    error: cause instanceof Error ? cause.message : "Authorization failed",
-                }),
+                (cause: unknown) => {
+                    NotificationManager.error({ cause, title: "Authorization failed" });
+                    return { url: undefined, error: cause instanceof Error ? cause.message : "Authorization failed" };
+                },
             );
         return this.authorization;
     }
@@ -63,6 +67,7 @@ class WorkerClient implements Auth.WorkerClient.Contract {
         try {
             await this.send({ command: "logout" });
         } catch (error) {
+            NotificationManager.error({ cause: error });
             this.publish({ ...this.current, error: error instanceof Error ? error.message : "Sign out failed" });
             throw error;
         }
@@ -96,6 +101,7 @@ class WorkerClient implements Auth.WorkerClient.Contract {
                 }
             }
         } catch (error) {
+            NotificationManager.error({ cause: error });
             this.publish({
                 ...this.current,
                 status: "unavailable",
@@ -110,8 +116,12 @@ class WorkerClient implements Auth.WorkerClient.Contract {
         try {
             const response = await this.send({ command: "snapshot" });
             const snapshot = WorkerSchema.snapshotResult.parse(response).value;
+            if (snapshot.error && snapshot.error !== this.current.error) {
+                NotificationManager.error({ cause: snapshot.error, logged: true, id: `worker:${snapshot.error}` });
+            }
             this.publish({ ...snapshot, error: this.current.error });
         } catch (error) {
+            NotificationManager.error({ cause: error });
             this.publish({
                 error: error instanceof Error ? error.message : "Session synchronization failed",
                 status: "unavailable",
@@ -124,7 +134,9 @@ class WorkerClient implements Auth.WorkerClient.Contract {
     public attachLifecycle(): Auth.WorkerClient.AttachLifecycle.Result {
         if (this.initialized === false) {
             this.initialized = true;
-            window.addEventListener("pagehide", () => this.disconnect({ error: new Error("The page was suspended") }));
+            window.addEventListener("pagehide", () =>
+                this.disconnect({ error: new CanceledError("The page was suspended") }),
+            );
             window.addEventListener("pageshow", (event) => {
                 if (event.persisted) {
                     this.initialization = undefined;
@@ -156,12 +168,15 @@ class WorkerClient implements Auth.WorkerClient.Contract {
                 if (response.success) {
                     this.receive(response.data);
                 } else {
-                    this.disconnect({ error: new Error("Invalid response from the session worker") });
-                    this.publish({ status: "unavailable", revision: "", claims: null, error: "Invalid worker response" });
+                    const error = new Error("Invalid response from the session worker", { cause: response.error });
+                    NotificationManager.error({ cause: error });
+                    this.disconnect({ error });
+                    this.publish({ status: "unavailable", revision: "", claims: null, error: error.message });
                 }
             };
-            worker.onerror = () => {
-                const error = new Error("The session worker could not be started");
+            worker.onerror = (event) => {
+                const error = new Error(event.message || "The session worker could not be started");
+                NotificationManager.error({ cause: error });
                 this.disconnect({ error });
                 this.publish({ status: "unavailable", revision: "", claims: null, error: error.message });
             };
@@ -185,6 +200,9 @@ class WorkerClient implements Auth.WorkerClient.Contract {
 
     public receive(props: Auth.WorkerClient.Receive.Props): Auth.WorkerClient.Receive.Result {
         if (props.kind === "session") {
+            if (props.value.error && props.value.error !== this.current.error) {
+                NotificationManager.error({ cause: props.value.error, logged: true, id: `worker:${props.value.error}` });
+            }
             this.publish(props.value);
         } else if (props.kind === "permissions") {
             for (const listener of this.permissionListeners) {
@@ -196,7 +214,9 @@ class WorkerClient implements Auth.WorkerClient.Contract {
                 clearTimeout(operation.timeout);
                 this.pending.delete(props.id);
                 if (props.kind === "error") {
-                    operation.reject(new Error(props.message));
+                    const error = new Error(props.message);
+                    NotificationManager.error({ cause: error, logged: true, id: `worker:${props.message}` });
+                    operation.reject(error);
                 } else {
                     operation.resolve(props.payload);
                 }
@@ -204,18 +224,29 @@ class WorkerClient implements Auth.WorkerClient.Contract {
         }
     }
 
-    public send(props: Auth.WorkerClient.Send.Props): Auth.WorkerClient.Send.Result {
-        const port = this.connect().port;
-        const id = crypto.randomUUID();
-        const message: Auth.Worker.Request = { id, payload: props };
-        return new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => {
-                this.pending.delete(id);
-                reject(new Error("The session operation timed out"));
-            }, Number(process.env.AUTH_WORKER_TIMEOUT_MS));
-            this.pending.set(id, { resolve, reject, timeout });
-            port.postMessage(message);
-        });
+    public async send(props: Auth.WorkerClient.Send.Props): Auth.WorkerClient.Send.Result {
+        try {
+            const port = this.connect().port;
+            const id = crypto.randomUUID();
+            const message: Auth.Worker.Request = { id, payload: props };
+            return await new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => {
+                    this.pending.delete(id);
+                    reject(new Error("The session operation timed out"));
+                }, Number(process.env.AUTH_WORKER_TIMEOUT_MS));
+                this.pending.set(id, { resolve, reject, timeout });
+                try {
+                    port.postMessage(message);
+                } catch (error) {
+                    clearTimeout(timeout);
+                    this.pending.delete(id);
+                    reject(error);
+                }
+            });
+        } catch (cause) {
+            NotificationManager.error({ cause });
+            throw cause;
+        }
     }
 }
 

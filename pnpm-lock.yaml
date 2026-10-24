@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@monadiam/ui-kit':
         specifier: file:../ui-kit
-        version: file:../ui-kit(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(tailwindcss@4.3.3)
+        version: file:../ui-kit(@tanstack/react-form@1.33.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(tailwindcss@4.3.3)
       '@tanstack/react-form':
         specifier: 1.33.5
         version: 1.33.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -573,6 +573,7 @@ packages:
   '@monadiam/ui-kit@file:../ui-kit':
     resolution: {directory: ../ui-kit, type: directory}
     peerDependencies:
+      '@tanstack/react-form': ^1.33.5
       react: ^19.0.0
       react-dom: ^19.0.0
       tailwindcss: ^4.3.0
@@ -3007,9 +3008,10 @@ snapshots:
 
   '@lukeed/ms@2.0.2': {}
 
-  '@monadiam/ui-kit@file:../ui-kit(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(tailwindcss@4.3.3)':
+  '@monadiam/ui-kit@file:../ui-kit(@tanstack/react-form@1.33.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(tailwindcss@4.3.3)':
     dependencies:
       '@base-ui/react': 1.9.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@tanstack/react-form': 1.33.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       class-variance-authority: 0.7.1
       cn: 0.5.0
       react: 19.3.0

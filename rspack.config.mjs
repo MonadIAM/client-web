@@ -71,6 +71,7 @@ export default (_environment, argv) => {
                     "OAUTH_CLIENT_ID",
                     "OAUTH_REDIRECT_URI",
                     "OAUTH_SCOPE",
+                    "TOAST_VISIBLE_LIMIT",
                     "API_REQUEST_TIMEOUT_MS",
                     "AUTH_REQUEST_TIMEOUT_MS",
                     "AUTH_WORKER_TIMEOUT_MS",

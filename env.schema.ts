@@ -20,6 +20,8 @@ export const envSchema = z.object({
     OAUTH_SCOPE: z.string().min(1),
     OAUTH_REDIRECT_URI: origin,
 
+    TOAST_VISIBLE_LIMIT: z.string().pipe(z.coerce.number<string>().int().positive()).transform(String),
+
     API_REQUEST_TIMEOUT_MS: timeout,
     AUTH_REQUEST_TIMEOUT_MS: timeout,
     AUTH_WORKER_TIMEOUT_MS: timeout,
