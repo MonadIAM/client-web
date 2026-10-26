@@ -1,4 +1,4 @@
-import { OAuthSchema } from "../oauth.schema";
+import { OAuthSchema } from "../oauth/oauth.schema";
 
 class Repository implements Auth.Session.Repository.Contract {
     public static readonly instance = new Repository();

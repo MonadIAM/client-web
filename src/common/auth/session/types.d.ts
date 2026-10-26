@@ -1,14 +1,24 @@
 import { z } from "zod";
 
+import { OAuthSchema } from "../oauth/oauth.schema";
 import { WorkerSchema } from "../worker.schema";
-import { OAuthSchema } from "../oauth.schema";
 
 declare global {
     namespace Auth.Session {
+        namespace UseSession {
+            type Result = Snapshot;
+
+            type Signature = () => Result;
+        }
+
         type Transaction = z.infer<typeof OAuthSchema.transaction>;
+
         type Credential = z.infer<typeof OAuthSchema.credential>;
+
         type Snapshot = z.infer<typeof OAuthSchema.snapshot>;
+
         type Claims = z.infer<typeof OAuthSchema.claims>;
+
         type Stored = z.infer<typeof OAuthSchema.stored>;
 
         namespace Manager {

@@ -1,13 +1,15 @@
 import { CanceledError } from "axios";
 
+import { SessionStatus, WorkerCommand, WorkerMessageKind } from "~src/enums";
 import { NotificationManager } from "~common/notifications";
+import { i18n } from "~common/i18n";
 
 import { WorkerSchema } from "./worker.schema";
 
 class WorkerClient implements Auth.WorkerClient.Contract {
     public static readonly instance = new WorkerClient();
 
-    public current: Auth.Session.Snapshot = { status: "initializing", revision: "", claims: null };
+    public current: Auth.Session.Snapshot = { status: SessionStatus.INITIALIZING, revision: "", claims: null };
     public authorization: Optional<Promise<Auth.WorkerClient.Authorization>>;
     public initialization: Optional<Promise<void>>;
     public worker: Nullable<SharedWorker> = null;
@@ -42,12 +44,12 @@ class WorkerClient implements Auth.WorkerClient.Contract {
     }
 
     public authorize(): Auth.WorkerClient.Authorize.Result {
-        this.authorization ??= this.send({ command: "authorize" })
+        this.authorization ??= this.send({ command: WorkerCommand.AUTHORIZE })
             .then((response) => WorkerSchema.authorizeResult.parse(response).value)
             .then(
                 (url) => ({ url, error: undefined }),
                 (cause: unknown) => {
-                    NotificationManager.error({ cause, title: "Authorization failed" });
+                    NotificationManager.error({ cause, title: i18n.t("errors.authorization") });
                     return { url: undefined, error: cause instanceof Error ? cause.message : "Authorization failed" };
                 },
             );
@@ -59,13 +61,13 @@ class WorkerClient implements Auth.WorkerClient.Contract {
     }
 
     public async getToken(props: Auth.WorkerClient.GetToken.Props): Auth.WorkerClient.GetToken.Result {
-        const response = await this.send({ command: "token", props });
+        const response = await this.send({ command: WorkerCommand.TOKEN, props });
         return WorkerSchema.tokenResult.parse(response).value;
     }
 
     public async logout(): Auth.WorkerClient.Logout.Result {
         try {
-            await this.send({ command: "logout" });
+            await this.send({ command: WorkerCommand.LOGOUT });
         } catch (error) {
             NotificationManager.error({ cause: error });
             this.publish({ ...this.current, error: error instanceof Error ? error.message : "Sign out failed" });
@@ -74,7 +76,7 @@ class WorkerClient implements Auth.WorkerClient.Contract {
     }
 
     public async invalidatePermissions(): Auth.WorkerClient.InvalidatePermissions.Result {
-        await this.send({ command: "invalidatePermissions" });
+        await this.send({ command: WorkerCommand.INVALIDATE_PERMISSIONS });
     }
 
     public initialize(): Auth.WorkerClient.Initialize.Result {
@@ -92,7 +94,7 @@ class WorkerClient implements Auth.WorkerClient.Contract {
 
             if (callbackAddress && callbackParameters) {
                 try {
-                    await this.send({ command: "callback", address: url.href });
+                    await this.send({ command: WorkerCommand.CALLBACK, address: url.href });
                 } finally {
                     for (const name of ["code", "state", "iss", "error", "error_description"]) {
                         url.searchParams.delete(name);
@@ -104,7 +106,7 @@ class WorkerClient implements Auth.WorkerClient.Contract {
             NotificationManager.error({ cause: error });
             this.publish({
                 ...this.current,
-                status: "unavailable",
+                status: SessionStatus.UNAVAILABLE,
                 error: error instanceof Error ? error.message : "Session initialization failed",
             });
         } finally {
@@ -114,7 +116,7 @@ class WorkerClient implements Auth.WorkerClient.Contract {
 
     public async synchronize(): Auth.WorkerClient.Synchronize.Result {
         try {
-            const response = await this.send({ command: "snapshot" });
+            const response = await this.send({ command: WorkerCommand.SNAPSHOT });
             const snapshot = WorkerSchema.snapshotResult.parse(response).value;
             if (snapshot.error && snapshot.error !== this.current.error) {
                 NotificationManager.error({ cause: snapshot.error, logged: true, id: `worker:${snapshot.error}` });
@@ -124,7 +126,7 @@ class WorkerClient implements Auth.WorkerClient.Contract {
             NotificationManager.error({ cause: error });
             this.publish({
                 error: error instanceof Error ? error.message : "Session synchronization failed",
-                status: "unavailable",
+                status: SessionStatus.UNAVAILABLE,
                 revision: "",
                 claims: null,
             });
@@ -140,7 +142,7 @@ class WorkerClient implements Auth.WorkerClient.Contract {
             window.addEventListener("pageshow", (event) => {
                 if (event.persisted) {
                     this.initialization = undefined;
-                    this.publish({ ...this.current, status: "initializing" });
+                    this.publish({ ...this.current, status: SessionStatus.INITIALIZING });
                     void this.initialize();
                 }
             });
@@ -171,14 +173,14 @@ class WorkerClient implements Auth.WorkerClient.Contract {
                     const error = new Error("Invalid response from the session worker", { cause: response.error });
                     NotificationManager.error({ cause: error });
                     this.disconnect({ error });
-                    this.publish({ status: "unavailable", revision: "", claims: null, error: error.message });
+                    this.publish({ status: SessionStatus.UNAVAILABLE, revision: "", claims: null, error: error.message });
                 }
             };
             worker.onerror = (event) => {
                 const error = new Error(event.message || "The session worker could not be started");
                 NotificationManager.error({ cause: error });
                 this.disconnect({ error });
-                this.publish({ status: "unavailable", revision: "", claims: null, error: error.message });
+                this.publish({ status: SessionStatus.UNAVAILABLE, revision: "", claims: null, error: error.message });
             };
             worker.port.start();
             this.worker = worker;
@@ -199,12 +201,12 @@ class WorkerClient implements Auth.WorkerClient.Contract {
     }
 
     public receive(props: Auth.WorkerClient.Receive.Props): Auth.WorkerClient.Receive.Result {
-        if (props.kind === "session") {
+        if (props.kind === WorkerMessageKind.SESSION) {
             if (props.value.error && props.value.error !== this.current.error) {
                 NotificationManager.error({ cause: props.value.error, logged: true, id: `worker:${props.value.error}` });
             }
             this.publish(props.value);
-        } else if (props.kind === "permissions") {
+        } else if (props.kind === WorkerMessageKind.PERMISSIONS) {
             for (const listener of this.permissionListeners) {
                 listener();
             }
@@ -213,7 +215,7 @@ class WorkerClient implements Auth.WorkerClient.Contract {
             if (operation) {
                 clearTimeout(operation.timeout);
                 this.pending.delete(props.id);
-                if (props.kind === "error") {
+                if (props.kind === WorkerMessageKind.ERROR) {
                     const error = new Error(props.message);
                     NotificationManager.error({ cause: error, logged: true, id: `worker:${props.message}` });
                     operation.reject(error);

@@ -1,14 +1,18 @@
+import { useTranslation } from "react-i18next";
 import { ToastHost } from "@monadiam/ui-kit";
 import { JSX, useEffect } from "react";
 
 import { NotificationManager } from "./notification.manager";
 
 export function NotificationHost(): JSX.Element {
+    const { t } = useTranslation();
+
     useEffect(() => {
         const onError = (event: ErrorEvent) => {
             NotificationManager.error({ cause: event.error ?? event.message });
             event.preventDefault();
         };
+
         const onRejection = (event: PromiseRejectionEvent) => {
             NotificationManager.error({ cause: event.reason });
             event.preventDefault();
@@ -23,5 +27,5 @@ export function NotificationHost(): JSX.Element {
         };
     }, []);
 
-    return <ToastHost source={NotificationManager} />;
+    return <ToastHost source={NotificationManager} label={t("common.notifications")} dismissLabel={t("common.dismiss")} />;
 }

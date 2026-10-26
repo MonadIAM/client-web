@@ -1,191 +1,215 @@
-export {};
+declare namespace Notifications {
+    type Options = UI.Toast.Options;
 
-declare global {
-    namespace Notifications {
-        type Options = UI.Toast.Options;
-        type Transport = UI.Toast.Transport;
-        type Unsubscribe = () => void;
+    type Transport = UI.Toast.Transport;
 
-        namespace Queue {
-            type Entry = {
-                options: Options & { id: string };
-                closing: boolean;
+    type Unsubscribe = () => void;
+
+    namespace Queue {
+        type Entry = {
+            options: Options & {
+                id: string;
             };
+            closing: boolean;
+        };
 
-            interface Contract extends PublicContract, PrivateContract {}
+        interface Contract extends PublicContract, PrivateContract {}
 
-            interface PublicContract {
-                readonly limit: number;
+        interface PublicContract {
+            readonly limit: number;
 
-                connect: Connect.Signature;
-                update: Update.Signature;
-                close: Close.Signature;
-                add: Add.Signature;
-            }
-
-            namespace Connect {
-                type Props = {
-                    transport: Transport;
-                };
-
-                type Result = Unsubscribe;
-
-                type Signature = (props: Props) => Result;
-            }
-
-            namespace Update {
-                type Props = {
-                    options: Partial<Options>;
-                    id: string;
-                };
-
-                type Result = void;
-
-                type Signature = (props: Props) => Result;
-            }
-
-            namespace Close {
-                type Props = {
-                    id?: string;
-                };
-
-                type Result = void;
-
-                type Signature = (props?: Props) => Result;
-            }
-
-            namespace Add {
-                type Props = Options;
-
-                type Result = string;
-
-                type Signature = (props: Props) => Result;
-            }
-
-            interface PrivateContract {
-                waiting: Map<string, Entry>;
-                visible: Map<string, Entry>;
-                transport: Optional<Transport>;
-
-                present: Present.Signature;
-                drain: Drain.Signature;
-            }
-
-            namespace Present {
-                type Props = {
-                    transport: Transport;
-                    entry: Entry;
-                };
-
-                type Result = void;
-
-                type Signature = (props: Props) => Result;
-            }
-
-            namespace Drain {
-                type Result = void;
-
-                type Signature = () => Result;
-            }
+            connect: Connect.Signature;
+            update: Update.Signature;
+            close: Close.Signature;
+            add: Add.Signature;
         }
 
-        namespace Manager {
-            interface Contract extends PublicContract, PrivateContract {}
+        namespace Connect {
+            type Props = {
+                transport: Transport;
+            };
 
-            interface PublicContract {
-                readonly limit: number;
+            type Result = Unsubscribe;
 
-                connect: Connect.Signature;
-                success: Success.Signature;
-                warning: Warning.Signature;
-                update: Update.Signature;
-                close: Close.Signature;
-                error: Error.Signature;
-                info: Info.Signature;
-            }
+            type Signature = (props: Props) => Result;
+        }
 
-            namespace Connect {
-                type Props = Queue.Connect.Props;
+        namespace Update {
+            type Props = {
+                options: Partial<Options>;
+                id: string;
+            };
 
-                type Result = Queue.Connect.Result;
+            type Result = void;
 
-                type Signature = (props: Props) => Result;
-            }
+            type Signature = (props: Props) => Result;
+        }
 
-            namespace Success {
-                type Props = Omit<Options, "type">;
+        namespace Close {
+            type Props = {
+                id?: string;
+            };
 
-                type Result = Queue.Add.Result;
+            type Result = void;
 
-                type Signature = (props: Props) => Result;
-            }
+            type Signature = (props?: Props) => Result;
+        }
 
-            namespace Info {
-                type Props = Omit<Options, "type">;
+        namespace Add {
+            type Props = Options;
 
-                type Result = Queue.Add.Result;
+            type Result = string;
 
-                type Signature = (props: Props) => Result;
-            }
+            type Signature = (props: Props) => Result;
+        }
 
-            namespace Warning {
-                type Props = Omit<Options, "type">;
+        interface PrivateContract {
+            transport: Optional<Transport>;
+            waiting: Map<string, Entry>;
+            visible: Map<string, Entry>;
 
-                type Result = Queue.Add.Result;
+            present: Present.Signature;
+            drain: Drain.Signature;
+        }
 
-                type Signature = (props: Props) => Result;
-            }
+        namespace Present {
+            type Props = {
+                transport: Transport;
+                entry: Entry;
+            };
 
-            namespace Error {
-                type Props = Omit<Options, "type" | "title"> & { cause: unknown; title?: string; logged?: boolean };
+            type Result = void;
 
-                type Result = Optional<string>;
+            type Signature = (props: Props) => Result;
+        }
 
-                type Signature = (props: Props) => Result;
-            }
+        namespace Drain {
+            type Result = void;
 
-            namespace Update {
-                type Props = Queue.Update.Props;
+            type Signature = () => Result;
+        }
+    }
 
-                type Result = Queue.Update.Result;
+    namespace Manager {
+        interface Contract extends PublicContract, PrivateContract {}
 
-                type Signature = (props: Props) => Result;
-            }
+        interface PublicContract {
+            readonly limit: number;
 
-            namespace Close {
-                type Props = Queue.Close.Props;
+            connect: Connect.Signature;
+            success: Success.Signature;
+            response: Response.Signature;
+            warning: Warning.Signature;
+            update: Update.Signature;
+            close: Close.Signature;
+            error: Error.Signature;
+            info: Info.Signature;
+        }
 
-                type Result = Queue.Close.Result;
+        namespace Connect {
+            type Props = Queue.Connect.Props;
 
-                type Signature = (props?: Props) => Result;
-            }
+            type Result = Queue.Connect.Result;
 
-            interface PrivateContract {
-                reported: WeakMap<object, string>;
+            type Signature = (props: Props) => Result;
+        }
 
-                getMessage: GetMessage.Signature;
-                log: Log.Signature;
-            }
+        namespace Success {
+            type Props = Omit<Options, "type">;
 
-            namespace GetMessage {
-                type Props = {
-                    cause: unknown;
-                };
+            type Result = Queue.Add.Result;
 
-                type Result = string;
+            type Signature = (props: Props) => Result;
+        }
 
-                type Signature = (props: Props) => Result;
-            }
+        namespace Info {
+            type Props = Omit<Options, "type">;
 
-            namespace Log {
-                type Props = {
-                    cause: unknown;
-                };
+            type Result = Queue.Add.Result;
 
-                type Result = void;
+            type Signature = (props: Props) => Result;
+        }
 
-                type Signature = (props: Props) => Result;
-            }
+        namespace Response {
+            type Props = {
+                data: unknown;
+            };
+
+            type Result = Optional<string>;
+
+            type Signature = (props: Props) => Result;
+        }
+
+        namespace Warning {
+            type Props = Omit<Options, "type">;
+
+            type Result = Queue.Add.Result;
+
+            type Signature = (props: Props) => Result;
+        }
+
+        namespace Error {
+            type Props = Omit<Options, "type" | "title"> & {
+                logged?: boolean;
+                title?: string;
+                cause: unknown;
+            };
+
+            type Result = Optional<string>;
+
+            type Signature = (props: Props) => Result;
+        }
+
+        namespace Update {
+            type Props = Queue.Update.Props;
+
+            type Result = Queue.Update.Result;
+
+            type Signature = (props: Props) => Result;
+        }
+
+        namespace Close {
+            type Props = Queue.Close.Props;
+
+            type Result = Queue.Close.Result;
+
+            type Signature = (props?: Props) => Result;
+        }
+
+        interface PrivateContract {
+            reported: WeakMap<object, string>;
+
+            getResponseMessage: GetResponseMessage.Signature;
+            getMessage: GetMessage.Signature;
+            log: Log.Signature;
+        }
+
+        namespace GetResponseMessage {
+            type Props = Response.Props;
+
+            type Result = Optional<string>;
+
+            type Signature = (props: Props) => Result;
+        }
+
+        namespace GetMessage {
+            type Props = {
+                cause: unknown;
+            };
+
+            type Result = string;
+
+            type Signature = (props: Props) => Result;
+        }
+
+        namespace Log {
+            type Props = {
+                cause: unknown;
+            };
+
+            type Result = void;
+
+            type Signature = (props: Props) => Result;
         }
     }
 }

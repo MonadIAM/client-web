@@ -1,15 +1,11 @@
 import { RouteObject } from "react-router";
 import { lazy } from "react";
 
-import { LoadError } from "./components/load-error";
+const Profile = lazy(() => import("~pages/profile").then((module) => ({ default: module.Profile })));
 
-const Session = lazy(() =>
-    import("~pages/session")
-        .then((module) => ({ default: module.Session }))
-        .catch((error: unknown) => {
-            console.error(error);
-            return { default: LoadError };
-        }),
-);
+const Main = lazy(() => import("~pages/main").then((module) => ({ default: module.Main })));
 
-export const privateRoutes: RouteObject[] = [{ path: "/", Component: Session }];
+export const privateRoutes: RouteObject[] = [
+    { path: "/", Component: Main },
+    { path: "/profile", Component: Profile },
+];

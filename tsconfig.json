@@ -2,11 +2,15 @@
   "extends": "./configs/tsconfig.base.json", // Root config, better to avoid editing!
   "compilerOptions": {
     "paths": {
+      "~ui/*": ["./node_modules/@monadiam/ui-kit/src/*"],
+      "~src/*": ["./src/*"],
       "~common/*": ["./src/common/*"],
       "~api": ["./src/common/api"],
       "~api/*": ["./src/common/api/*"],
       "~auth": ["./src/common/auth"],
       "~auth/*": ["./src/common/auth/*"],
+      "~layout": ["./src/layout"],
+      "~layout/*": ["./src/layout/*"],
       "~pages/*": ["./src/pages/*"],
       "~router": ["./src/router"],
       "~router/*": ["./src/router/*"],

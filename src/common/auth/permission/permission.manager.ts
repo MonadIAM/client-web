@@ -1,4 +1,5 @@
-import { AccessControl } from "~api/sdk";
+import { PermissionMatch } from "~src/enums";
+import { AccessControlSDK } from "~api/sdk";
 
 import { AuthWorkerClient } from "../worker.client";
 
@@ -8,7 +9,7 @@ class Manager implements Auth.Permission.Manager.Contract {
     private constructor() {}
 
     public async list(props: Auth.Permission.Manager.List.Props): Promise<API.AccessControl.Privileges> {
-        const response = await AccessControl.permissionControllerGetPrivileges({
+        const response = await AccessControlSDK.permissionControllerGetPrivileges({
             signal: props.signal,
             throwOnError: true,
         });
@@ -22,7 +23,7 @@ class Manager implements Auth.Permission.Manager.Contract {
                 const permissions = props.permissions[code] ?? [];
                 return permissions.some((access) => this.checkAccess({ access, options: props.options }));
             };
-            return props.options.match === "any" ? codes.some(matches) : codes.every(matches);
+            return props.options.match === PermissionMatch.ANY ? codes.some(matches) : codes.every(matches);
         } else {
             return false;
         }

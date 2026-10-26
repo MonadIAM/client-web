@@ -1,6 +1,7 @@
 import { useRoutes } from "react-router";
 import { JSX, use } from "react";
 
+import { SessionStatus } from "~src/enums";
 import { useSession } from "~auth";
 
 import { privateRoutes } from "../private.routes";
@@ -11,14 +12,15 @@ import { Loading } from "./loading";
 export function RouteResolver({ initialization }: Router.Props): JSX.Element {
     use(initialization);
     const { status } = useSession();
-    const route = useRoutes(status === "initializing" ? [] : status === "authenticated" ? privateRoutes : publicRoutes);
-    const root = status === "authenticated" ? "/" : "/login";
+    const route = useRoutes(
+        status === SessionStatus.INITIALIZING ? [] : status === SessionStatus.AUTHENTICATED ? privateRoutes : publicRoutes,
+    );
 
-    if (status === "initializing") {
+    if (status === SessionStatus.INITIALIZING) {
         return <Loading />;
     } else if (route) {
         return route;
     } else {
-        return <NotFound rootPath={root} />;
+        return <NotFound rootPath={status === SessionStatus.AUTHENTICATED ? "/" : "/signin"} />;
     }
 }

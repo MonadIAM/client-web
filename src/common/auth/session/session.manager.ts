@@ -1,5 +1,7 @@
+import { SessionStatus } from "~src/enums";
+
 import { SessionRepository } from "./session.repository";
-import { OAuthEngine } from "../oauth.engine";
+import { OAuthEngine } from "../oauth/oauth.engine";
 
 class Manager implements Auth.Session.Manager.Contract {
     public static readonly instance = new Manager();
@@ -30,14 +32,14 @@ class Manager implements Auth.Session.Manager.Contract {
     public snapshot(): Auth.Session.Snapshot {
         if (this.storageError) {
             return {
-                status: "unavailable",
+                status: SessionStatus.UNAVAILABLE,
                 revision: this.stored.revision,
                 error: this.storageError,
                 claims: null,
             };
         } else {
             return {
-                status: this.stored.identity ? "authenticated" : "anonymous",
+                status: this.stored.identity ? SessionStatus.AUTHENTICATED : SessionStatus.ANONYMOUS,
                 claims: this.stored.identity?.claims ?? null,
                 revision: this.stored.revision,
             };

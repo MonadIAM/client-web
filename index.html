@@ -5,6 +5,29 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="theme-color" content="#fafafa" />
         <title>MonadIAM</title>
+        <script>
+            (() => {
+                function getInitialTheme() {
+                    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                    const systemTheme = prefersDark ? "dark" : "light";
+
+                    try {
+                        const savedTheme = window.localStorage.getItem("monadiam.theme");
+                        return savedTheme === "light" || savedTheme === "dark" ? savedTheme : systemTheme;
+                    } catch {
+                        return systemTheme;
+                    }
+                }
+
+                const theme = getInitialTheme();
+                const root = document.documentElement;
+                const themeColor = document.querySelector('meta[name="theme-color"]');
+
+                root.classList.remove("light", "dark");
+                root.classList.add(theme);
+                themeColor.content = theme === "dark" ? "#09090b" : "#fafafa";
+            })();
+        </script>
     </head>
     <body>
         <div id="root"></div>

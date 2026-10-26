@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-import { OAuthSchema } from "./oauth.schema";
+import { WorkerCommand, WorkerMessageKind } from "~src/enums";
+
+import { OAuthSchema } from "./oauth/oauth.schema";
 
 export abstract class WorkerSchema {
     private constructor() {}
@@ -11,12 +13,12 @@ export abstract class WorkerSchema {
     });
 
     public static readonly command = z.discriminatedUnion("command", [
-        z.object({ command: z.literal("snapshot") }),
-        z.object({ command: z.literal("authorize") }),
-        z.object({ command: z.literal("callback"), address: z.url() }),
-        z.object({ command: z.literal("token"), props: this.tokenProps }),
-        z.object({ command: z.literal("logout") }),
-        z.object({ command: z.literal("invalidatePermissions") }),
+        z.object({ command: z.literal(WorkerCommand.SNAPSHOT) }),
+        z.object({ command: z.literal(WorkerCommand.AUTHORIZE) }),
+        z.object({ command: z.literal(WorkerCommand.CALLBACK), address: z.url() }),
+        z.object({ command: z.literal(WorkerCommand.TOKEN), props: this.tokenProps }),
+        z.object({ command: z.literal(WorkerCommand.LOGOUT) }),
+        z.object({ command: z.literal(WorkerCommand.INVALIDATE_PERMISSIONS) }),
     ]);
 
     public static readonly request = z.object({
@@ -25,17 +27,17 @@ export abstract class WorkerSchema {
     });
 
     public static readonly snapshotResult = z.object({
-        command: z.literal("snapshot"),
+        command: z.literal(WorkerCommand.SNAPSHOT),
         value: OAuthSchema.snapshot,
     });
 
     public static readonly authorizeResult = z.object({
-        command: z.literal("authorize"),
+        command: z.literal(WorkerCommand.AUTHORIZE),
         value: z.url(),
     });
 
     public static readonly tokenResult = z.object({
-        command: z.literal("token"),
+        command: z.literal(WorkerCommand.TOKEN),
         value: OAuthSchema.credential,
     });
 
@@ -43,15 +45,15 @@ export abstract class WorkerSchema {
         this.snapshotResult,
         this.authorizeResult,
         this.tokenResult,
-        z.object({ command: z.literal("callback"), value: OAuthSchema.snapshot }),
-        z.object({ command: z.literal("logout"), value: OAuthSchema.snapshot }),
-        z.object({ command: z.literal("invalidatePermissions") }),
+        z.object({ command: z.literal(WorkerCommand.CALLBACK), value: OAuthSchema.snapshot }),
+        z.object({ command: z.literal(WorkerCommand.LOGOUT), value: OAuthSchema.snapshot }),
+        z.object({ command: z.literal(WorkerCommand.INVALIDATE_PERMISSIONS) }),
     ]);
 
     public static readonly response = z.discriminatedUnion("kind", [
-        z.object({ kind: z.literal("result"), id: z.string(), payload: this.payload }),
-        z.object({ kind: z.literal("error"), id: z.string(), message: z.string() }),
-        z.object({ kind: z.literal("session"), value: OAuthSchema.snapshot }),
-        z.object({ kind: z.literal("permissions") }),
+        z.object({ kind: z.literal(WorkerMessageKind.RESULT), id: z.string(), payload: this.payload }),
+        z.object({ kind: z.literal(WorkerMessageKind.ERROR), id: z.string(), message: z.string() }),
+        z.object({ kind: z.literal(WorkerMessageKind.SESSION), value: OAuthSchema.snapshot }),
+        z.object({ kind: z.literal(WorkerMessageKind.PERMISSIONS) }),
     ]);
 }

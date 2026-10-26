@@ -1,24 +1,29 @@
-import { Button, CenteredViewport } from "@monadiam/ui-kit";
+import { ButtonVariant } from "@monadiam/ui-kit/enums";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+import { Button } from "@monadiam/ui-kit";
 import { JSX } from "react";
 
+import { routerStyles } from "../styles";
+
 export function NotFound({ rootPath }: Router.NotFoundProps): JSX.Element {
+    const { t } = useTranslation();
     const navigate = useNavigate();
 
     return (
-        <CenteredViewport>
-            <div className="grid w-full max-w-lg gap-6 px-6 text-center">
-                <h1 className="text-2xl font-semibold">Page not found</h1>
-                <p role="status">The address may be incorrect or the page may have moved.</p>
-                <div className="flex flex-wrap justify-center gap-4">
+        <section className={routerStyles.centered}>
+            <div className={routerStyles.error}>
+                <h1 className={routerStyles.title}>{t("errors.notFound")}</h1>
+                <p role="status">{t("errors.notFoundDescription")}</p>
+                <div className={routerStyles.errorActions}>
                     <Button type="button" onClick={() => void navigate(rootPath)}>
-                        Go to root
+                        {t("common.home")}
                     </Button>
-                    <Button type="button" variant="outline" onClick={() => void navigate(-1)}>
-                        Go back
+                    <Button type="button" variant={ButtonVariant.OUTLINE} onClick={() => void navigate(-1)}>
+                        {t("common.back")}
                     </Button>
                 </div>
             </div>
-        </CenteredViewport>
+        </section>
     );
 }

@@ -1,6 +1,7 @@
 import { MutationCache, QueryCache, QueryClient, queryOptions } from "@tanstack/react-query";
 
 import { NotificationManager } from "~common/notifications";
+import { SessionStatus } from "~src/enums";
 
 import { PermissionManager } from "./permission.manager";
 import { AuthWorkerClient } from "../worker.client";
@@ -49,7 +50,7 @@ class Store {
             queryKey: ["permissions", session.revision, session.claims?.realms],
             staleTime: Number(process.env.AUTH_PERMISSION_STALE_TIME_MS),
             queryFn: ({ signal }) => PermissionManager.list({ signal }),
-            enabled: session.status === "authenticated",
+            enabled: session.status === SessionStatus.AUTHENTICATED,
         });
     }
 }

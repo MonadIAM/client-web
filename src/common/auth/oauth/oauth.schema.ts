@@ -1,13 +1,14 @@
 import { z } from "zod";
 
-import { Identity } from "~api/schemas";
+import { IdentitySchemas } from "~api/schemas";
+import { SessionStatus } from "~src/enums";
 
 export abstract class OAuthSchema {
     private constructor() {}
 
-    public static readonly error = Identity.zOAuthErrorResponseBody.pick({ error: true });
+    public static readonly error = IdentitySchemas.zOAuthErrorResponseBody.pick({ error: true });
 
-    public static readonly metadata = Identity.zOpenIdConfiguration;
+    public static readonly metadata = IdentitySchemas.zOpenIdConfiguration;
 
     public static readonly tokens = z.object({
         access_token: z.string().min(1),
@@ -61,11 +62,12 @@ export abstract class OAuthSchema {
     });
 
     public static readonly authentication = z.object({
+        requires2FA: z.boolean().optional(),
         authorizationUrl: z.url().optional(),
     });
 
     public static readonly snapshot = z.object({
-        status: z.enum(["initializing", "anonymous", "authenticated", "unavailable"]),
+        status: z.enum(SessionStatus),
         revision: z.string(),
         claims: this.claims.nullable(),
         error: z.string().optional(),

@@ -1,0 +1,126 @@
+{
+    "common": {
+        "home": "Home",
+        "language": "Language",
+        "loading": "Loading",
+        "retry": "Retry",
+        "back": "Go back",
+        "skip": "Skip to content",
+        "notifications": "Notifications",
+        "dismiss": "Dismiss notification",
+        "lightTheme": "Use light theme",
+        "darkTheme": "Use dark theme"
+    },
+    "nav": {
+        "signin": "Sign in",
+        "signup": "Create an account",
+        "profile": "Profile: {{name}}",
+        "account": "Signed-in account"
+    },
+    "main": {
+        "title": "MonadIAM",
+        "description": "Identity and access management."
+    },
+    "auth": {
+        "signin": "Sign in",
+        "signup": "Create account",
+        "identifier": "Email or phone number",
+        "password": "Password",
+        "name": "Name",
+        "newPassword": "New password",
+        "signout": "Sign out",
+        "verify": "Verify account",
+        "code": "Verification code",
+        "verifyDescription": "Enter the code sent to {{identifier}}.",
+        "resend": "Resend code",
+        "haveCode": "Already have a verification code?",
+        "verified": "Account verified",
+        "saveCodes": "Save these recovery codes in a safe place. They are shown only once.",
+        "copyCodes": "Copy recovery codes",
+        "copiedCodes": "Recovery codes copied",
+        "copyFailed": "Could not copy recovery codes",
+        "continue": "Back to sign in",
+        "requestMissing": "Start an authorization request before signing in",
+        "nextStepMissing": "Identity did not return the next authentication step",
+        "invalidCallback": "Identity returned an unexpected callback address",
+        "signinDescription": "Access your organizations and projects.",
+        "signupDescription": "Register to join your organization.",
+        "noAccount": "New to MonadIAM?",
+        "hasAccount": "Already have an account?",
+        "showPassword": "Show password",
+        "hidePassword": "Hide password",
+        "backToSignup": "Back to registration",
+        "preparing": "Preparing sign in",
+        "preparingDescription": "You will be taken to the sign-in form automatically.",
+        "signupTitle": "Create an account",
+        "useCode": "Sign in with a one-time code",
+        "verifyTitle": "Verify your account",
+        "codesSaved": "Codes saved — go to sign in"
+    },
+    "validation": {
+        "invalid": "Invalid value"
+    },
+    "errors": {
+        "load": "Page could not be loaded",
+        "notFound": "Page not found",
+        "notFoundDescription": "The address may be incorrect or the page may have moved.",
+        "unexpected": "An unexpected error occurred",
+        "authorization": "Authorization failed",
+        "session": "Session operation failed"
+    },
+    "profile": {
+        "title": "Profile",
+        "account": "Account",
+        "session": "Session",
+        "context": "Authentication context",
+        "permissions": "Own permissions",
+        "description": "Your current session and access information."
+    },
+    "passwordRecovery": {
+        "title": "Reset your password",
+        "description": "Enter your email or phone to request a verification code.",
+        "forgot": "Forgot password?",
+        "send": "Send code",
+        "haveCode": "I already have a verification code",
+        "useRecovery": "Use a recovery code",
+        "recoveryCode": "Recovery code",
+        "confirmTitle": "Set a new password",
+        "confirmDescription": "Enter the verification code and your new password.",
+        "recoveryDescription": "Use a saved recovery code to set a new password.",
+        "save": "Save password",
+        "complete": "Password changed",
+        "completeDescription": "You can now sign in with your new password.",
+        "back": "Back to requesting a code"
+    },
+    "social": {
+        "or": "or continue with",
+        "google": "Continue with Google",
+        "github": "Continue with GitHub",
+        "invalidCallback": "Invalid sign-in provider response",
+        "completing": "Completing sign in",
+        "failed": "Could not complete sign in"
+    },
+    "otp": {
+        "requestTitle": "Sign in with a code",
+        "requestDescription": "Enter your email or phone to request a one-time code.",
+        "send": "Send code",
+        "haveCode": "I already have a code",
+        "verifyTitle": "Enter your sign-in code",
+        "verifyDescription": "Use the one-time code from your message.",
+        "verify": "Continue",
+        "requestAnother": "Request another code",
+        "retryIn": "Resend in {{seconds}} s"
+    },
+    "secondFactor": {
+        "title": "Two-factor authentication",
+        "description": "Enter the code from your authenticator app.",
+        "submit": "Verify",
+        "lostAccess": "Lost access to your authenticator?"
+    },
+    "resetSecondFactor": {
+        "title": "Reset two-factor authentication",
+        "description": "Use your master code to reset your second factors.",
+        "submit": "Reset second factors",
+        "masterCode": "Master code"
+    }
+}

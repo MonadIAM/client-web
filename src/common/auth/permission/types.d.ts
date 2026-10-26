@@ -1,10 +1,24 @@
-import type { QueryClient, UseQueryOptions } from "@tanstack/react-query";
+import type { QueryClient, UseQueryOptions, UseQueryResult } from "@tanstack/react-query";
+
+import type { PermissionMatch } from "~src/enums";
 
 declare global {
     namespace Auth.Permission {
+        namespace UsePermission {
+            type Props = Manager.Match.Props["options"];
+
+            type Result = UseQueryResult<API.AccessControl.Privileges, Error> & {
+                allowed: Optional<boolean>;
+            };
+
+            type Signature = (props?: Props) => Result;
+        }
+
         namespace Manager {
             type Map = API.AccessControl.Privileges["data"];
+
             type Access = Map[string][number];
+
             type Scope = Access["scope"];
 
             interface Contract extends PublicContract, PrivateContract {}
@@ -26,7 +40,7 @@ declare global {
                     permissions: Map;
                     options: {
                         codes?: string | readonly string[];
-                        match?: "all" | "any";
+                        match?: PermissionMatch;
                         realm?: string;
                         scope?: Scope;
                     };
@@ -64,33 +78,39 @@ declare global {
         }
 
         namespace Store {
+            interface Contract extends PublicContract, PrivateContract {}
+
             interface PublicContract {
                 client: QueryClient;
+
                 initialize: Initialize.Signature;
                 query: Query.Signature;
+            }
+
+            namespace Initialize {
+                type Result = void;
+
+                type Signature = () => Result;
+            }
+
+            namespace Query {
+                type Props = {
+                    session: Auth.Session.Snapshot;
+                };
+
+                type Result = UseQueryOptions<
+                    API.AccessControl.Privileges,
+                    Error,
+                    API.AccessControl.Privileges,
+                    Optional<string | string[]>[]
+                >;
+
+                type Signature = (props: Props) => Result;
             }
 
             interface PrivateContract {
                 initialized: boolean;
                 revision: string;
-            }
-
-            interface Contract extends PublicContract, PrivateContract {}
-
-            namespace Initialize {
-                type Result = void;
-                type Signature = () => Result;
-            }
-
-            namespace Query {
-                type Props = { session: Auth.Session.Snapshot };
-                type Result = UseQueryOptions<
-                    API.AccessControl.Privileges,
-                    Error,
-                    API.AccessControl.Privileges,
-                    (string | string[] | undefined)[]
-                >;
-                type Signature = (props: Props) => Result;
             }
         }
     }

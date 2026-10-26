@@ -1,10 +1,15 @@
 import process from "node:process";
 import { z } from "zod";
+import ms from "ms";
 
 import "dotenv/config";
 
-const duration = z.string().pipe(z.coerce.number<string>().int().nonnegative().max(2_147_483_647)).transform(String);
-const timeout = z.string().pipe(z.coerce.number<string>().int().positive().max(2_147_483_647)).transform(String);
+const interval = z
+    .string()
+    .min(1)
+    .transform((value) => ms(value as ms.StringValue));
+const duration = interval.pipe(z.number().int().nonnegative().max(2_147_483_647)).transform(String);
+const timeout = interval.pipe(z.number().int().positive().max(2_147_483_647)).transform(String);
 const ratio = z.string().pipe(z.coerce.number<string>().gt(0).lt(1)).transform(String);
 const origin = z.url({ protocol: /^https?$/ });
 
@@ -20,6 +25,8 @@ export const envSchema = z.object({
     OAUTH_SCOPE: z.string().min(1),
     OAUTH_REDIRECT_URI: origin,
 
+    OTP_COOLDOWN: timeout,
+
     TOAST_VISIBLE_LIMIT: z.string().pipe(z.coerce.number<string>().int().positive()).transform(String),
 
     API_REQUEST_TIMEOUT_MS: timeout,
@@ -32,4 +39,4 @@ export const envSchema = z.object({
     AUTH_PERMISSION_STALE_TIME_MS: duration,
 });
 
-envSchema.parse(process.env);
+export const env = envSchema.parse(process.env);

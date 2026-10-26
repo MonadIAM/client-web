@@ -1,6 +1,8 @@
 import axios, { AxiosError, CanceledError } from "axios";
 
 import { AuthWorkerClient } from "~common/auth/worker.client";
+import { SessionStatus } from "~src/enums";
+import { i18n } from "~common/i18n";
 
 import { client as accessControl } from "./generated/access-control/client.gen";
 import { client as notification } from "./generated/notification/client.gen";
@@ -23,6 +25,10 @@ class ApiTransport implements API.Transport.Contract {
     public initialize(): void {
         if (this.initialized === false) {
             this.initialized = true;
+            this.identityPublic.interceptors.request.use((config) => {
+                config.headers.set("Accept-Language", i18n.resolvedLanguage ?? "en");
+                return config;
+            });
             accessControl.setConfig({
                 axios: this.createTransport({ origin: process.env.ACCESS_CONTROL_ORIGIN }),
                 baseURL: process.env.ACCESS_CONTROL_ORIGIN,
@@ -66,6 +72,7 @@ class ApiTransport implements API.Transport.Contract {
                 throw new CanceledError();
             } else {
                 const headers = axios.AxiosHeaders.from(config.headers);
+                headers.set("Accept-Language", i18n.resolvedLanguage ?? "en");
                 headers.set("Authorization", `Bearer ${credential.token}`);
                 return { ...config, headers, authSession: credential };
             }
@@ -78,7 +85,7 @@ class ApiTransport implements API.Transport.Contract {
         const response = props.response;
         const credential = response.config.authSession;
         const current = AuthWorkerClient.getSnapshot();
-        if (credential?.revision === current.revision && current.status === "authenticated") {
+        if (credential?.revision === current.revision && current.status === SessionStatus.AUTHENTICATED) {
             return response;
         } else {
             throw new CanceledError("The session has ended or changed");

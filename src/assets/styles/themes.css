@@ -61,6 +61,8 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 h1,
@@ -68,4 +70,8 @@ h2,
 h3 {
   font-family: var(--font-display);
   text-wrap: balance;
+}
+
+::selection {
+  background-color: color-mix(in srgb, var(--primary) 20%, transparent);
 }

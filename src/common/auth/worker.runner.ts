@@ -1,5 +1,7 @@
+import { WorkerCommand, WorkerMessageKind } from "~src/enums";
+
+import { SessionManager } from "./session/session.manager";
 import { WorkerSchema } from "./worker.schema";
-import { SessionManager } from "./session";
 
 class SharedWorkerRunner implements Auth.WorkerRunner.Contract {
     public static readonly instance = new SharedWorkerRunner();
@@ -9,7 +11,9 @@ class SharedWorkerRunner implements Auth.WorkerRunner.Contract {
     private constructor() {}
 
     public initialize(): Auth.WorkerRunner.Initialize.Result {
-        SessionManager.subscribe({ listener: () => this.broadcast({ kind: "session", value: SessionManager.snapshot() }) });
+        SessionManager.subscribe({
+            listener: () => this.broadcast({ kind: WorkerMessageKind.SESSION, value: SessionManager.snapshot() }),
+        });
         globalThis.addEventListener("connect", (event: Event) => {
             if (event instanceof MessageEvent) {
                 const port = event.ports[0];
@@ -21,13 +25,14 @@ class SharedWorkerRunner implements Auth.WorkerRunner.Contract {
                     } else {
                         const request = WorkerSchema.request.parse(message.data);
                         void this.execute(request.payload).then(
-                            (payload) => this.reply({ port, response: { kind: "result", id: request.id, payload } }),
+                            (payload) =>
+                                this.reply({ port, response: { kind: WorkerMessageKind.RESULT, id: request.id, payload } }),
                             (error: unknown) => {
                                 console.error(error);
                                 this.reply({
                                     port,
                                     response: {
-                                        kind: "error",
+                                        kind: WorkerMessageKind.ERROR,
                                         id: request.id,
                                         message: error instanceof Error ? error.message : "Authentication failed",
                                     },
@@ -54,25 +59,25 @@ class SharedWorkerRunner implements Auth.WorkerRunner.Contract {
     public async execute(props: Auth.WorkerRunner.Execute.Props): Auth.WorkerRunner.Execute.Result {
         await SessionManager.restore();
         switch (props.command) {
-            case "callback": {
+            case WorkerCommand.CALLBACK: {
                 await SessionManager.callback({ address: props.address });
                 return { value: SessionManager.snapshot(), command: props.command };
             }
-            case "token": {
+            case WorkerCommand.TOKEN: {
                 return { value: await SessionManager.getToken(props.props), command: props.command };
             }
-            case "authorize": {
+            case WorkerCommand.AUTHORIZE: {
                 return { value: await SessionManager.authorize(), command: props.command };
             }
-            case "snapshot": {
+            case WorkerCommand.SNAPSHOT: {
                 return { value: SessionManager.snapshot(), command: props.command };
             }
-            case "logout": {
+            case WorkerCommand.LOGOUT: {
                 await SessionManager.logout();
                 return { value: SessionManager.snapshot(), command: props.command };
             }
-            case "invalidatePermissions": {
-                this.broadcast({ kind: "permissions" });
+            case WorkerCommand.INVALIDATE_PERMISSIONS: {
+                this.broadcast({ kind: WorkerMessageKind.PERMISSIONS });
                 return { command: props.command };
             }
             default: {

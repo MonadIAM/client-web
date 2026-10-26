@@ -1,4 +1,7 @@
+import { ToastType } from "@monadiam/ui-kit/enums";
 import { AxiosError, isCancel } from "axios";
+
+import { i18n } from "~common/i18n";
 
 import { ToastQueue } from "./toast.queue";
 
@@ -15,15 +18,36 @@ class Manager implements Notifications.Manager.Contract {
     }
 
     public success(props: Notifications.Manager.Success.Props): Notifications.Manager.Success.Result {
-        return ToastQueue.add({ ...props, timeout: props.timeout ?? 5000, type: "success" });
+        return ToastQueue.add({ ...props, timeout: props.timeout ?? 5e3, type: ToastType.SUCCESS });
+    }
+
+    public response(props: Notifications.Manager.Response.Props): Notifications.Manager.Response.Result {
+        const message = this.getResponseMessage(props);
+        return message ? this.success({ title: message }) : undefined;
+    }
+
+    public getResponseMessage({
+        data,
+    }: Notifications.Manager.GetResponseMessage.Props): Notifications.Manager.GetResponseMessage.Result {
+        if (data && typeof data === "object" && "message" in data) {
+            if (typeof data.message === "string") {
+                return data.message;
+            } else if (
+                Array.isArray(data.message) &&
+                data.message.every((message): message is string => typeof message === "string")
+            ) {
+                return data.message.join("\n");
+            }
+        }
+        return undefined;
     }
 
     public info(props: Notifications.Manager.Info.Props): Notifications.Manager.Info.Result {
-        return ToastQueue.add({ ...props, timeout: props.timeout ?? 5000, type: "info" });
+        return ToastQueue.add({ ...props, timeout: props.timeout ?? 5e3, type: ToastType.INFO });
     }
 
     public warning(props: Notifications.Manager.Warning.Props): Notifications.Manager.Warning.Result {
-        return ToastQueue.add({ ...props, timeout: props.timeout ?? 5000, type: "warning" });
+        return ToastQueue.add({ ...props, timeout: props.timeout ?? 5e3, type: ToastType.WARNING });
     }
 
     public error(props: Notifications.Manager.Error.Props): Notifications.Manager.Error.Result {
@@ -44,10 +68,10 @@ class Manager implements Notifications.Manager.Contract {
         const message = this.getMessage({ cause });
         const id = ToastQueue.add({
             ...options,
-            timeout: options.timeout ?? 8000,
+            timeout: options.timeout ?? 8e3,
             title: title ?? message,
             description: options.description ?? (title && title !== message ? message : undefined),
-            type: "error",
+            type: ToastType.ERROR,
         });
         if (reference) {
             this.reported.set(reference, id);
@@ -66,9 +90,9 @@ class Manager implements Notifications.Manager.Contract {
     public getMessage(props: Notifications.Manager.GetMessage.Props): Notifications.Manager.GetMessage.Result {
         const { cause } = props;
         if (cause instanceof AxiosError) {
-            const data: unknown = cause.response?.data;
-            if (data && typeof data === "object" && "message" in data && typeof data.message === "string") {
-                return data.message;
+            const message = this.getResponseMessage({ data: cause.response?.data });
+            if (message) {
+                return message;
             }
         }
         if (cause instanceof Error) {
@@ -76,7 +100,7 @@ class Manager implements Notifications.Manager.Contract {
         } else if (typeof cause === "string") {
             return cause;
         } else {
-            return "An unexpected error occurred";
+            return i18n.t("errors.unexpected");
         }
     }
 

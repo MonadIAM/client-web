@@ -8,6 +8,15 @@ import * as HrTypes from "./generated/hr";
 
 declare global {
     namespace API {
+        namespace Validation {
+            type Props<TName extends string> = {
+                fields: readonly TName[];
+                cause: unknown;
+            };
+
+            type Result<TName extends string> = Optional<Partial<Record<TName, string>>>;
+        }
+
         export import AccessControl = AccessControlTypes;
         export import Notification = NotificationTypes;
         export import Organization = OrganizationTypes;
@@ -16,6 +25,7 @@ declare global {
 
         namespace Transport {
             type Request = InternalAxiosRequestConfig<unknown>;
+
             type Response = AxiosResponse<unknown>;
 
             interface Contract extends PublicContract, PrivateContract {}

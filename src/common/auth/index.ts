@@ -1,4 +1,7 @@
-export { usePermission, useSession } from "./hooks";
+export { PermissionManager, PermissionStore, usePermission } from "./permission";
+export { OAuthEngine, OAuthSchema, useAuthentication } from "./oauth";
+export { SessionRepository, useSession } from "./session";
+export { CooldownOTP, useCooldownOTP } from "./otp";
 export { AuthWorkerClient } from "./worker.client";
-export { PermissionStore } from "./permission";
-export { SessionRepository } from "./session";
+export { FederatedManager } from "./federated";
+export { useProfile } from "./profile";

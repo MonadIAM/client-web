@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { tsImport } from "tsx/esm/api";
 import { rspack } from "@rspack/core";
 
-await tsImport("./env.schema.ts", import.meta.url);
+const { env } = await tsImport("./env.schema.ts", import.meta.url);
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 
@@ -26,6 +26,20 @@ export default (_environment, argv) => {
         },
         module: {
             rules: [
+                {
+                    test: /\.svg$/i,
+                    oneOf: [
+                        {
+                            resourceQuery: /react/,
+                            type: "javascript/auto",
+                            use: {
+                                loader: "@svgr/webpack",
+                                options: { dimensions: false },
+                            },
+                        },
+                        { type: "asset/resource" },
+                    ],
+                },
                 {
                     test: /\.[jt]sx?$/,
                     exclude: /node_modules\/(?!.*@monadiam[+/]ui-kit)/,
@@ -71,6 +85,7 @@ export default (_environment, argv) => {
                     "OAUTH_CLIENT_ID",
                     "OAUTH_REDIRECT_URI",
                     "OAUTH_SCOPE",
+                    "OTP_COOLDOWN",
                     "TOAST_VISIBLE_LIMIT",
                     "API_REQUEST_TIMEOUT_MS",
                     "AUTH_REQUEST_TIMEOUT_MS",
@@ -80,14 +95,14 @@ export default (_environment, argv) => {
                     "AUTH_TRANSACTION_TTL_MS",
                     "AUTH_IAT_TOLERANCE_MS",
                     "AUTH_PERMISSION_STALE_TIME_MS",
-                ].map((name) => [`process.env.${name}`, JSON.stringify(process.env[name])])),
+                ].map((name) => [`process.env.${name}`, JSON.stringify(env[name])])),
             ),
-            new rspack.HtmlRspackPlugin({ template: "./index.html" }),
+            new rspack.HtmlRspackPlugin({ template: "./index.html", favicon: "./src/assets/images/favicon.svg" }),
             ...(development ? [new ReactRefreshRspackPlugin()] : []),
         ],
         devServer: {
             host: "localhost",
-            port: 3000,
+            port: 3e3,
             historyApiFallback: true,
         },
     };
