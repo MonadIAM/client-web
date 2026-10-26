@@ -1,4 +1,5 @@
-import { Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
+import { Text, Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
+import { TextTone, TextAlign } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
@@ -9,8 +10,6 @@ import { IdentitySchemas } from "~api/schemas";
 import { IdentitySDK } from "~api/sdk";
 import { OTPFlow } from "~src/enums";
 import { API } from "~api";
-
-import { pageStyles } from "../styles";
 
 export function VerifyCode({ authorizationRequest }: SigninOTP.Verify.Props) {
     const { t } = useTranslation();
@@ -66,7 +65,11 @@ export function VerifyCode({ authorizationRequest }: SigninOTP.Verify.Props) {
                     {t("otp.verify")}
                 </Button>
             </Form.Actions>
-            {remaining > 0 && <p className={pageStyles.cooldown}>{t("otp.retryIn", { seconds: remaining })}</p>}
+            {remaining > 0 && (
+                <Text.P tone={TextTone.MUTED} align={TextAlign.CENTER}>
+                    {t("otp.retryIn", { seconds: remaining })}
+                </Text.P>
+            )}
             <Form.Links>
                 <Link
                     to={{

@@ -1,3 +1,5 @@
+import { TextTone } from "@monadiam/ui-kit/enums";
+import { Text } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 
 import { pageStyles } from "./styles";
@@ -7,8 +9,8 @@ export function Main() {
 
     return (
         <section className={pageStyles.root}>
-            <h1 className={pageStyles.title}>{t("main.title")}</h1>
-            <p className={pageStyles.description}>{t("main.description")}</p>
+            <Text.H1>{t("main.title")}</Text.H1>
+            <Text.P tone={TextTone.MUTED}>{t("main.description")}</Text.P>
         </section>
     );
 }

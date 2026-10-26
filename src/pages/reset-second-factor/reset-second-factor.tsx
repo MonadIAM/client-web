@@ -1,5 +1,5 @@
-import { Flex, Button, Field, Form, useForm, useSelector, Container } from "@monadiam/ui-kit";
-import { FlexAlignment, FlexJustification } from "@monadiam/ui-kit/enums";
+import { Text, Flex, Button, Field, Form, useForm, useSelector, Container } from "@monadiam/ui-kit";
+import { TextTone, FlexAlignment, FlexJustification } from "@monadiam/ui-kit/enums";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 
@@ -58,8 +58,8 @@ export function ResetSecondFactor() {
             className={pageStyles.auth}>
             <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
-                    <h1 className={pageStyles.title}>{t("resetSecondFactor.title")}</h1>
-                    <p className={pageStyles.description}>{t("resetSecondFactor.description")}</p>
+                    <Text.H1>{t("resetSecondFactor.title")}</Text.H1>
+                    <Text.P tone={TextTone.MUTED}>{t("resetSecondFactor.description")}</Text.P>
                 </header>
                 <Container render={<Flex.Col gap="1.25rem" />}>
                     <Form form={form} aria-label={t("resetSecondFactor.title")}>

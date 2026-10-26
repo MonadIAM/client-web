@@ -1,7 +1,7 @@
-import { FlexJustification, FlexWrap, ButtonVariant, FlexAlignment } from "@monadiam/ui-kit/enums";
+import { TextSize, FlexJustification, FlexWrap, ButtonVariant, FlexAlignment } from "@monadiam/ui-kit/enums";
+import { Text, Flex, Button } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { Flex, Button } from "@monadiam/ui-kit";
 import { JSX } from "react";
 
 import { routerStyles } from "../styles";
@@ -13,8 +13,10 @@ export function NotFound({ rootPath }: Router.NotFoundProps): JSX.Element {
     return (
         <section className={routerStyles.centered}>
             <Flex.Col align={FlexAlignment.CENTER} gap="1.25rem" className={routerStyles.error}>
-                <h1 className={routerStyles.title}>{t("errors.notFound")}</h1>
-                <p role="status">{t("errors.notFoundDescription")}</p>
+                <Text.H1>{t("errors.notFound")}</Text.H1>
+                <Text.P size={TextSize.MD} role="status">
+                    {t("errors.notFoundDescription")}
+                </Text.P>
                 <Flex.Row
                     wrap={FlexWrap.WRAP}
                     justify={FlexJustification.CENTER}

@@ -1,5 +1,5 @@
-import { Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
-import { ButtonVariant, FormSpacing } from "@monadiam/ui-kit/enums";
+import { Text, Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
+import { TextTone, ButtonVariant, FormSpacing } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
 import { useState, Fragment } from "react";
 
@@ -12,7 +12,6 @@ import { OTPFlow } from "~src/enums";
 import { API } from "~api";
 
 import { SignupSchema } from "../schema";
-import { pageStyles } from "../styles";
 
 export function Verification({ identifier, onVerified }: Signup.Verification.Props) {
     const { t } = useTranslation();
@@ -90,7 +89,7 @@ export function Verification({ identifier, onVerified }: Signup.Verification.Pro
 
     return (
         <Fragment>
-            {identifier && <p className={pageStyles.description}>{t("auth.verifyDescription", { identifier })}</p>}
+            {identifier && <Text.P tone={TextTone.MUTED}>{t("auth.verifyDescription", { identifier })}</Text.P>}
             <Form form={form} aria-label={t("auth.verify")}>
                 <Form.Fields disabled={resending}>
                     <Field.Text

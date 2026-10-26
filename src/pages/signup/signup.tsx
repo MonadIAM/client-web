@@ -1,6 +1,6 @@
-import { FlexAlignment, FlexJustification } from "@monadiam/ui-kit/enums";
-import { Flex, Container } from "@monadiam/ui-kit";
+import { TextTone, FlexAlignment, FlexJustification } from "@monadiam/ui-kit/enums";
 import { Link, useNavigate, useSearchParams } from "react-router";
+import { Text, Flex, Container } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 import { useState, Fragment } from "react";
 
@@ -42,9 +42,9 @@ export function SignUp() {
             className={pageStyles.auth}>
             <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
-                    <h1 className={pageStyles.title}>{title}</h1>
+                    <Text.H1>{title}</Text.H1>
                     {step === SignupStep.REGISTRATION && (
-                        <p className={pageStyles.description}>{t("auth.signupDescription")}</p>
+                        <Text.P tone={TextTone.MUTED}>{t("auth.signupDescription")}</Text.P>
                     )}
                 </header>
                 <Container render={<Flex.Col gap="1.25rem" />}>
@@ -86,12 +86,12 @@ export function SignUp() {
                         {step === SignupStep.VERIFICATION && (
                             <Link to={{ search: `?${registrationSearch}` }}>{t("auth.backToSignup")}</Link>
                         )}
-                        <p>
+                        <Text.P>
                             {step === SignupStep.REGISTRATION && <Fragment>{t("auth.hasAccount")} </Fragment>}
                             <Link to={{ pathname: "/signin", search }}>
                                 {step === SignupStep.REGISTRATION ? t("nav.signin") : t("auth.continue")}
                             </Link>
-                        </p>
+                        </Text.P>
                     </Flex.Col>
                 )}
             </Flex.Col>

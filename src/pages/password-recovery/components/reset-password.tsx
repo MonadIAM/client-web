@@ -1,5 +1,5 @@
-import { FieldType, FormSpacing } from "@monadiam/ui-kit/enums";
-import { Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
+import { TextTone, TextAlign, FieldType, FormSpacing } from "@monadiam/ui-kit/enums";
+import { Text, Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
 import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 
@@ -10,8 +10,6 @@ import { IdentitySchemas } from "~api/schemas";
 import { useCooldownOTP } from "~auth";
 import { IdentitySDK } from "~api/sdk";
 import { API } from "~api";
-
-import { pageStyles } from "../styles";
 
 export function ResetPassword({ identifier, method, onComplete, onIdentifierChange }: PasswordRecovery.Reset.Props) {
     const { t } = useTranslation();
@@ -106,7 +104,9 @@ export function ResetPassword({ identifier, method, onComplete, onIdentifierChan
                 </Button>
             </Form.Actions>
             {method === PasswordRecoveryStep.OTP && remaining > 0 && (
-                <p className={pageStyles.cooldown}>{t("otp.retryIn", { seconds: remaining })}</p>
+                <Text.P tone={TextTone.MUTED} align={TextAlign.CENTER}>
+                    {t("otp.retryIn", { seconds: remaining })}
+                </Text.P>
             )}
             <Form.Links>
                 <Link

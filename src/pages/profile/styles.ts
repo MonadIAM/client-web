@@ -3,6 +3,4 @@ export const pageStyles = {
     profileHeader: "grid gap-2",
     identifier: "font-mono text-xs md:text-xs",
     profileActions: "border-t border-border pt-5",
-    title: "text-2xl font-semibold tracking-tight",
-    description: "text-sm leading-6 text-muted-foreground",
 };

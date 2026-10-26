@@ -1,7 +1,7 @@
-import { FlexAlignment, FlexJustification } from "@monadiam/ui-kit/enums";
+import { TextTone, FlexAlignment, FlexJustification } from "@monadiam/ui-kit/enums";
+import { Text, Flex, Container } from "@monadiam/ui-kit";
 import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Flex, Container } from "@monadiam/ui-kit";
 import { useState } from "react";
 
 import { RequestCode } from "./components/request-code";
@@ -25,10 +25,10 @@ export function SigninOTP() {
             className={pageStyles.auth}>
             <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
-                    <h1 className={pageStyles.title}>{t(verifying ? "otp.verifyTitle" : "otp.requestTitle")}</h1>
-                    <p className={pageStyles.description}>
+                    <Text.H1>{t(verifying ? "otp.verifyTitle" : "otp.requestTitle")}</Text.H1>
+                    <Text.P tone={TextTone.MUTED}>
                         {t(verifying ? "otp.verifyDescription" : "otp.requestDescription")}
-                    </p>
+                    </Text.P>
                 </header>
                 <Container render={<Flex.Col gap="1.25rem" />}>
                     {verifying ? (
@@ -47,7 +47,7 @@ export function SigninOTP() {
                             }}
                         />
                     )}
-                    {!authorizationRequest && <p className={pageStyles.description}>{t("auth.requestMissing")}</p>}
+                    {!authorizationRequest && <Text.P tone={TextTone.MUTED}>{t("auth.requestMissing")}</Text.P>}
                 </Container>
                 <Flex.Col render={<footer />} gap="0.25rem" className={pageStyles.footer}>
                     <Link to={{ pathname: "/signin", search }}>{t("auth.continue")}</Link>

@@ -1,6 +1,6 @@
-import { FlexAlignment, FlexJustification } from "@monadiam/ui-kit/enums";
+import { TextTone, FlexAlignment, FlexJustification } from "@monadiam/ui-kit/enums";
+import { Text, Flex, Container } from "@monadiam/ui-kit";
 import { Link, useSearchParams } from "react-router";
-import { Flex, Container } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 
@@ -47,12 +47,10 @@ export function PasswordRecovery() {
             className={pageStyles.auth}>
             <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
-                    <h1 className={pageStyles.title}>{t(`passwordRecovery.${title}`)}</h1>
-                    <p
-                        className={pageStyles.description}
-                        role={step === PasswordRecoveryStep.COMPLETE ? "status" : undefined}>
+                    <Text.H1>{t(`passwordRecovery.${title}`)}</Text.H1>
+                    <Text.P tone={TextTone.MUTED} role={step === PasswordRecoveryStep.COMPLETE ? "status" : undefined}>
                         {t(`passwordRecovery.${description}`)}
-                    </p>
+                    </Text.P>
                 </header>
                 {step !== PasswordRecoveryStep.COMPLETE && (
                     <Container render={<Flex.Col gap="1.25rem" />}>

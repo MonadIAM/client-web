@@ -1,6 +1,6 @@
 import { FlexAlignment, FlexJustification, SpinnerVariant } from "@monadiam/ui-kit/enums";
+import { Text, Flex, Spinner } from "@monadiam/ui-kit";
 import { Link, useNavigate } from "react-router";
-import { Flex, Spinner } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 
@@ -45,7 +45,7 @@ export function FederatedCallback() {
             className={pageStyles.auth}>
             <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
-                    <h1 className={pageStyles.title}>{t(failed ? "social.failed" : "social.completing")}</h1>
+                    <Text.H1>{t(failed ? "social.failed" : "social.completing")}</Text.H1>
                 </header>
                 {failed ? (
                     <Flex.Col render={<footer />} gap="0.25rem" className={pageStyles.footer}>

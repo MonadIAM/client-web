@@ -1,15 +1,16 @@
-import {
-    FlexAlignment,
-    FlexJustification,
-    ButtonVariant,
-    FieldType,
-    FormAlignment,
-    SpinnerVariant,
-} from "@monadiam/ui-kit/enums";
-import { Flex, Button, Field, Form, Spinner, useForm, useSelector, Container } from "@monadiam/ui-kit";
-import { Link, useSearchParams } from "react-router";
+import { Text, Flex, Button, Field, Form, Spinner, useForm, useSelector, Container } from "@monadiam/ui-kit";
 import { JSX, useEffect, useState, Fragment } from "react";
+import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
+import {
+    FlexJustification,
+    SpinnerVariant,
+    FlexAlignment,
+    ButtonVariant,
+    FormAlignment,
+    FieldType,
+    TextTone,
+} from "@monadiam/ui-kit/enums";
 
 import { AuthWorkerClient, useSession, useAuthentication } from "~auth";
 import { NotificationManager } from "~common/notifications";
@@ -103,8 +104,8 @@ export function SignIn(): JSX.Element {
             className={pageStyles.auth}>
             <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
-                    <h1 className={pageStyles.title}>{t("auth.signin")}</h1>
-                    <p className={pageStyles.description}>{t("auth.signinDescription")}</p>
+                    <Text.H1>{t("auth.signin")}</Text.H1>
+                    <Text.P tone={TextTone.MUTED}>{t("auth.signinDescription")}</Text.P>
                 </header>
                 <Container render={<Flex.Col gap="1.25rem" />} aria-busy={preparing}>
                     {preparing ? (
@@ -115,8 +116,8 @@ export function SignIn(): JSX.Element {
                             className={pageStyles.authPreparation}
                             role="status">
                             <Spinner variant={SpinnerVariant.INLINE} aria-hidden="true" />
-                            <p>{t("auth.preparing")}</p>
-                            <p className={pageStyles.description}>{t("auth.preparingDescription")}</p>
+                            <Text.P>{t("auth.preparing")}</Text.P>
+                            <Text.P tone={TextTone.MUTED}>{t("auth.preparingDescription")}</Text.P>
                         </Flex.Col>
                     ) : (
                         <Fragment>
@@ -197,7 +198,7 @@ export function SignIn(): JSX.Element {
                     )}
                 </Container>
                 <Flex.Col render={<footer />} gap="0.25rem" className={pageStyles.footer}>
-                    <p>
+                    <Text.P>
                         {t("auth.noAccount")}{" "}
                         <Link
                             to={{
@@ -206,7 +207,7 @@ export function SignIn(): JSX.Element {
                             }}>
                             {t("nav.signup")}
                         </Link>
-                    </p>
+                    </Text.P>
                 </Flex.Col>
             </Flex.Col>
         </Flex.Col>

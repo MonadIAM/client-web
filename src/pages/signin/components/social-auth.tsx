@@ -1,5 +1,5 @@
-import { ButtonVariant, FormDirection } from "@monadiam/ui-kit/enums";
-import { Flex, Button, Form } from "@monadiam/ui-kit";
+import { TextSize, TextTone, ButtonVariant, FormDirection } from "@monadiam/ui-kit/enums";
+import { Text, Flex, Button, Form } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 import { useRef, useState } from "react";
 
@@ -32,7 +32,9 @@ export function SocialAuth({ authorizationRequest, onPendingChange, disabled }: 
 
     return (
         <Flex.Col gap="0.75rem" className={socialStyles.root}>
-            <p className={socialStyles.separator}>{t("social.or")}</p>
+            <Text.P size={TextSize.XS} tone={TextTone.MUTED} className={socialStyles.separator}>
+                {t("social.or")}
+            </Text.P>
             <Form.Actions direction={FormDirection.HORIZONTAL}>
                 <Button
                     type="button"

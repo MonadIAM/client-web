@@ -1,5 +1,5 @@
-import { Flex, Button, Field, Form, useForm, Container } from "@monadiam/ui-kit";
-import { FlexJustification, ButtonVariant } from "@monadiam/ui-kit/enums";
+import { Text, Flex, Button, Field, Form, useForm, Container } from "@monadiam/ui-kit";
+import { TextTone, FlexJustification, ButtonVariant } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { useState, JSX } from "react";
@@ -44,8 +44,8 @@ export function Profile(): JSX.Element {
     return (
         <section className={pageStyles.root}>
             <header className={pageStyles.profileHeader}>
-                <h1 className={pageStyles.title}>{t("profile.title")}</h1>
-                <p className={pageStyles.description}>{t("profile.description")}</p>
+                <Text.H1>{t("profile.title")}</Text.H1>
+                <Text.P tone={TextTone.MUTED}>{t("profile.description")}</Text.P>
             </header>
             <Container render={<Flex.Col gap="1.25rem" />}>
                 <Form form={form} aria-label={t("profile.title")}>
