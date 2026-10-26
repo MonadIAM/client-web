@@ -35,8 +35,10 @@
         "resend": "Resend code",
         "haveCode": "Already have a verification code?",
         "verified": "Account verified",
-        "saveCodes": "Save these recovery codes in a safe place. They are shown only once.",
+        "saveCodesTitle": "Save your recovery codes",
+        "saveCodes": "They are shown only once.",
         "copyCodes": "Copy recovery codes",
+        "downloadCodes": "Download recovery codes",
         "copiedCodes": "Recovery codes copied",
         "copyFailed": "Could not copy recovery codes",
         "continue": "Back to sign in",
@@ -55,7 +57,7 @@
         "signupTitle": "Create an account",
         "useCode": "Sign in with a one-time code",
         "verifyTitle": "Verify your account",
-        "codesSaved": "Codes saved — go to sign in"
+        "goToSignin": "Go to sign in"
     },
     "validation": {
         "invalid": "Invalid value"

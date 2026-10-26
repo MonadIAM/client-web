@@ -1,4 +1,6 @@
+import { FlexAlignment, FlexJustification } from "@monadiam/ui-kit/enums";
 import { Link, useSearchParams } from "react-router";
+import { Flex, Container } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 
@@ -38,8 +40,12 @@ export function PasswordRecovery() {
                 : "confirmDescription";
 
     return (
-        <section className={pageStyles.auth}>
-            <div className={pageStyles.authContent}>
+        <Flex.Col
+            render={<section />}
+            align={FlexAlignment.CENTER}
+            justify={FlexJustification.CENTER}
+            className={pageStyles.auth}>
+            <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
                     <h1 className={pageStyles.title}>{t(`passwordRecovery.${title}`)}</h1>
                     <p
@@ -49,7 +55,7 @@ export function PasswordRecovery() {
                     </p>
                 </header>
                 {step !== PasswordRecoveryStep.COMPLETE && (
-                    <div className={pageStyles.panel}>
+                    <Container render={<Flex.Col gap="1.25rem" />}>
                         {step === PasswordRecoveryStep.REQUEST ? (
                             <RequestPassword
                                 identifier={identifier}
@@ -72,12 +78,12 @@ export function PasswordRecovery() {
                                 onIdentifierChange={setIdentifier}
                             />
                         )}
-                    </div>
+                    </Container>
                 )}
-                <footer className={pageStyles.footer}>
+                <Flex.Col render={<footer />} gap="0.25rem" className={pageStyles.footer}>
                     <Link to={{ pathname: "/signin", search }}>{t("auth.continue")}</Link>
-                </footer>
-            </div>
-        </section>
+                </Flex.Col>
+            </Flex.Col>
+        </Flex.Col>
     );
 }

@@ -1,7 +1,14 @@
-import { ButtonVariant, FieldType, FormAlignment, SpinnerVariant } from "@monadiam/ui-kit/enums";
-import { Button, Field, Form, Spinner, useForm, useSelector } from "@monadiam/ui-kit";
+import {
+    FlexAlignment,
+    FlexJustification,
+    ButtonVariant,
+    FieldType,
+    FormAlignment,
+    SpinnerVariant,
+} from "@monadiam/ui-kit/enums";
+import { Flex, Button, Field, Form, Spinner, useForm, useSelector, Container } from "@monadiam/ui-kit";
 import { Link, useSearchParams } from "react-router";
-import { JSX, useEffect, useState } from "react";
+import { JSX, useEffect, useState, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 
 import { AuthWorkerClient, useSession, useAuthentication } from "~auth";
@@ -89,21 +96,30 @@ export function SignIn(): JSX.Element {
     }
 
     return (
-        <section className={pageStyles.auth}>
-            <div className={pageStyles.authContent}>
+        <Flex.Col
+            render={<section />}
+            align={FlexAlignment.CENTER}
+            justify={FlexJustification.CENTER}
+            className={pageStyles.auth}>
+            <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
                     <h1 className={pageStyles.title}>{t("auth.signin")}</h1>
                     <p className={pageStyles.description}>{t("auth.signinDescription")}</p>
                 </header>
-                <div className={pageStyles.panel} aria-busy={preparing}>
+                <Container render={<Flex.Col gap="1.25rem" />} aria-busy={preparing}>
                     {preparing ? (
-                        <div className={pageStyles.authPreparation} role="status">
+                        <Flex.Col
+                            align={FlexAlignment.CENTER}
+                            justify={FlexJustification.CENTER}
+                            gap="0.75rem"
+                            className={pageStyles.authPreparation}
+                            role="status">
                             <Spinner variant={SpinnerVariant.INLINE} aria-hidden="true" />
                             <p>{t("auth.preparing")}</p>
                             <p className={pageStyles.description}>{t("auth.preparingDescription")}</p>
-                        </div>
+                        </Flex.Col>
                     ) : (
-                        <>
+                        <Fragment>
                             <Form form={form} aria-label={t("auth.signin")}>
                                 <Form.Fields disabled={providerPending}>
                                     <Field.Text
@@ -177,11 +193,11 @@ export function SignIn(): JSX.Element {
                                     {t("common.retry")}
                                 </Button>
                             )}
-                        </>
+                        </Fragment>
                     )}
-                </div>
-                <footer className={pageStyles.footer}>
-                    <span>
+                </Container>
+                <Flex.Col render={<footer />} gap="0.25rem" className={pageStyles.footer}>
+                    <p>
                         {t("auth.noAccount")}{" "}
                         <Link
                             to={{
@@ -190,9 +206,9 @@ export function SignIn(): JSX.Element {
                             }}>
                             {t("nav.signup")}
                         </Link>
-                    </span>
-                </footer>
-            </div>
-        </section>
+                    </p>
+                </Flex.Col>
+            </Flex.Col>
+        </Flex.Col>
     );
 }

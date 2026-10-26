@@ -19,7 +19,7 @@ export function Brand() {
             className={layoutStyles.brand}>
             <img src={light} className={layoutStyles.markLight} alt="" width="36" height="36" />
             <img src={dark} className={layoutStyles.markDark} alt="" width="36" height="36" />
-            <span>MonadIAM</span>
+            MonadIAM
         </Link>
     );
 }

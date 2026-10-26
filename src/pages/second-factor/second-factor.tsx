@@ -1,4 +1,5 @@
-import { Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
+import { Flex, Button, Field, Form, useForm, useSelector, Container } from "@monadiam/ui-kit";
+import { FlexAlignment, FlexJustification } from "@monadiam/ui-kit/enums";
 import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 
@@ -47,13 +48,17 @@ export function SecondFactor() {
     const isSubmitting = useSelector(form.store, (state) => state.isSubmitting);
 
     return (
-        <section className={pageStyles.auth}>
-            <div className={pageStyles.authContent}>
+        <Flex.Col
+            render={<section />}
+            align={FlexAlignment.CENTER}
+            justify={FlexJustification.CENTER}
+            className={pageStyles.auth}>
+            <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
                     <h1 className={pageStyles.title}>{t("secondFactor.title")}</h1>
                     <p className={pageStyles.description}>{t("secondFactor.description")}</p>
                 </header>
-                <div className={pageStyles.panel}>
+                <Container render={<Flex.Col gap="1.25rem" />}>
                     <Form form={form} aria-label={t("secondFactor.title")}>
                         <Form.Fields>
                             <Field.Code
@@ -82,11 +87,11 @@ export function SecondFactor() {
                             </Link>
                         </Form.Links>
                     </Form>
-                </div>
-                <footer className={pageStyles.footer}>
+                </Container>
+                <Flex.Col render={<footer />} gap="0.25rem" className={pageStyles.footer}>
                     <Link to={{ pathname: "/signin", search }}>{t("auth.continue")}</Link>
-                </footer>
-            </div>
-        </section>
+                </Flex.Col>
+            </Flex.Col>
+        </Flex.Col>
     );
 }

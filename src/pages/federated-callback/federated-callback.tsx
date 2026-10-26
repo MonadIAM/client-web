@@ -1,8 +1,8 @@
-import { SpinnerVariant } from "@monadiam/ui-kit/enums";
+import { FlexAlignment, FlexJustification, SpinnerVariant } from "@monadiam/ui-kit/enums";
 import { Link, useNavigate } from "react-router";
+import { Flex, Spinner } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import { Spinner } from "@monadiam/ui-kit";
 
 import { NotificationManager } from "~common/notifications";
 import { FederatedManager } from "~auth";
@@ -38,21 +38,31 @@ export function FederatedCallback() {
     }, [address, navigate]);
 
     return (
-        <section className={pageStyles.auth}>
-            <div className={pageStyles.authContent}>
+        <Flex.Col
+            render={<section />}
+            align={FlexAlignment.CENTER}
+            justify={FlexJustification.CENTER}
+            className={pageStyles.auth}>
+            <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
                     <h1 className={pageStyles.title}>{t(failed ? "social.failed" : "social.completing")}</h1>
                 </header>
                 {failed ? (
-                    <footer className={pageStyles.footer}>
+                    <Flex.Col render={<footer />} gap="0.25rem" className={pageStyles.footer}>
                         <Link to="/signin">{t("auth.continue")}</Link>
-                    </footer>
+                    </Flex.Col>
                 ) : (
-                    <div className={pageStyles.authPreparation} role="status" aria-label={t("social.completing")}>
+                    <Flex.Col
+                        align={FlexAlignment.CENTER}
+                        justify={FlexJustification.CENTER}
+                        gap="0.75rem"
+                        className={pageStyles.authPreparation}
+                        role="status"
+                        aria-label={t("social.completing")}>
                         <Spinner variant={SpinnerVariant.INLINE} aria-hidden="true" />
-                    </div>
+                    </Flex.Col>
                 )}
-            </div>
-        </section>
+            </Flex.Col>
+        </Flex.Col>
     );
 }

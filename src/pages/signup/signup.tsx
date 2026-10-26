@@ -1,6 +1,8 @@
+import { FlexAlignment, FlexJustification } from "@monadiam/ui-kit/enums";
+import { Flex, Container } from "@monadiam/ui-kit";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, Fragment } from "react";
 
 import { SignupStep } from "~src/enums";
 
@@ -33,15 +35,19 @@ export function SignUp() {
               : t("auth.verified");
 
     return (
-        <section className={pageStyles.auth}>
-            <div className={pageStyles.authContent}>
+        <Flex.Col
+            render={<section />}
+            align={FlexAlignment.CENTER}
+            justify={FlexJustification.CENTER}
+            className={pageStyles.auth}>
+            <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
                     <h1 className={pageStyles.title}>{title}</h1>
                     {step === SignupStep.REGISTRATION && (
                         <p className={pageStyles.description}>{t("auth.signupDescription")}</p>
                     )}
                 </header>
-                <div className={pageStyles.panel}>
+                <Container render={<Flex.Col gap="1.25rem" />}>
                     {step === SignupStep.REGISTRATION ? (
                         <Registration
                             onIdentifierChange={setIdentifier}
@@ -74,21 +80,21 @@ export function SignUp() {
                             />
                         )
                     )}
-                </div>
+                </Container>
                 {step !== SignupStep.RECOVERY && (
-                    <footer className={pageStyles.footer}>
+                    <Flex.Col render={<footer />} gap="0.25rem" className={pageStyles.footer}>
                         {step === SignupStep.VERIFICATION && (
                             <Link to={{ search: `?${registrationSearch}` }}>{t("auth.backToSignup")}</Link>
                         )}
-                        <span>
-                            {step === SignupStep.REGISTRATION && <>{t("auth.hasAccount")} </>}
+                        <p>
+                            {step === SignupStep.REGISTRATION && <Fragment>{t("auth.hasAccount")} </Fragment>}
                             <Link to={{ pathname: "/signin", search }}>
                                 {step === SignupStep.REGISTRATION ? t("nav.signin") : t("auth.continue")}
                             </Link>
-                        </span>
-                    </footer>
+                        </p>
+                    </Flex.Col>
                 )}
-            </div>
-        </section>
+            </Flex.Col>
+        </Flex.Col>
     );
 }

@@ -1,6 +1,7 @@
+import { Fragment } from "react";
 import { NavbarAppearance } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
-import { Navbar } from "@monadiam/ui-kit";
+import { Flex, Navbar } from "@monadiam/ui-kit";
 
 import { NotificationHost } from "~common/notifications/notification.host";
 import { SessionStatus } from "~src/enums";
@@ -17,7 +18,7 @@ export function Layout({ children }: Layout.Props) {
     const session = useSession();
 
     return (
-        <div className={layoutStyles.root}>
+        <Flex.Col className={layoutStyles.root}>
             <a href="#main-content" className={layoutStyles.skip}>
                 {t("common.skip")}
             </a>
@@ -31,17 +32,17 @@ export function Layout({ children }: Layout.Props) {
                     session.status === SessionStatus.AUTHENTICATED ? (
                         <AccountNavigation />
                     ) : (
-                        <>
+                        <Fragment>
                             <LanguageSwitcher />
                             <ThemeSwitcher />
-                        </>
+                        </Fragment>
                     )
                 }
             />
-            <main id="main-content" tabIndex={-1} className={layoutStyles.content}>
+            <Flex.Col render={<main />} id="main-content" tabIndex={-1} className={layoutStyles.content}>
                 {children}
-            </main>
+            </Flex.Col>
             <NotificationHost />
-        </div>
+        </Flex.Col>
     );
 }

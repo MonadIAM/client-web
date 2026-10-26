@@ -1,7 +1,7 @@
 import { Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
 import { ButtonVariant, FormSpacing } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, Fragment } from "react";
 
 import { NotificationManager } from "~common/notifications";
 import { getValidationErrors } from "~api/validation";
@@ -89,7 +89,7 @@ export function Verification({ identifier, onVerified }: Signup.Verification.Pro
     }
 
     return (
-        <>
+        <Fragment>
             {identifier && <p className={pageStyles.description}>{t("auth.verifyDescription", { identifier })}</p>}
             <Form form={form} aria-label={t("auth.verify")}>
                 <Form.Fields disabled={resending}>
@@ -127,6 +127,6 @@ export function Verification({ identifier, onVerified }: Signup.Verification.Pro
                     </Button>
                 </Form.Actions>
             </Form>
-        </>
+        </Fragment>
     );
 }

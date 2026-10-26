@@ -1,5 +1,5 @@
-import { Button, Field, Form, useForm } from "@monadiam/ui-kit";
-import { ButtonVariant } from "@monadiam/ui-kit/enums";
+import { Flex, Button, Field, Form, useForm, Container } from "@monadiam/ui-kit";
+import { FlexJustification, ButtonVariant } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { useState, JSX } from "react";
@@ -47,7 +47,7 @@ export function Profile(): JSX.Element {
                 <h1 className={pageStyles.title}>{t("profile.title")}</h1>
                 <p className={pageStyles.description}>{t("profile.description")}</p>
             </header>
-            <div className={pageStyles.panel}>
+            <Container render={<Flex.Col gap="1.25rem" />}>
                 <Form form={form} aria-label={t("profile.title")}>
                     <Form.Fields>
                         <Field.Text
@@ -74,12 +74,12 @@ export function Profile(): JSX.Element {
                         />
                     </Form.Fields>
                 </Form>
-                <div className={pageStyles.profileActions}>
+                <Flex.Row justify={FlexJustification.END} className={pageStyles.profileActions}>
                     <Button variant={ButtonVariant.OUTLINE} loading={pending} onClick={() => void logout()}>
                         {t("auth.signout")}
                     </Button>
-                </div>
-            </div>
+                </Flex.Row>
+            </Container>
         </section>
     );
 }
