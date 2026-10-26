@@ -104,6 +104,7 @@ export function SignIn(): JSX.Element {
             className={pageStyles.auth}>
             <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
+                    <title>{t("auth.signin")}</title>
                     <Text.H1>{t("auth.signin")}</Text.H1>
                     <Text.P tone={TextTone.MUTED}>{t("auth.signinDescription")}</Text.P>
                 </header>

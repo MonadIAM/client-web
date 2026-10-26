@@ -55,6 +55,7 @@ export function SecondFactor() {
             className={pageStyles.auth}>
             <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
+                    <title>{t("secondFactor.title")}</title>
                     <Text.H1>{t("secondFactor.title")}</Text.H1>
                     <Text.P tone={TextTone.MUTED}>{t("secondFactor.description")}</Text.P>
                 </header>

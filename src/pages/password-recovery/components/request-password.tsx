@@ -1,5 +1,4 @@
 import { Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
-import { Link, useSearchParams } from "react-router";
 import { FormSpacing } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
 
@@ -11,15 +10,9 @@ import { IdentitySchemas } from "~api/schemas";
 import { IdentitySDK } from "~api/sdk";
 import { API } from "~api";
 
-export function RequestPassword({ identifier, onContinue, onIdentifierChange }: PasswordRecovery.Request.Props) {
+export function RequestPassword({ identifier, onContinue }: PasswordRecovery.Request.Props) {
     const { t } = useTranslation();
     const remaining = useCooldownOTP({ flow: OTPFlow.PASSWORD });
-    const [parameters] = useSearchParams();
-
-    const otpSearch = new URLSearchParams(parameters);
-    otpSearch.set("step", PasswordRecoveryStep.OTP);
-    const recoverySearch = new URLSearchParams(parameters);
-    recoverySearch.set("step", PasswordRecoveryStep.RECOVERY);
 
     const form = useForm({
         defaultValues: { identifier },
@@ -74,16 +67,12 @@ export function RequestPassword({ identifier, onContinue, onIdentifierChange }: 
                 </Button>
             </Form.Actions>
             <Form.Links>
-                <Link
-                    to={{ search: `?${otpSearch}` }}
-                    onClick={() => onIdentifierChange(form.state.values.identifier.trim())}>
+                <Button.Link onClick={() => onContinue(form.state.values.identifier.trim(), PasswordRecoveryStep.OTP)}>
                     {t("passwordRecovery.haveCode")}
-                </Link>
-                <Link
-                    to={{ search: `?${recoverySearch}` }}
-                    onClick={() => onIdentifierChange(form.state.values.identifier.trim())}>
+                </Button.Link>
+                <Button.Link onClick={() => onContinue(form.state.values.identifier.trim(), PasswordRecoveryStep.RECOVERY)}>
                     {t("passwordRecovery.useRecovery")}
-                </Link>
+                </Button.Link>
             </Form.Links>
         </Form>
     );

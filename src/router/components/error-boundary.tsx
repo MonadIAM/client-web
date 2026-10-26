@@ -1,21 +1,13 @@
 import { Component, ReactNode } from "react";
-import { useLocation } from "react-router";
 
-import { LoadError } from "./load-error";
+export class ErrorBoundary extends Component<Router.ErrorBoundary.Props, Router.ErrorBoundary.State> {
+    public override state: Router.ErrorBoundary.State = { failed: false };
 
-class Boundary extends Component<Router.PageErrorBoundary.Props, Router.PageErrorBoundary.State> {
-    public override state: Router.PageErrorBoundary.State = { failed: false };
-
-    public static getDerivedStateFromError(): Router.PageErrorBoundary.State {
+    public static getDerivedStateFromError(): Router.ErrorBoundary.State {
         return { failed: true };
     }
 
     public override render(): ReactNode {
-        return this.state.failed ? <LoadError /> : this.props.children;
+        return this.state.failed ? this.props.fallback : this.props.children;
     }
-}
-
-export function PageErrorBoundary({ children }: Router.PageErrorBoundary.Props): ReactNode {
-    const { pathname } = useLocation();
-    return <Boundary key={pathname}>{children}</Boundary>;
 }

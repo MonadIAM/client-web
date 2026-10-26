@@ -9,6 +9,7 @@ export function Loading(): JSX.Element {
 
     return (
         <section className={routerStyles.centered}>
+            <title>{t("common.loading")}</title>
             <Spinner aria-label={t("common.loading")} />
         </section>
     );

@@ -4,17 +4,20 @@ import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 
+import { SigninOTPStep } from "~src/enums";
+
 import { RequestCode } from "./components/request-code";
 import { VerifyCode } from "./components/verify-code";
 import { pageStyles } from "./styles";
 
 export function SigninOTP() {
     const { t } = useTranslation();
-    const [parameters, setParameters] = useSearchParams();
-    const [identifier, setIdentifier] = useState("");
-
+    const [state, setState] = useState<SigninOTP.State>({
+        step: SigninOTPStep.REQUEST,
+        identifier: "",
+    });
+    const [parameters] = useSearchParams();
     const authorizationRequest = parameters.get("authorizationRequest");
-    const verifying = parameters.get("step") === "verify";
     const search = authorizationRequest ? `?${new URLSearchParams({ authorizationRequest })}` : "";
 
     return (
@@ -25,25 +28,28 @@ export function SigninOTP() {
             className={pageStyles.auth}>
             <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
-                    <Text.H1>{t(verifying ? "otp.verifyTitle" : "otp.requestTitle")}</Text.H1>
+                    <title>{t(state.step === SigninOTPStep.VERIFICATION ? "otp.verifyTitle" : "otp.requestTitle")}</title>
+                    <Text.H1>
+                        {t(state.step === SigninOTPStep.VERIFICATION ? "otp.verifyTitle" : "otp.requestTitle")}
+                    </Text.H1>
                     <Text.P tone={TextTone.MUTED}>
-                        {t(verifying ? "otp.verifyDescription" : "otp.requestDescription")}
+                        {t(state.step === SigninOTPStep.VERIFICATION ? "otp.verifyDescription" : "otp.requestDescription")}
                     </Text.P>
                 </header>
                 <Container render={<Flex.Col gap="1.25rem" />}>
-                    {verifying ? (
-                        <VerifyCode authorizationRequest={authorizationRequest} />
+                    {state.step === SigninOTPStep.VERIFICATION ? (
+                        <VerifyCode
+                            authorizationRequest={authorizationRequest}
+                            onBack={() => {
+                                setState({ step: SigninOTPStep.REQUEST, identifier: state.identifier });
+                            }}
+                        />
                     ) : (
                         <RequestCode
                             authorizationRequest={authorizationRequest}
-                            identifier={identifier}
-                            onRequested={(value) => {
-                                setIdentifier(value);
-                                setParameters((current) => {
-                                    const next = new URLSearchParams(current);
-                                    next.set("step", "verify");
-                                    return next;
-                                });
+                            identifier={state.identifier}
+                            onContinue={(identifier) => {
+                                setState({ step: SigninOTPStep.VERIFICATION, identifier });
                             }}
                         />
                     )}

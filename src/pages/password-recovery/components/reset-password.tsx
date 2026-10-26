@@ -1,6 +1,5 @@
 import { TextTone, TextAlign, FieldType, FormSpacing } from "@monadiam/ui-kit/enums";
 import { Text, Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
-import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import { NotificationManager } from "~common/notifications";
@@ -11,17 +10,14 @@ import { useCooldownOTP } from "~auth";
 import { IdentitySDK } from "~api/sdk";
 import { API } from "~api";
 
-export function ResetPassword({ identifier, method, onComplete, onIdentifierChange }: PasswordRecovery.Reset.Props) {
+export function ResetPassword({ identifier, method, onComplete, onBack }: PasswordRecovery.Reset.Props) {
     const { t } = useTranslation();
     const remaining = useCooldownOTP({ flow: OTPFlow.PASSWORD });
-    const [parameters] = useSearchParams();
 
     const schema =
         method === PasswordRecoveryStep.OTP
             ? IdentitySchemas.zPasswordResetByOtpBody
             : IdentitySchemas.zPasswordResetByRecoveryCodeBody;
-    const requestSearch = new URLSearchParams(parameters);
-    requestSearch.delete("step");
 
     const form = useForm({
         defaultValues: { identifier, code: "", password: "" },
@@ -109,11 +105,9 @@ export function ResetPassword({ identifier, method, onComplete, onIdentifierChan
                 </Text.P>
             )}
             <Form.Links>
-                <Link
-                    to={{ search: `?${requestSearch}` }}
-                    onClick={() => onIdentifierChange(form.state.values.identifier.trim())}>
+                <Button.Link onClick={() => onBack(form.state.values.identifier.trim())}>
                     {t("passwordRecovery.back")}
-                </Link>
+                </Button.Link>
             </Form.Links>
         </Form>
     );

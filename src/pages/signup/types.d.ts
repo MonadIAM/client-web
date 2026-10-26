@@ -1,24 +1,43 @@
-declare namespace Signup {
-    namespace SaveRecoveryCodes {
-        type Props = {
-            codes: string[];
+import type { SignupStep } from "~src/enums";
 
-            onComplete(): void;
-        };
-    }
+declare global {
+    namespace Signup {
+        type State =
+            | {
+                  step: SignupStep.REGISTRATION;
+                  identifier: string;
+              }
+            | {
+                  step: SignupStep.VERIFICATION;
+                  identifier: string;
+              }
+            | {
+                  step: SignupStep.RECOVERY;
+                  codes: string[];
+              };
 
-    namespace Registration {
-        type Props = {
-            onIdentifierChange(identifier: string): void;
-            onCreated(identifier: string): void;
-        };
-    }
+        namespace SaveRecoveryCodes {
+            type Props = {
+                codes: string[];
 
-    namespace Verification {
-        type Props = {
-            identifier: string;
+                onComplete(): void;
+            };
+        }
 
-            onVerified(codes: string[]): void;
-        };
+        namespace Registration {
+            type Props = {
+                identifier: string;
+
+                onContinue(identifier: string): void;
+            };
+        }
+
+        namespace Verification {
+            type Props = {
+                identifier: string;
+
+                onVerified(codes: string[]): void;
+            };
+        }
     }
 }

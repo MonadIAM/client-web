@@ -1,25 +1,20 @@
 import { Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
 import { FieldType, FormSpacing } from "@monadiam/ui-kit/enums";
-import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import { NotificationManager } from "~common/notifications";
 import { getValidationErrors } from "~api/validation";
-import { OTPFlow, SignupStep } from "~src/enums";
 import { IdentitySchemas } from "~api/schemas";
 import { IdentitySDK } from "~api/sdk";
+import { OTPFlow } from "~src/enums";
 import { CooldownOTP } from "~auth";
 import { API } from "~api";
 
-export function Registration({ onCreated, onIdentifierChange }: Signup.Registration.Props) {
+export function Registration({ identifier, onContinue }: Signup.Registration.Props) {
     const { t } = useTranslation();
-    const [parameters] = useSearchParams();
-
-    const verificationSearch = new URLSearchParams(parameters);
-    verificationSearch.set("step", SignupStep.VERIFICATION);
 
     const form = useForm({
-        defaultValues: { name: "", identifier: "", password: "" },
+        defaultValues: { name: "", identifier, password: "" },
         onSubmit: async ({ value, formApi }) => {
             try {
                 const identifier = value.identifier.trim();
@@ -30,7 +25,7 @@ export function Registration({ onCreated, onIdentifierChange }: Signup.Registrat
                 });
                 CooldownOTP.start({ flow: OTPFlow.SIGNUP });
                 formApi.reset();
-                onCreated(identifier);
+                onContinue(identifier);
             } catch (cause) {
                 const fields = getValidationErrors({
                     cause,
@@ -89,11 +84,9 @@ export function Registration({ onCreated, onIdentifierChange }: Signup.Registrat
                 </Button>
             </Form.Actions>
             <Form.Links>
-                <Link
-                    to={{ search: `?${verificationSearch}` }}
-                    onClick={() => onIdentifierChange(form.state.values.identifier.trim())}>
+                <Button.Link onClick={() => onContinue(form.state.values.identifier.trim())}>
                     {t("auth.haveCode")}
-                </Link>
+                </Button.Link>
             </Form.Links>
         </Form>
     );

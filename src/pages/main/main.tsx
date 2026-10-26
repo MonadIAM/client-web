@@ -9,6 +9,7 @@ export function Main() {
 
     return (
         <section className={pageStyles.root}>
+            <title>{t("main.title")}</title>
             <Text.H1>{t("main.title")}</Text.H1>
             <Text.P tone={TextTone.MUTED}>{t("main.description")}</Text.P>
         </section>

@@ -1,6 +1,5 @@
 import { Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router";
 
 import { NotificationManager } from "~common/notifications";
 import { getValidationErrors } from "~api/validation";
@@ -10,7 +9,7 @@ import { IdentitySDK } from "~api/sdk";
 import { OTPFlow } from "~src/enums";
 import { API } from "~api";
 
-export function RequestCode({ authorizationRequest, identifier, onRequested }: SigninOTP.Request.Props) {
+export function RequestCode({ authorizationRequest, identifier, onContinue }: SigninOTP.Request.Props) {
     const { t } = useTranslation();
     const remaining = useCooldownOTP({ flow: OTPFlow.SIGNIN });
 
@@ -30,7 +29,7 @@ export function RequestCode({ authorizationRequest, identifier, onRequested }: S
                     });
                     CooldownOTP.start({ flow: OTPFlow.SIGNIN });
                     NotificationManager.response({ data: response.data });
-                    onRequested(identifier);
+                    onContinue(identifier);
                 } catch (cause) {
                     CooldownOTP.recover({ flow: OTPFlow.SIGNIN, cause });
                     const fields = getValidationErrors({
@@ -71,12 +70,9 @@ export function RequestCode({ authorizationRequest, identifier, onRequested }: S
             </Form.Actions>
             {authorizationRequest && (
                 <Form.Links>
-                    <Link
-                        to={{
-                            search: `?${new URLSearchParams({ authorizationRequest, step: "verify" })}`,
-                        }}>
+                    <Button.Link onClick={() => onContinue(form.state.values.identifier.trim())}>
                         {t("otp.haveCode")}
-                    </Link>
+                    </Button.Link>
                 </Form.Links>
             )}
         </Form>

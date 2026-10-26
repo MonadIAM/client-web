@@ -9,8 +9,9 @@ export function LoadError(): JSX.Element {
     const { t } = useTranslation();
 
     return (
-        <section className={routerStyles.centered}>
+        <main className={`${routerStyles.centered} ${routerStyles.fallback}`}>
             <Flex.Col align={FlexAlignment.CENTER} gap="1.25rem" className={routerStyles.error}>
+                <title>{t("errors.load")}</title>
                 <Text.H1>MonadIAM</Text.H1>
                 <Text.P size={TextSize.MD} role="alert">
                     {t("errors.load")}
@@ -23,6 +24,6 @@ export function LoadError(): JSX.Element {
                     {t("common.retry")}
                 </Button>
             </Flex.Col>
-        </section>
+        </main>
     );
 }

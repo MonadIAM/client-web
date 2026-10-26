@@ -58,6 +58,7 @@ export function ResetSecondFactor() {
             className={pageStyles.auth}>
             <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
+                    <title>{t("resetSecondFactor.title")}</title>
                     <Text.H1>{t("resetSecondFactor.title")}</Text.H1>
                     <Text.P tone={TextTone.MUTED}>{t("resetSecondFactor.description")}</Text.P>
                 </header>

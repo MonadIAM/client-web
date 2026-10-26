@@ -1,7 +1,6 @@
 import { Text, Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
 import { TextTone, TextAlign } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router";
 
 import { NotificationManager } from "~common/notifications";
 import { useCooldownOTP, useAuthentication } from "~auth";
@@ -11,7 +10,7 @@ import { IdentitySDK } from "~api/sdk";
 import { OTPFlow } from "~src/enums";
 import { API } from "~api";
 
-export function VerifyCode({ authorizationRequest }: SigninOTP.Verify.Props) {
+export function VerifyCode({ authorizationRequest, onBack }: SigninOTP.Verify.Props) {
     const { t } = useTranslation();
     const remaining = useCooldownOTP({ flow: OTPFlow.SIGNIN });
     const continueAuthentication = useAuthentication();
@@ -71,12 +70,7 @@ export function VerifyCode({ authorizationRequest }: SigninOTP.Verify.Props) {
                 </Text.P>
             )}
             <Form.Links>
-                <Link
-                    to={{
-                        search: authorizationRequest ? `?${new URLSearchParams({ authorizationRequest })}` : "",
-                    }}>
-                    {t("otp.requestAnother")}
-                </Link>
+                <Button.Link onClick={() => onBack()}>{t("otp.requestAnother")}</Button.Link>
             </Form.Links>
         </Form>
     );

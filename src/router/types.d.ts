@@ -10,9 +10,10 @@ declare global {
             rootPath: string;
         };
 
-        namespace PageErrorBoundary {
+        namespace ErrorBoundary {
             type Props = {
                 children: ReactNode;
+                fallback: ReactNode;
             };
 
             type State = {

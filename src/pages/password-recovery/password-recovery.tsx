@@ -12,30 +12,25 @@ import { pageStyles } from "./styles";
 
 export function PasswordRecovery() {
     const { t } = useTranslation();
-    const [identifier, setIdentifier] = useState("");
-    const [complete, setComplete] = useState(false);
-    const [parameters, setParameters] = useSearchParams();
-
-    const requestedStep = parameters.get("step");
-    const step = complete
-        ? PasswordRecoveryStep.COMPLETE
-        : requestedStep === PasswordRecoveryStep.OTP || requestedStep === PasswordRecoveryStep.RECOVERY
-          ? requestedStep
-          : PasswordRecoveryStep.REQUEST;
+    const [state, setState] = useState<PasswordRecovery.State>({
+        step: PasswordRecoveryStep.REQUEST,
+        identifier: "",
+    });
+    const [parameters] = useSearchParams();
     const request = parameters.get("authorizationRequest");
     const search = request ? `?${new URLSearchParams({ authorizationRequest: request })}` : "";
     const title =
-        step === PasswordRecoveryStep.COMPLETE
+        state.step === PasswordRecoveryStep.COMPLETE
             ? "complete"
-            : step === PasswordRecoveryStep.REQUEST
+            : state.step === PasswordRecoveryStep.REQUEST
               ? "title"
               : "confirmTitle";
     const description =
-        step === PasswordRecoveryStep.COMPLETE
+        state.step === PasswordRecoveryStep.COMPLETE
             ? "completeDescription"
-            : step === PasswordRecoveryStep.REQUEST
+            : state.step === PasswordRecoveryStep.REQUEST
               ? "description"
-              : step === PasswordRecoveryStep.RECOVERY
+              : state.step === PasswordRecoveryStep.RECOVERY
                 ? "recoveryDescription"
                 : "confirmDescription";
 
@@ -47,33 +42,32 @@ export function PasswordRecovery() {
             className={pageStyles.auth}>
             <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
+                    <title>{t(`passwordRecovery.${title}`)}</title>
                     <Text.H1>{t(`passwordRecovery.${title}`)}</Text.H1>
-                    <Text.P tone={TextTone.MUTED} role={step === PasswordRecoveryStep.COMPLETE ? "status" : undefined}>
+                    <Text.P
+                        tone={TextTone.MUTED}
+                        role={state.step === PasswordRecoveryStep.COMPLETE ? "status" : undefined}>
                         {t(`passwordRecovery.${description}`)}
                     </Text.P>
                 </header>
-                {step !== PasswordRecoveryStep.COMPLETE && (
+                {state.step !== PasswordRecoveryStep.COMPLETE && (
                     <Container render={<Flex.Col gap="1.25rem" />}>
-                        {step === PasswordRecoveryStep.REQUEST ? (
+                        {state.step === PasswordRecoveryStep.REQUEST ? (
                             <RequestPassword
-                                identifier={identifier}
-                                onIdentifierChange={setIdentifier}
+                                identifier={state.identifier}
                                 onContinue={(identifier, step) => {
-                                    setIdentifier(identifier);
-                                    setParameters((current) => {
-                                        const next = new URLSearchParams(current);
-                                        next.set("step", step);
-                                        return next;
-                                    });
+                                    setState({ step, identifier });
                                 }}
                             />
                         ) : (
                             <ResetPassword
-                                key={step}
-                                identifier={identifier}
-                                method={step}
-                                onComplete={() => setComplete(true)}
-                                onIdentifierChange={setIdentifier}
+                                key={state.step}
+                                identifier={state.identifier}
+                                method={state.step}
+                                onComplete={() => setState({ step: PasswordRecoveryStep.COMPLETE })}
+                                onBack={(identifier) => {
+                                    setState({ step: PasswordRecoveryStep.REQUEST, identifier });
+                                }}
                             />
                         )}
                     </Container>

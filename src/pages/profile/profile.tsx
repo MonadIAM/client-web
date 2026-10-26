@@ -44,6 +44,7 @@ export function Profile(): JSX.Element {
     return (
         <section className={pageStyles.root}>
             <header className={pageStyles.profileHeader}>
+                <title>{t("profile.title")}</title>
                 <Text.H1>{t("profile.title")}</Text.H1>
                 <Text.P tone={TextTone.MUTED}>{t("profile.description")}</Text.P>
             </header>

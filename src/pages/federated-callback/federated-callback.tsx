@@ -45,6 +45,7 @@ export function FederatedCallback() {
             className={pageStyles.auth}>
             <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
+                    <title>{t(failed ? "social.failed" : "social.completing")}</title>
                     <Text.H1>{t(failed ? "social.failed" : "social.completing")}</Text.H1>
                 </header>
                 {failed ? (

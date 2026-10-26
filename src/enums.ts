@@ -44,6 +44,11 @@ export enum PasswordRecoveryStep {
     COMPLETE = "complete",
 }
 
+export enum SigninOTPStep {
+    REQUEST = "request",
+    VERIFICATION = "verification",
+}
+
 export enum SignupStep {
     REGISTRATION = "registration",
     VERIFICATION = "verification",

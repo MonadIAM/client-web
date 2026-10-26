@@ -13,6 +13,7 @@ export function NotFound({ rootPath }: Router.NotFoundProps): JSX.Element {
     return (
         <section className={routerStyles.centered}>
             <Flex.Col align={FlexAlignment.CENTER} gap="1.25rem" className={routerStyles.error}>
+                <title>{t("errors.notFound")}</title>
                 <Text.H1>{t("errors.notFound")}</Text.H1>
                 <Text.P size={TextSize.MD} role="status">
                     {t("errors.notFoundDescription")}

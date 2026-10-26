@@ -1,6 +1,6 @@
 import { TextTone, FlexAlignment, FlexJustification } from "@monadiam/ui-kit/enums";
 import { Link, useNavigate, useSearchParams } from "react-router";
-import { Text, Flex, Container } from "@monadiam/ui-kit";
+import { Text, Flex, Container, Button } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 import { useState, Fragment } from "react";
 
@@ -14,23 +14,17 @@ import { pageStyles } from "./styles";
 export function SignUp() {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const [identifier, setIdentifier] = useState("");
-    const [codes, setCodes] = useState<string[]>();
-    const [parameters, setParameters] = useSearchParams();
-
-    const step = codes
-        ? SignupStep.RECOVERY
-        : parameters.get("step") === SignupStep.VERIFICATION
-          ? SignupStep.VERIFICATION
-          : SignupStep.REGISTRATION;
-    const registrationSearch = new URLSearchParams(parameters);
-    registrationSearch.delete("step");
+    const [state, setState] = useState<Signup.State>({
+        step: SignupStep.REGISTRATION,
+        identifier: "",
+    });
+    const [parameters] = useSearchParams();
     const request = parameters.get("authorizationRequest");
     const search = request ? `?${new URLSearchParams({ authorizationRequest: request })}` : "";
     const title =
-        step === SignupStep.REGISTRATION
+        state.step === SignupStep.REGISTRATION
             ? t("auth.signupTitle")
-            : step === SignupStep.VERIFICATION
+            : state.step === SignupStep.VERIFICATION
               ? t("auth.verifyTitle")
               : t("auth.verified");
 
@@ -42,54 +36,48 @@ export function SignUp() {
             className={pageStyles.auth}>
             <Flex.Col className={pageStyles.authContent}>
                 <header className={pageStyles.header}>
+                    <title>{title}</title>
                     <Text.H1>{title}</Text.H1>
-                    {step === SignupStep.REGISTRATION && (
+                    {state.step === SignupStep.REGISTRATION && (
                         <Text.P tone={TextTone.MUTED}>{t("auth.signupDescription")}</Text.P>
                     )}
                 </header>
                 <Container render={<Flex.Col gap="1.25rem" />}>
-                    {step === SignupStep.REGISTRATION ? (
+                    {state.step === SignupStep.REGISTRATION ? (
                         <Registration
-                            onIdentifierChange={setIdentifier}
-                            onCreated={(identifier) => {
-                                setIdentifier(identifier);
-                                setParameters((current) => {
-                                    const next = new URLSearchParams(current);
-                                    next.set("step", SignupStep.VERIFICATION);
-                                    return next;
-                                });
+                            identifier={state.identifier}
+                            onContinue={(identifier) => {
+                                setState({ step: SignupStep.VERIFICATION, identifier });
                             }}
                         />
-                    ) : step === SignupStep.VERIFICATION ? (
+                    ) : state.step === SignupStep.VERIFICATION ? (
                         <Verification
-                            identifier={identifier}
+                            identifier={state.identifier}
                             onVerified={(codes) => {
-                                setCodes(codes);
-                                setIdentifier("");
-                                setParameters(registrationSearch, { replace: true });
+                                setState({ step: SignupStep.RECOVERY, codes });
                             }}
                         />
                     ) : (
-                        codes && (
-                            <SaveRecoveryCodes
-                                codes={codes}
-                                onComplete={() => {
-                                    setCodes(undefined);
-                                    void navigate({ pathname: "/signin", search }, { replace: true });
-                                }}
-                            />
-                        )
+                        <SaveRecoveryCodes
+                            codes={state.codes}
+                            onComplete={() => {
+                                void navigate({ pathname: "/signin", search }, { replace: true });
+                            }}
+                        />
                     )}
                 </Container>
-                {step !== SignupStep.RECOVERY && (
+                {state.step !== SignupStep.RECOVERY && (
                     <Flex.Col render={<footer />} gap="0.25rem" className={pageStyles.footer}>
-                        {step === SignupStep.VERIFICATION && (
-                            <Link to={{ search: `?${registrationSearch}` }}>{t("auth.backToSignup")}</Link>
+                        {state.step === SignupStep.VERIFICATION && (
+                            <Button.Link
+                                onClick={() => setState({ step: SignupStep.REGISTRATION, identifier: state.identifier })}>
+                                {t("auth.backToSignup")}
+                            </Button.Link>
                         )}
                         <Text.P>
-                            {step === SignupStep.REGISTRATION && <Fragment>{t("auth.hasAccount")} </Fragment>}
+                            {state.step === SignupStep.REGISTRATION && <Fragment>{t("auth.hasAccount")} </Fragment>}
                             <Link to={{ pathname: "/signin", search }}>
-                                {step === SignupStep.REGISTRATION ? t("nav.signin") : t("auth.continue")}
+                                {state.step === SignupStep.REGISTRATION ? t("nav.signin") : t("auth.continue")}
                             </Link>
                         </Text.P>
                     </Flex.Col>
