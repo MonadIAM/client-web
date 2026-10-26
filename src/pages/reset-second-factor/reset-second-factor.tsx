@@ -1,7 +1,6 @@
+import { Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
 import { Link, useNavigate, useSearchParams } from "react-router";
-import { Button, Field, Form } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
-import { useForm } from "@tanstack/react-form";
 
 import { NotificationManager } from "~common/notifications";
 import { getValidationErrors } from "~api/validation";
@@ -21,7 +20,6 @@ export function ResetSecondFactor() {
 
     const form = useForm({
         defaultValues: { identifier: "", code: "" },
-
         onSubmit: async ({ value, formApi }) => {
             try {
                 const response = await IdentitySDK.secondFactorControllerReset({
@@ -49,6 +47,8 @@ export function ResetSecondFactor() {
         },
     });
 
+    const isSubmitting = useSelector(form.store, (state) => state.isSubmitting);
+
     return (
         <section className={pageStyles.auth}>
             <div className={pageStyles.authContent}>
@@ -58,52 +58,40 @@ export function ResetSecondFactor() {
                 </header>
                 <div className={pageStyles.panel}>
                     <Form form={form} aria-label={t("resetSecondFactor.title")}>
-                        {({ isSubmitting }) => (
-                            <>
-                                <form.Field
-                                    name="identifier"
-                                    validators={{ onChange: IdentitySchemas.zSecondFactorResetBody.shape.identifier }}>
-                                    {(field) => (
-                                        <Field
-                                            field={field}
-                                            label={t("auth.identifier")}
-                                            invalidMessage={t("validation.invalid")}
-                                            autoComplete="username"
-                                            autoCapitalize="none"
-                                            spellCheck={false}
-                                            required
-                                        />
-                                    )}
-                                </form.Field>
-                                <form.Field
-                                    name="code"
-                                    validators={{
-                                        onChange: IdentitySchemas.zSecondFactorResetBody.shape.code,
-                                    }}>
-                                    {(field) => (
-                                        <Field
-                                            field={field}
-                                            label={t("resetSecondFactor.masterCode")}
-                                            invalidMessage={t("validation.invalid")}
-                                            autoComplete="off"
-                                            autoCapitalize="none"
-                                            spellCheck={false}
-                                            required
-                                        />
-                                    )}
-                                </form.Field>
-                                <Form.Actions>
-                                    <Button type="submit" loading={isSubmitting}>
-                                        {t("resetSecondFactor.submit")}
-                                    </Button>
-                                </Form.Actions>
-                            </>
-                        )}
+                        <Form.Fields>
+                            <Field.Text
+                                form={form}
+                                name="identifier"
+                                validators={{ onChange: IdentitySchemas.zSecondFactorResetBody.shape.identifier }}
+                                label={t("auth.identifier")}
+                                invalidMessage={t("validation.invalid")}
+                                autoComplete="username"
+                                autoCapitalize="none"
+                                spellCheck={false}
+                                required
+                            />
+                            <Field.Text
+                                form={form}
+                                name="code"
+                                validators={{ onChange: IdentitySchemas.zSecondFactorResetBody.shape.code }}
+                                label={t("resetSecondFactor.masterCode")}
+                                invalidMessage={t("validation.invalid")}
+                                autoComplete="off"
+                                autoCapitalize="none"
+                                spellCheck={false}
+                                required
+                            />
+                        </Form.Fields>
+                        <Form.Actions>
+                            <Button type="submit" loading={isSubmitting}>
+                                {t("resetSecondFactor.submit")}
+                            </Button>
+                        </Form.Actions>
                     </Form>
                 </div>
-                <Form.Links className={pageStyles.footer}>
+                <footer className={pageStyles.footer}>
                     <Link to={{ pathname: "/signin", search }}>{t("auth.continue")}</Link>
-                </Form.Links>
+                </footer>
             </div>
         </section>
     );

@@ -9,7 +9,7 @@ import { FederatedManager } from "~auth";
 
 import { socialStyles } from "../styles";
 
-export function SocialAuth({ authorizationRequest, onPendingChange }: Signin.Social.Props) {
+export function SocialAuth({ authorizationRequest, onPendingChange, disabled }: Signin.Social.Props) {
     const { t } = useTranslation();
     const [pending, setPending] = useState<Auth.Federated.Provider>();
     const busy = useRef(false);
@@ -38,7 +38,7 @@ export function SocialAuth({ authorizationRequest, onPendingChange }: Signin.Soc
                     type="button"
                     variant={ButtonVariant.OUTLINE}
                     className={socialStyles.button}
-                    disabled={!authorizationRequest || !!pending}
+                    disabled={disabled || !authorizationRequest || !!pending}
                     loading={pending === FederatedProvider.GITHUB}
                     aria-label={t("social.github")}
                     onClick={() => void authorize(FederatedProvider.GITHUB)}>
@@ -48,7 +48,7 @@ export function SocialAuth({ authorizationRequest, onPendingChange }: Signin.Soc
                     type="button"
                     variant={ButtonVariant.OUTLINE}
                     className={socialStyles.button}
-                    disabled={!authorizationRequest || !!pending}
+                    disabled={disabled || !authorizationRequest || !!pending}
                     loading={pending === FederatedProvider.GOOGLE}
                     aria-label={t("social.google")}
                     onClick={() => void authorize(FederatedProvider.GOOGLE)}>

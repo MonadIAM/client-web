@@ -1,8 +1,7 @@
-import { Button, Field, Form } from "@monadiam/ui-kit";
+import { Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
 import { Link, useSearchParams } from "react-router";
 import { FormSpacing } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
-import { useForm } from "@tanstack/react-form";
 
 import { NotificationManager } from "~common/notifications";
 import { PasswordRecoveryStep, OTPFlow } from "~src/enums";
@@ -24,7 +23,6 @@ export function RequestPassword({ identifier, onContinue, onIdentifierChange }: 
 
     const form = useForm({
         defaultValues: { identifier },
-
         onSubmit: async ({ value, formApi }) => {
             if (!CooldownOTP.remaining({ flow: OTPFlow.PASSWORD })) {
                 try {
@@ -39,7 +37,10 @@ export function RequestPassword({ identifier, onContinue, onIdentifierChange }: 
                     onContinue(identifier, PasswordRecoveryStep.OTP);
                 } catch (cause) {
                     CooldownOTP.recover({ flow: OTPFlow.PASSWORD, cause });
-                    const fields = getValidationErrors({ cause, fields: ["identifier"] });
+                    const fields = getValidationErrors({
+                        cause,
+                        fields: ["identifier"],
+                    });
                     if (fields) {
                         formApi.setErrorMap({ onSubmit: { fields } });
                     } else {
@@ -50,44 +51,40 @@ export function RequestPassword({ identifier, onContinue, onIdentifierChange }: 
         },
     });
 
+    const isSubmitting = useSelector(form.store, (state) => state.isSubmitting);
+
     return (
         <Form form={form} aria-label={t("passwordRecovery.title")}>
-            {({ isSubmitting }) => (
-                <>
-                    <form.Field
-                        name="identifier"
-                        validators={{ onChange: IdentitySchemas.zPasswordRequestResetOtpBody.shape.identifier }}>
-                        {(field) => (
-                            <Field
-                                field={field}
-                                label={t("auth.identifier")}
-                                invalidMessage={t("validation.invalid")}
-                                autoComplete="username"
-                                autoCapitalize="none"
-                                spellCheck={false}
-                                required
-                            />
-                        )}
-                    </form.Field>
-                    <Form.Actions gap={FormSpacing.LARGE}>
-                        <Button type="submit" loading={isSubmitting} disabled={remaining > 0}>
-                            {remaining ? t("otp.retryIn", { seconds: remaining }) : t("passwordRecovery.send")}
-                        </Button>
-                    </Form.Actions>
-                    <Form.Links>
-                        <Link
-                            to={{ search: `?${otpSearch}` }}
-                            onClick={() => onIdentifierChange(form.state.values.identifier.trim())}>
-                            {t("passwordRecovery.haveCode")}
-                        </Link>
-                        <Link
-                            to={{ search: `?${recoverySearch}` }}
-                            onClick={() => onIdentifierChange(form.state.values.identifier.trim())}>
-                            {t("passwordRecovery.useRecovery")}
-                        </Link>
-                    </Form.Links>
-                </>
-            )}
+            <Form.Fields>
+                <Field.Text
+                    form={form}
+                    name="identifier"
+                    validators={{ onChange: IdentitySchemas.zPasswordRequestResetOtpBody.shape.identifier }}
+                    label={t("auth.identifier")}
+                    invalidMessage={t("validation.invalid")}
+                    autoComplete="username"
+                    autoCapitalize="none"
+                    spellCheck={false}
+                    required
+                />
+            </Form.Fields>
+            <Form.Actions gap={FormSpacing.LARGE}>
+                <Button type="submit" loading={isSubmitting} disabled={remaining > 0}>
+                    {remaining ? t("otp.retryIn", { seconds: remaining }) : t("passwordRecovery.send")}
+                </Button>
+            </Form.Actions>
+            <Form.Links>
+                <Link
+                    to={{ search: `?${otpSearch}` }}
+                    onClick={() => onIdentifierChange(form.state.values.identifier.trim())}>
+                    {t("passwordRecovery.haveCode")}
+                </Link>
+                <Link
+                    to={{ search: `?${recoverySearch}` }}
+                    onClick={() => onIdentifierChange(form.state.values.identifier.trim())}>
+                    {t("passwordRecovery.useRecovery")}
+                </Link>
+            </Form.Links>
         </Form>
     );
 }

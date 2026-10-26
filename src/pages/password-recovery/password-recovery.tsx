@@ -1,6 +1,5 @@
 import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Form } from "@monadiam/ui-kit";
 import { useState } from "react";
 
 import { PasswordRecoveryStep } from "~src/enums";
@@ -75,9 +74,9 @@ export function PasswordRecovery() {
                         )}
                     </div>
                 )}
-                <Form.Links className={pageStyles.footer}>
+                <footer className={pageStyles.footer}>
                     <Link to={{ pathname: "/signin", search }}>{t("auth.continue")}</Link>
-                </Form.Links>
+                </footer>
             </div>
         </section>
     );

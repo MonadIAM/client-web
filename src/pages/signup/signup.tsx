@@ -1,6 +1,5 @@
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Form } from "@monadiam/ui-kit";
 import { useState } from "react";
 
 import { SignupStep } from "~src/enums";
@@ -77,7 +76,7 @@ export function SignUp() {
                     )}
                 </div>
                 {step !== SignupStep.RECOVERY && (
-                    <Form.Links className={pageStyles.footer}>
+                    <footer className={pageStyles.footer}>
                         {step === SignupStep.VERIFICATION && (
                             <Link to={{ search: `?${registrationSearch}` }}>{t("auth.backToSignup")}</Link>
                         )}
@@ -87,7 +86,7 @@ export function SignUp() {
                                 {step === SignupStep.REGISTRATION ? t("nav.signin") : t("auth.continue")}
                             </Link>
                         </span>
-                    </Form.Links>
+                    </footer>
                 )}
             </div>
         </section>

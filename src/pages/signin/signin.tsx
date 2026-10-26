@@ -1,8 +1,7 @@
 import { ButtonVariant, FieldType, FormAlignment, SpinnerVariant } from "@monadiam/ui-kit/enums";
-import { Button, Field, Form, Spinner } from "@monadiam/ui-kit";
+import { Button, Field, Form, Spinner, useForm, useSelector } from "@monadiam/ui-kit";
 import { Link, useSearchParams } from "react-router";
 import { JSX, useEffect, useState } from "react";
-import { useForm } from "@tanstack/react-form";
 import { useTranslation } from "react-i18next";
 
 import { AuthWorkerClient, useSession, useAuthentication } from "~auth";
@@ -33,7 +32,6 @@ export function SignIn(): JSX.Element {
 
     const form = useForm({
         defaultValues: { identifier: "", password: "" },
-
         onSubmit: async ({ value, formApi }) => {
             try {
                 const response = await authenticate(value);
@@ -52,6 +50,8 @@ export function SignIn(): JSX.Element {
             }
         },
     });
+
+    const isSubmitting = useSelector(form.store, (state) => state.isSubmitting);
 
     useEffect(() => {
         let active = true;
@@ -104,73 +104,67 @@ export function SignIn(): JSX.Element {
                         </div>
                     ) : (
                         <>
-                            <Form form={form} aria-label={t("auth.signin")} disabled={providerPending}>
-                                {({ isSubmitting }) => (
-                                    <>
-                                        <form.Field
-                                            name="identifier"
-                                            validators={{ onChange: IdentitySchemas.zAuthnPasswordBody.shape.identifier }}>
-                                            {(field) => (
-                                                <Field
-                                                    field={field}
-                                                    invalidMessage={t("validation.invalid")}
-                                                    label={t("auth.identifier")}
-                                                    autoCapitalize="none"
-                                                    spellCheck={false}
-                                                    autoComplete="username"
-                                                    required
-                                                />
-                                            )}
-                                        </form.Field>
-                                        <form.Field
-                                            name="password"
-                                            validators={{ onChange: IdentitySchemas.zAuthnPasswordBody.shape.password }}>
-                                            {(field) => (
-                                                <Field
-                                                    field={field}
-                                                    invalidMessage={t("validation.invalid")}
-                                                    label={t("auth.password")}
-                                                    action={
-                                                        <Link
-                                                            to={{
-                                                                pathname: "/password-recovery",
-                                                                search: authorizationRequest
-                                                                    ? `?${new URLSearchParams({ authorizationRequest })}`
-                                                                    : "",
-                                                            }}>
-                                                            {t("passwordRecovery.forgot")}
-                                                        </Link>
-                                                    }
-                                                    type={FieldType.PASSWORD}
-                                                    showPasswordLabel={t("auth.showPassword")}
-                                                    hidePasswordLabel={t("auth.hidePassword")}
-                                                    autoComplete="current-password"
-                                                    required
-                                                />
-                                            )}
-                                        </form.Field>
-                                        <Form.Actions>
-                                            <Button type="submit" disabled={!authorizationRequest} loading={isSubmitting}>
-                                                {t("nav.signin")}
-                                            </Button>
-                                        </Form.Actions>
-                                        <Form.Links align={FormAlignment.START}>
+                            <Form form={form} aria-label={t("auth.signin")}>
+                                <Form.Fields disabled={providerPending}>
+                                    <Field.Text
+                                        form={form}
+                                        name="identifier"
+                                        validators={{ onChange: IdentitySchemas.zAuthnPasswordBody.shape.identifier }}
+                                        invalidMessage={t("validation.invalid")}
+                                        label={t("auth.identifier")}
+                                        autoCapitalize="none"
+                                        spellCheck={false}
+                                        autoComplete="username"
+                                        required
+                                    />
+                                    <Field.Text
+                                        form={form}
+                                        name="password"
+                                        validators={{ onChange: IdentitySchemas.zAuthnPasswordBody.shape.password }}
+                                        invalidMessage={t("validation.invalid")}
+                                        label={t("auth.password")}
+                                        action={
                                             <Link
                                                 to={{
-                                                    pathname: "/signin/otp",
+                                                    pathname: "/password-recovery",
                                                     search: authorizationRequest
                                                         ? `?${new URLSearchParams({ authorizationRequest })}`
                                                         : "",
                                                 }}>
-                                                {t("auth.useCode")}
+                                                {t("passwordRecovery.forgot")}
                                             </Link>
-                                        </Form.Links>
-                                        <SocialAuth
-                                            authorizationRequest={authorizationRequest}
-                                            onPendingChange={setProviderPending}
-                                        />
-                                    </>
-                                )}
+                                        }
+                                        type={FieldType.PASSWORD}
+                                        showPasswordLabel={t("auth.showPassword")}
+                                        hidePasswordLabel={t("auth.hidePassword")}
+                                        autoComplete="current-password"
+                                        required
+                                    />
+                                </Form.Fields>
+                                <Form.Actions>
+                                    <Button
+                                        type="submit"
+                                        disabled={!authorizationRequest || providerPending}
+                                        loading={isSubmitting}>
+                                        {t("nav.signin")}
+                                    </Button>
+                                </Form.Actions>
+                                <Form.Links align={FormAlignment.START}>
+                                    <Link
+                                        to={{
+                                            pathname: "/signin/otp",
+                                            search: authorizationRequest
+                                                ? `?${new URLSearchParams({ authorizationRequest })}`
+                                                : "",
+                                        }}>
+                                        {t("auth.useCode")}
+                                    </Link>
+                                </Form.Links>
+                                <SocialAuth
+                                    disabled={isSubmitting}
+                                    authorizationRequest={authorizationRequest}
+                                    onPendingChange={setProviderPending}
+                                />
                             </Form>
                             {!authorizationRequest && (session.error ?? authorization?.error) && (
                                 <Button
@@ -186,7 +180,7 @@ export function SignIn(): JSX.Element {
                         </>
                     )}
                 </div>
-                <Form.Links className={pageStyles.footer}>
+                <footer className={pageStyles.footer}>
                     <span>
                         {t("auth.noAccount")}{" "}
                         <Link
@@ -197,7 +191,7 @@ export function SignIn(): JSX.Element {
                             {t("nav.signup")}
                         </Link>
                     </span>
-                </Form.Links>
+                </footer>
             </div>
         </section>
     );

@@ -1,7 +1,6 @@
-import { ButtonVariant, FieldType, FormSpacing } from "@monadiam/ui-kit/enums";
-import { Button, Field, Form } from "@monadiam/ui-kit";
+import { Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
+import { ButtonVariant, FormSpacing } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
-import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
 
 import { NotificationManager } from "~common/notifications";
@@ -22,7 +21,6 @@ export function Verification({ identifier, onVerified }: Signup.Verification.Pro
 
     const form = useForm({
         defaultValues: { identifier, code: "" },
-
         onSubmit: async ({ value, formApi }) => {
             try {
                 const response = await IdentitySDK.accountControllerVerify({
@@ -49,6 +47,8 @@ export function Verification({ identifier, onVerified }: Signup.Verification.Pro
         },
     });
 
+    const isSubmitting = useSelector(form.store, (state) => state.isSubmitting);
+
     async function resend(): Promise<void> {
         if (!CooldownOTP.remaining({ flow: OTPFlow.SIGNUP })) {
             const parsed = IdentitySchemas.zAccountResendVerificationBody.shape.identifier.safeParse(
@@ -66,7 +66,10 @@ export function Verification({ identifier, onVerified }: Signup.Verification.Pro
                     NotificationManager.response({ data: response.data });
                 } catch (cause) {
                     CooldownOTP.recover({ flow: OTPFlow.SIGNUP, cause });
-                    const fields = getValidationErrors({ cause, fields: ["identifier"] });
+                    const fields = getValidationErrors({
+                        cause,
+                        fields: ["identifier"],
+                    });
                     if (fields) {
                         form.setErrorMap({ onSubmit: { fields } });
                     } else {
@@ -77,7 +80,9 @@ export function Verification({ identifier, onVerified }: Signup.Verification.Pro
                 }
             } else {
                 form.setErrorMap({
-                    onSubmit: { fields: { identifier: parsed.error.issues[0]?.message } },
+                    onSubmit: {
+                        fields: { identifier: parsed.error.issues[0]?.message },
+                    },
                 });
             }
         }
@@ -86,49 +91,41 @@ export function Verification({ identifier, onVerified }: Signup.Verification.Pro
     return (
         <>
             {identifier && <p className={pageStyles.description}>{t("auth.verifyDescription", { identifier })}</p>}
-            <Form form={form} aria-label={t("auth.verify")} disabled={resending}>
-                {({ isSubmitting }) => (
-                    <>
-                        <form.Field
-                            name="identifier"
-                            validators={{ onChange: IdentitySchemas.zAccountVerifyBody.shape.identifier }}>
-                            {(field) => (
-                                <Field
-                                    field={field}
-                                    invalidMessage={t("validation.invalid")}
-                                    label={t("auth.identifier")}
-                                    autoComplete="username"
-                                    required
-                                />
-                            )}
-                        </form.Field>
-                        <form.Field name="code" validators={{ onChange: IdentitySchemas.zAccountVerifyBody.shape.code }}>
-                            {(field) => (
-                                <Field
-                                    field={field}
-                                    invalidMessage={t("validation.invalid")}
-                                    type={FieldType.CODE}
-                                    label={t("auth.code")}
-                                    autoComplete="one-time-code"
-                                    required
-                                />
-                            )}
-                        </form.Field>
-                        <Form.Actions gap={FormSpacing.LARGE}>
-                            <Button type="submit" loading={isSubmitting}>
-                                {t("auth.verify")}
-                            </Button>
-                            <Button
-                                type="button"
-                                variant={ButtonVariant.OUTLINE}
-                                disabled={remaining > 0}
-                                loading={resending}
-                                onClick={() => void resend()}>
-                                {remaining ? t("otp.retryIn", { seconds: remaining }) : t("auth.resend")}
-                            </Button>
-                        </Form.Actions>
-                    </>
-                )}
+            <Form form={form} aria-label={t("auth.verify")}>
+                <Form.Fields disabled={resending}>
+                    <Field.Text
+                        form={form}
+                        name="identifier"
+                        validators={{ onChange: IdentitySchemas.zAccountVerifyBody.shape.identifier }}
+                        invalidMessage={t("validation.invalid")}
+                        label={t("auth.identifier")}
+                        autoComplete="username"
+                        required
+                    />
+                    <Field.Code
+                        form={form}
+                        name="code"
+                        length={6}
+                        validators={{ onChange: IdentitySchemas.zAccountVerifyBody.shape.code }}
+                        invalidMessage={t("validation.invalid")}
+                        label={t("auth.code")}
+                        autoComplete="one-time-code"
+                        required
+                    />
+                </Form.Fields>
+                <Form.Actions gap={FormSpacing.LARGE}>
+                    <Button type="submit" loading={isSubmitting} disabled={resending}>
+                        {t("auth.verify")}
+                    </Button>
+                    <Button
+                        type="button"
+                        variant={ButtonVariant.OUTLINE}
+                        disabled={remaining > 0 || isSubmitting}
+                        loading={resending}
+                        onClick={() => void resend()}>
+                        {remaining ? t("otp.retryIn", { seconds: remaining }) : t("auth.resend")}
+                    </Button>
+                </Form.Actions>
             </Form>
         </>
     );

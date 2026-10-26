@@ -1,7 +1,6 @@
-import { ButtonVariant, FormAlignment, FormDirection } from "@monadiam/ui-kit/enums";
-import { Button, Field, Form } from "@monadiam/ui-kit";
+import { Button, Field, Form, useForm } from "@monadiam/ui-kit";
+import { ButtonVariant } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
-import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "react-router";
 import { useState, JSX } from "react";
 
@@ -50,38 +49,36 @@ export function Profile(): JSX.Element {
             </header>
             <div className={pageStyles.panel}>
                 <Form form={form} aria-label={t("profile.title")}>
-                    <form.Field name="account">
-                        {(field) => (
-                            <Field field={field} className={pageStyles.identifier} label={t("profile.account")} readOnly />
-                        )}
-                    </form.Field>
-                    <form.Field name="session">
-                        {(field) => (
-                            <Field field={field} className={pageStyles.identifier} label={t("profile.session")} readOnly />
-                        )}
-                    </form.Field>
-                    <form.Field name="context">
-                        {(field) => <Field field={field} label={t("profile.context")} readOnly />}
-                    </form.Field>
-                    <form.Field name="permissions">
-                        {(field) => (
-                            <Field
-                                field={field}
-                                label={t("profile.permissions")}
-                                aria-busy={permissions.isPending}
-                                readOnly
-                            />
-                        )}
-                    </form.Field>
+                    <Form.Fields>
+                        <Field.Text
+                            form={form}
+                            name="account"
+                            className={pageStyles.identifier}
+                            label={t("profile.account")}
+                            readOnly
+                        />
+                        <Field.Text
+                            form={form}
+                            name="session"
+                            className={pageStyles.identifier}
+                            label={t("profile.session")}
+                            readOnly
+                        />
+                        <Field.Text form={form} name="context" label={t("profile.context")} readOnly />
+                        <Field.Text
+                            form={form}
+                            name="permissions"
+                            label={t("profile.permissions")}
+                            aria-busy={permissions.isPending}
+                            readOnly
+                        />
+                    </Form.Fields>
                 </Form>
-                <Form.Actions
-                    direction={FormDirection.HORIZONTAL}
-                    align={FormAlignment.END}
-                    className={pageStyles.profileActions}>
+                <div className={pageStyles.profileActions}>
                     <Button variant={ButtonVariant.OUTLINE} loading={pending} onClick={() => void logout()}>
                         {t("auth.signout")}
                     </Button>
-                </Form.Actions>
+                </div>
             </div>
         </section>
     );

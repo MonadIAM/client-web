@@ -1,8 +1,7 @@
+import { Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
 import { FieldType, FormSpacing } from "@monadiam/ui-kit/enums";
-import { Button, Field, Form } from "@monadiam/ui-kit";
 import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import { useForm } from "@tanstack/react-form";
 
 import { NotificationManager } from "~common/notifications";
 import { getValidationErrors } from "~api/validation";
@@ -21,7 +20,6 @@ export function Registration({ onCreated, onIdentifierChange }: Signup.Registrat
 
     const form = useForm({
         defaultValues: { name: "", identifier: "", password: "" },
-
         onSubmit: async ({ value, formApi }) => {
             try {
                 const identifier = value.identifier.trim();
@@ -47,66 +45,56 @@ export function Registration({ onCreated, onIdentifierChange }: Signup.Registrat
         },
     });
 
+    const isSubmitting = useSelector(form.store, (state) => state.isSubmitting);
+
     return (
         <Form form={form} aria-label={t("auth.signup")}>
-            {({ isSubmitting }) => (
-                <>
-                    <form.Field name="name" validators={{ onChange: IdentitySchemas.zAccountSignupBody.shape.name }}>
-                        {(field) => (
-                            <Field
-                                field={field}
-                                invalidMessage={t("validation.invalid")}
-                                label={t("auth.name")}
-                                autoComplete="name"
-                                required
-                            />
-                        )}
-                    </form.Field>
-                    <form.Field
-                        name="identifier"
-                        validators={{ onChange: IdentitySchemas.zAccountSignupBody.shape.identifier }}>
-                        {(field) => (
-                            <Field
-                                field={field}
-                                invalidMessage={t("validation.invalid")}
-                                label={t("auth.identifier")}
-                                autoComplete="username"
-                                autoCapitalize="none"
-                                spellCheck={false}
-                                required
-                            />
-                        )}
-                    </form.Field>
-                    <form.Field
-                        name="password"
-                        validators={{ onChange: IdentitySchemas.zAccountSignupBody.shape.password }}>
-                        {(field) => (
-                            <Field
-                                field={field}
-                                invalidMessage={t("validation.invalid")}
-                                label={t("auth.newPassword")}
-                                type={FieldType.PASSWORD}
-                                showPasswordLabel={t("auth.showPassword")}
-                                hidePasswordLabel={t("auth.hidePassword")}
-                                autoComplete="new-password"
-                                required
-                            />
-                        )}
-                    </form.Field>
-                    <Form.Actions gap={FormSpacing.LARGE}>
-                        <Button type="submit" loading={isSubmitting}>
-                            {t("auth.signup")}
-                        </Button>
-                    </Form.Actions>
-                    <Form.Links>
-                        <Link
-                            to={{ search: `?${verificationSearch}` }}
-                            onClick={() => onIdentifierChange(form.state.values.identifier.trim())}>
-                            {t("auth.haveCode")}
-                        </Link>
-                    </Form.Links>
-                </>
-            )}
+            <Form.Fields>
+                <Field.Text
+                    form={form}
+                    name="name"
+                    validators={{ onChange: IdentitySchemas.zAccountSignupBody.shape.name }}
+                    invalidMessage={t("validation.invalid")}
+                    label={t("auth.name")}
+                    autoComplete="name"
+                    required
+                />
+                <Field.Text
+                    form={form}
+                    name="identifier"
+                    validators={{ onChange: IdentitySchemas.zAccountSignupBody.shape.identifier }}
+                    invalidMessage={t("validation.invalid")}
+                    label={t("auth.identifier")}
+                    autoComplete="username"
+                    autoCapitalize="none"
+                    spellCheck={false}
+                    required
+                />
+                <Field.Text
+                    form={form}
+                    name="password"
+                    validators={{ onChange: IdentitySchemas.zAccountSignupBody.shape.password }}
+                    invalidMessage={t("validation.invalid")}
+                    label={t("auth.newPassword")}
+                    type={FieldType.PASSWORD}
+                    showPasswordLabel={t("auth.showPassword")}
+                    hidePasswordLabel={t("auth.hidePassword")}
+                    autoComplete="new-password"
+                    required
+                />
+            </Form.Fields>
+            <Form.Actions gap={FormSpacing.LARGE}>
+                <Button type="submit" loading={isSubmitting}>
+                    {t("auth.signup")}
+                </Button>
+            </Form.Actions>
+            <Form.Links>
+                <Link
+                    to={{ search: `?${verificationSearch}` }}
+                    onClick={() => onIdentifierChange(form.state.values.identifier.trim())}>
+                    {t("auth.haveCode")}
+                </Link>
+            </Form.Links>
         </Form>
     );
 }

@@ -1,4 +1,4 @@
-import { Button, Form, RecoveryCodes } from "@monadiam/ui-kit";
+import { Button, RecoveryCodes } from "@monadiam/ui-kit";
 import { ButtonVariant } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
 
@@ -24,14 +24,14 @@ export function SaveRecoveryCodes({ codes, onComplete }: Signup.SaveRecoveryCode
                 {t("auth.saveCodes")}
             </p>
             <RecoveryCodes codes={codes} />
-            <Form.Actions>
+            <div className={pageStyles.recoveryActions}>
                 <Button type="button" variant={ButtonVariant.OUTLINE} onClick={() => void copy()}>
                     {t("auth.copyCodes")}
                 </Button>
                 <Button type="button" onClick={onComplete}>
                     {t("auth.codesSaved")}
                 </Button>
-            </Form.Actions>
+            </div>
         </>
     );
 }

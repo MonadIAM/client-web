@@ -1,6 +1,5 @@
-import { Button, Field, Form } from "@monadiam/ui-kit";
+import { Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
-import { useForm } from "@tanstack/react-form";
 import { Link } from "react-router";
 
 import { NotificationManager } from "~common/notifications";
@@ -17,7 +16,6 @@ export function RequestCode({ authorizationRequest, identifier, onRequested }: S
 
     const form = useForm({
         defaultValues: { identifier },
-
         onSubmit: async ({ value, formApi }) => {
             if (!CooldownOTP.remaining({ flow: OTPFlow.SIGNIN })) {
                 try {
@@ -35,7 +33,10 @@ export function RequestCode({ authorizationRequest, identifier, onRequested }: S
                     onRequested(identifier);
                 } catch (cause) {
                     CooldownOTP.recover({ flow: OTPFlow.SIGNIN, cause });
-                    const fields = getValidationErrors({ cause, fields: ["identifier"] });
+                    const fields = getValidationErrors({
+                        cause,
+                        fields: ["identifier"],
+                    });
                     if (fields) {
                         formApi.setErrorMap({ onSubmit: { fields } });
                     } else {
@@ -46,41 +47,37 @@ export function RequestCode({ authorizationRequest, identifier, onRequested }: S
         },
     });
 
+    const isSubmitting = useSelector(form.store, (state) => state.isSubmitting);
+
     return (
         <Form form={form} aria-label={t("otp.requestTitle")}>
-            {({ isSubmitting }) => (
-                <>
-                    <form.Field
-                        name="identifier"
-                        validators={{ onChange: IdentitySchemas.zAuthnRequestOtpBody.shape.identifier }}>
-                        {(field) => (
-                            <Field
-                                field={field}
-                                label={t("auth.identifier")}
-                                invalidMessage={t("validation.invalid")}
-                                autoComplete="username"
-                                autoCapitalize="none"
-                                spellCheck={false}
-                                required
-                            />
-                        )}
-                    </form.Field>
-                    <Form.Actions>
-                        <Button type="submit" loading={isSubmitting} disabled={!authorizationRequest || remaining > 0}>
-                            {remaining ? t("otp.retryIn", { seconds: remaining }) : t("otp.send")}
-                        </Button>
-                    </Form.Actions>
-                    {authorizationRequest && (
-                        <Form.Links>
-                            <Link
-                                to={{
-                                    search: `?${new URLSearchParams({ authorizationRequest, step: "verify" })}`,
-                                }}>
-                                {t("otp.haveCode")}
-                            </Link>
-                        </Form.Links>
-                    )}
-                </>
+            <Form.Fields>
+                <Field.Text
+                    form={form}
+                    name="identifier"
+                    validators={{ onChange: IdentitySchemas.zAuthnRequestOtpBody.shape.identifier }}
+                    label={t("auth.identifier")}
+                    invalidMessage={t("validation.invalid")}
+                    autoComplete="username"
+                    autoCapitalize="none"
+                    spellCheck={false}
+                    required
+                />
+            </Form.Fields>
+            <Form.Actions>
+                <Button type="submit" loading={isSubmitting} disabled={!authorizationRequest || remaining > 0}>
+                    {remaining ? t("otp.retryIn", { seconds: remaining }) : t("otp.send")}
+                </Button>
+            </Form.Actions>
+            {authorizationRequest && (
+                <Form.Links>
+                    <Link
+                        to={{
+                            search: `?${new URLSearchParams({ authorizationRequest, step: "verify" })}`,
+                        }}>
+                        {t("otp.haveCode")}
+                    </Link>
+                </Form.Links>
             )}
         </Form>
     );

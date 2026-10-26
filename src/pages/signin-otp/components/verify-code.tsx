@@ -1,6 +1,4 @@
-import { Button, Field, Form } from "@monadiam/ui-kit";
-import { FieldType } from "@monadiam/ui-kit/enums";
-import { useForm } from "@tanstack/react-form";
+import { Button, Field, Form, useForm, useSelector } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
@@ -21,7 +19,6 @@ export function VerifyCode({ authorizationRequest }: SigninOTP.Verify.Props) {
 
     const form = useForm({
         defaultValues: { code: "" },
-
         onSubmit: async ({ value, formApi }) => {
             try {
                 if (!authorizationRequest) {
@@ -48,38 +45,36 @@ export function VerifyCode({ authorizationRequest }: SigninOTP.Verify.Props) {
         },
     });
 
+    const isSubmitting = useSelector(form.store, (state) => state.isSubmitting);
+
     return (
         <Form form={form} aria-label={t("otp.verifyTitle")}>
-            {({ isSubmitting }) => (
-                <>
-                    <form.Field name="code" validators={{ onChange: IdentitySchemas.zAuthnVerifyOtpBody.shape.code }}>
-                        {(field) => (
-                            <Field
-                                field={field}
-                                type={FieldType.CODE}
-                                label={t("auth.code")}
-                                invalidMessage={t("validation.invalid")}
-                                autoComplete="one-time-code"
-                                required
-                            />
-                        )}
-                    </form.Field>
-                    <Form.Actions>
-                        <Button type="submit" loading={isSubmitting} disabled={!authorizationRequest}>
-                            {t("otp.verify")}
-                        </Button>
-                    </Form.Actions>
-                    {remaining > 0 && <p className={pageStyles.cooldown}>{t("otp.retryIn", { seconds: remaining })}</p>}
-                    <Form.Links>
-                        <Link
-                            to={{
-                                search: authorizationRequest ? `?${new URLSearchParams({ authorizationRequest })}` : "",
-                            }}>
-                            {t("otp.requestAnother")}
-                        </Link>
-                    </Form.Links>
-                </>
-            )}
+            <Form.Fields>
+                <Field.Code
+                    form={form}
+                    name="code"
+                    length={6}
+                    validators={{ onChange: IdentitySchemas.zAuthnVerifyOtpBody.shape.code }}
+                    label={t("auth.code")}
+                    invalidMessage={t("validation.invalid")}
+                    autoComplete="one-time-code"
+                    required
+                />
+            </Form.Fields>
+            <Form.Actions>
+                <Button type="submit" loading={isSubmitting} disabled={!authorizationRequest}>
+                    {t("otp.verify")}
+                </Button>
+            </Form.Actions>
+            {remaining > 0 && <p className={pageStyles.cooldown}>{t("otp.retryIn", { seconds: remaining })}</p>}
+            <Form.Links>
+                <Link
+                    to={{
+                        search: authorizationRequest ? `?${new URLSearchParams({ authorizationRequest })}` : "",
+                    }}>
+                    {t("otp.requestAnother")}
+                </Link>
+            </Form.Links>
         </Form>
     );
 }

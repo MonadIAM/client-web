@@ -1,8 +1,8 @@
 import { SpinnerVariant } from "@monadiam/ui-kit/enums";
-import { Form, Spinner } from "@monadiam/ui-kit";
 import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
+import { Spinner } from "@monadiam/ui-kit";
 
 import { NotificationManager } from "~common/notifications";
 import { FederatedManager } from "~auth";
@@ -27,7 +27,7 @@ export function FederatedCallback() {
                 if (active) {
                     NotificationManager.error({ cause });
                     setFailed(true);
-                    void navigate("/auth/federated/callback", { replace: true });
+                    navigate("/auth/federated/callback", { replace: true });
                 }
             },
         );
@@ -44,9 +44,9 @@ export function FederatedCallback() {
                     <h1 className={pageStyles.title}>{t(failed ? "social.failed" : "social.completing")}</h1>
                 </header>
                 {failed ? (
-                    <Form.Links>
+                    <footer className={pageStyles.footer}>
                         <Link to="/signin">{t("auth.continue")}</Link>
-                    </Form.Links>
+                    </footer>
                 ) : (
                     <div className={pageStyles.authPreparation} role="status" aria-label={t("social.completing")}>
                         <Spinner variant={SpinnerVariant.INLINE} aria-hidden="true" />
