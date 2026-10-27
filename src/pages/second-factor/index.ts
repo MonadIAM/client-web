@@ -1,1 +1,1 @@
-export { SecondFactor } from "./second-factor";
+export { SecondFactor } from "./ui/second-factor";

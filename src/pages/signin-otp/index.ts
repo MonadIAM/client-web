@@ -1,1 +1,1 @@
-export { SigninOTP } from "./signin-otp";
+export { SigninOTP } from "./ui/signin-otp";

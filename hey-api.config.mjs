@@ -19,7 +19,7 @@ const origin = origins[service];
 export default defineConfig({
     input: new URL("/docs/openapi.json", origin).href,
     output: {
-        path: `./src/common/api/generated/${tag ? `${service}/${tag}` : service}`,
+        path: `./src/shared/api/generated/${tag ? `${service}/${tag}` : service}`,
         clean: Boolean(tag),
     },
     ...(tag && {

@@ -1,1 +1,1 @@
-export { FederatedCallback } from "./federated-callback";
+export { FederatedCallback } from "./ui/federated-callback";

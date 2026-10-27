@@ -12,7 +12,7 @@ const prettierConfig = [
             "node_modules/**/*",
             "./*.config.{mjs,ts}",
             "./configs/*.config.{mjs,ts}",
-            "./src/common/api/generated/**/*",
+            "./src/shared/api/generated/**/*",
             "**/migrations/*.ts",
             "**/*.generated.ts",
         ]

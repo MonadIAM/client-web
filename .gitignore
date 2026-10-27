@@ -6,7 +6,7 @@ coverage/
 *.tsbuildinfo
 
 # Generated API clients
-/src/common/api/generated/
+/src/shared/api/generated/
 
 # Local environment
 .env

@@ -3,19 +3,10 @@
   "compilerOptions": {
     "paths": {
       "~ui/*": ["./node_modules/@monadiam/ui-kit/src/*"],
-      "~src/*": ["./src/*"],
-      "~common/*": ["./src/common/*"],
-      "~api": ["./src/common/api"],
-      "~api/*": ["./src/common/api/*"],
-      "~auth": ["./src/common/auth"],
-      "~auth/*": ["./src/common/auth/*"],
-      "~layout": ["./src/layout"],
-      "~layout/*": ["./src/layout/*"],
+      "~features/*": ["./src/features/*"],
+      "~shared/*": ["./src/shared/*"],
       "~pages/*": ["./src/pages/*"],
-      "~router": ["./src/router"],
-      "~router/*": ["./src/router/*"],
-      "~assets/*": ["./src/assets/*"],
-      "~root/*": ["./*"]
+      "~app/*": ["./src/app/*"],
     },
     "types": ["react", "react-dom", "node"], // React types and Node.js types used by environment validation.
     "rootDir": ".",                          // Includes application source and the root environment schema.

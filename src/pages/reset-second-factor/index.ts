@@ -1,1 +1,1 @@
-export { ResetSecondFactor } from "./reset-second-factor";
+export { ResetSecondFactor } from "./ui/reset-second-factor";

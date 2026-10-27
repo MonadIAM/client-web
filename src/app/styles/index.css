@@ -1,0 +1,13 @@
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "./fonts.css";
+@import "./reset.css";
+@import "../../shared/theme/themes.css";
+@import "@monadiam/ui-kit/styles.css";
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@source "../../";
+@source not "../../shared/api/generated";
+
+@custom-variant dark (&:where(.dark, .dark *));

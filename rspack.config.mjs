@@ -97,7 +97,7 @@ export default (_environment, argv) => {
                     "AUTH_PERMISSION_STALE_TIME_MS",
                 ].map((name) => [`process.env.${name}`, JSON.stringify(env[name])])),
             ),
-            new rspack.HtmlRspackPlugin({ template: "./index.html", favicon: "./src/assets/images/favicon.svg" }),
+            new rspack.HtmlRspackPlugin({ template: "./index.html", favicon: "./src/app/assets/favicon.svg" }),
             ...(development ? [new ReactRefreshRspackPlugin()] : []),
         ],
         devServer: {
