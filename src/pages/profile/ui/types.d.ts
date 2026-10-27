@@ -1,11 +1,10 @@
-import type { ReactNode } from "react";
 import type { BadgeTone } from "@monadiam/ui-kit/enums";
+import type { ReactNode } from "react";
 
 declare global {
     namespace ProfileLayout {
         type Props = {
             title: string;
-            description: string;
             children: ReactNode;
         };
     }

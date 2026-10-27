@@ -8,11 +8,7 @@ export function AppearanceDialog({ open, onOpenChange, returnFocus }: Appearance
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <Dialog.Content
-                title={t("appearance.title")}
-                description={t("appearance.description")}
-                closeLabel={t("common.close")}
-                finalFocus={returnFocus}>
+            <Dialog.Content title={t("appearance.title")} closeLabel={t("common.close")} finalFocus={returnFocus}>
                 <AppearanceForm onClose={() => onOpenChange(false)} />
             </Dialog.Content>
         </Dialog>

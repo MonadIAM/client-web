@@ -1,5 +1,5 @@
-import { Button, Section, Text } from "@monadiam/ui-kit";
 import { ButtonVariant, TextTone } from "@monadiam/ui-kit/enums";
+import { Button, Section, Text } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 
 import { useAccount } from "~shared/auth";
@@ -12,7 +12,7 @@ export function Profile() {
     const account = useAccount();
 
     return (
-        <ProfileLayout title={t("profile.title")} description={t("profile.description")}>
+        <ProfileLayout title={t("profile.title")}>
             {account.data && <ProfileDetails key={account.data.id} account={account.data} />}
             {!account.data && account.isError && (
                 <Section title={t("profile.loadError")}>

@@ -1,3 +1,4 @@
+import { List, Section, Avatar, Button, Dialog, Badge, Field, Flex, Form, Text } from "@monadiam/ui-kit";
 import { CameraIcon, CopyIcon, CheckIcon } from "@monadiam/ui-kit/icons";
 import { useTranslation } from "react-i18next";
 import { Fragment, useMemo } from "react";
@@ -5,12 +6,11 @@ import {
     FlexJustification,
     FormDirection,
     ButtonVariant,
-    ButtonSize,
     FlexAlignment,
+    ButtonSize,
     BadgeTone,
     TextSize,
 } from "@monadiam/ui-kit/enums";
-import { List, Section, Avatar, Button, Dialog, Badge, Field, Flex, Form, Text } from "@monadiam/ui-kit";
 
 import { Language } from "~shared/i18n";
 
@@ -39,7 +39,7 @@ export function ProfileDetails({ account }: ProfileDetails.Props) {
 
     return (
         <Fragment>
-            <Section title={t("profile.details")} description={t("profile.detailsDescription")}>
+            <Section title={t("profile.details")}>
                 <Form form={form} aria-label={t("profile.details")}>
                     <div className={pageStyles.details}>
                         <Form.Fields>
@@ -103,7 +103,7 @@ export function ProfileDetails({ account }: ProfileDetails.Props) {
                     </Form.Actions>
                 </Form>
             </Section>
-            <Section title={t("profile.account")} description={t("profile.accountDescription")}>
+            <Section title={t("profile.account")}>
                 <List
                     items={[
                         {

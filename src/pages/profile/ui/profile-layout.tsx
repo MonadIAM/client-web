@@ -1,14 +1,13 @@
+import { Button, Flex, Text } from "@monadiam/ui-kit";
+import { useTranslation } from "react-i18next";
 import { useRef, useState } from "react";
 import { NavLink } from "react-router";
-import { useTranslation } from "react-i18next";
-import { Button, Flex, Text } from "@monadiam/ui-kit";
-import { TextTone } from "@monadiam/ui-kit/enums";
 
 import { AppearanceDialog } from "~features/appearance";
 
 import { profileLayoutStyles } from "./styles";
 
-export function ProfileLayout({ title, description, children }: ProfileLayout.Props) {
+export function ProfileLayout({ title, children }: ProfileLayout.Props) {
     const { t } = useTranslation();
     const [appearanceOpen, setAppearanceOpen] = useState(false);
     const trigger = useRef<HTMLButtonElement>(null);
@@ -16,9 +15,8 @@ export function ProfileLayout({ title, description, children }: ProfileLayout.Pr
     return (
         <Flex.Col gap="1.5rem" className={profileLayoutStyles.root}>
             <title>{title}</title>
-            <Flex.Col render={<header />} gap="0.25rem">
+            <Flex.Col render={<header />}>
                 <Text.H1>{title}</Text.H1>
-                <Text.P tone={TextTone.MUTED}>{description}</Text.P>
             </Flex.Col>
             <Flex.Row
                 render={<nav />}
@@ -27,6 +25,9 @@ export function ProfileLayout({ title, description, children }: ProfileLayout.Pr
                 className={profileLayoutStyles.navigation}>
                 <NavLink to="/profile" end className={profileLayoutStyles.link}>
                     {t("profile.title")}
+                </NavLink>
+                <NavLink to="/profile/security" className={profileLayoutStyles.link}>
+                    {t("security.title")}
                 </NavLink>
                 <Button.Link
                     ref={trigger}

@@ -1,5 +1,5 @@
+import { UserIcon, BrushIcon, LogoutIcon, ShieldLockIcon } from "@monadiam/ui-kit/icons";
 import { FlexAlignment, TextSize, TextTone, TextWeight } from "@monadiam/ui-kit/enums";
-import { UserIcon, BrushIcon, LogoutIcon } from "@monadiam/ui-kit/icons";
 import { Avatar, DropdownMenu, Flex, Text } from "@monadiam/ui-kit";
 import { Fragment, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -46,6 +46,10 @@ export function AccountNavigation() {
                     <DropdownMenu.LinkItem render={<Link to="/profile" />}>
                         <UserIcon aria-hidden="true" />
                         {t("profile.title")}
+                    </DropdownMenu.LinkItem>
+                    <DropdownMenu.LinkItem render={<Link to="/profile/security" />}>
+                        <ShieldLockIcon aria-hidden="true" />
+                        {t("security.title")}
                     </DropdownMenu.LinkItem>
                     <DropdownMenu.Item
                         onClick={() => {

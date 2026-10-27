@@ -13,10 +13,11 @@ export function AppearanceForm({ onClose }: Appearance.FormProps) {
 
     return (
         <Form form={form} aria-label={t("appearance.title")}>
-            <Form.Fields>
+            <Form.Fields className={appearanceStyles.fields}>
                 <Field.Select
                     form={form}
                     name="language"
+                    reserveErrorSpace={false}
                     label={t("appearance.language")}
                     disabled={isSubmitting}
                     options={[
