@@ -11,6 +11,8 @@ declare global {
         interface Contract extends PublicContract, PrivateContract {}
 
         interface PublicContract {
+            getPreference: GetPreference.Signature;
+            setPreference: SetPreference.Signature;
             getSnapshot: GetSnapshot.Signature;
             initialize: Initialize.Signature;
             subscribe: Subscribe.Signature;
@@ -43,6 +45,22 @@ declare global {
             type Result = void;
 
             type Signature = () => Result;
+        }
+
+        namespace GetPreference {
+            type Result = Optional<Mode>;
+
+            type Signature = () => Result;
+        }
+
+        namespace SetPreference {
+            type Props = {
+                mode: Optional<Mode>;
+            };
+
+            type Result = void;
+
+            type Signature = (props: Props) => Result;
         }
 
         interface PrivateContract {

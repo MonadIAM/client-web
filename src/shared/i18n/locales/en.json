@@ -9,9 +9,14 @@
         "notifications": "Notifications",
         "dismiss": "Dismiss notification",
         "lightTheme": "Use light theme",
-        "darkTheme": "Use dark theme"
+        "darkTheme": "Use dark theme",
+        "save": "Save changes",
+        "cancel": "Cancel",
+        "close": "Close",
+        "copied": "Copied"
     },
     "nav": {
+        "appearance": "Appearance",
         "signin": "Sign in",
         "signup": "Create an account",
         "profile": "Profile: {{name}}",
@@ -60,23 +65,50 @@
         "goToSignin": "Go to sign in"
     },
     "validation": {
-        "invalid": "Invalid value"
+        "invalid": "Invalid value",
+        "required": "This field is required"
     },
     "errors": {
         "load": "Page could not be loaded",
         "notFound": "Page not found",
         "notFoundDescription": "The address may be incorrect or the page may have moved.",
         "unexpected": "An unexpected error occurred",
+        "responseFormat": "Could not process the server response. Please try again.",
         "authorization": "Authorization failed",
         "session": "Session operation failed"
     },
     "profile": {
-        "title": "Profile",
+        "title": "My profile",
+        "description": "Manage your profile and view your account details.",
+        "details": "Profile information",
+        "detailsDescription": "Your display name and time zone.",
+        "changePhoto": "Change photo",
+        "photoNotImplemented": "Profile image upload is not implemented yet.",
+        "displayName": "Display name",
+        "timeZone": "Time zone",
+        "searchTimeZone": "Search by city, zone or UTC offset…",
+        "noTimeZones": "No time zones found",
         "account": "Account",
-        "session": "Session",
-        "context": "Authentication context",
-        "permissions": "Own permissions",
-        "description": "Your current session and access information."
+        "accountDescription": "System account information.",
+        "id": "Account ID",
+        "subject": "Account type",
+        "status": "Status",
+        "createdAt": "Created",
+        "copyId": "Copy account ID",
+        "saved": "Profile saved",
+        "loadError": "Could not load your profile",
+        "loadErrorDescription": "Try loading your account details again.",
+        "subjects": {
+            "SYSTEM": "System",
+            "HUMAN": "User",
+            "SERVICE": "Service"
+        },
+        "statuses": {
+            "ACTIVE": "Active",
+            "PENDING": "Pending verification",
+            "SUSPENDED": "Suspended",
+            "DEACTIVATED": "Deactivated"
+        }
     },
     "passwordRecovery": {
         "title": "Reset your password",
@@ -124,5 +156,18 @@
         "description": "Use your master code to reset your second factors.",
         "submit": "Reset second factors",
         "masterCode": "Master code"
+    },
+    "settings": {
+        "navigation": "Personal settings",
+        "personalAccount": "Personal account"
+    },
+    "appearance": {
+        "title": "Language and appearance",
+        "description": "Choose the interface language and theme. These preferences are saved in this browser.",
+        "language": "Platform language",
+        "theme": "Theme",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System"
     }
 }

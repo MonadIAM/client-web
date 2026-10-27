@@ -13,12 +13,13 @@
   "scripts": {
     "secrets:check": "gitleaks protect --staged --config .gitleaks.toml",
     "knip": "knip --config configs/knip.config.ts",
-    "start": "rspack serve --mode development",
-    "build": "rspack build --mode production",
+    "start": "pnpm run ui:sync && rspack serve --mode development",
+    "build": "pnpm run ui:sync && rspack build --mode production",
     "stylelint": "stylelint \"src/**/*.css\"",
     "env:check": "tsx env.schema.ts",
     "tsc": "tsc --noEmit",
-    "lint": "eslint"
+    "lint": "eslint",
+    "ui:sync": "pnpm update @monadiam/ui-kit --offline --ignore-scripts"
   },
   "dependencies": {
     "@monadiam/ui-kit": "file:../ui-kit",

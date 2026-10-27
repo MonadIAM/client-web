@@ -95,6 +95,8 @@ export default (_environment, argv) => {
                     "AUTH_TRANSACTION_TTL_MS",
                     "AUTH_IAT_TOLERANCE_MS",
                     "AUTH_PERMISSION_STALE_TIME_MS",
+                    "AUTH_ACCOUNT_STALE_TIME_MS",
+                    "COPY_FEEDBACK_DURATION_MS",
                 ].map((name) => [`process.env.${name}`, JSON.stringify(env[name])])),
             ),
             new rspack.HtmlRspackPlugin({ template: "./index.html", favicon: "./src/app/assets/favicon.svg" }),

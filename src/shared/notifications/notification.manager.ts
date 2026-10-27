@@ -1,5 +1,6 @@
 import { ToastType } from "@monadiam/ui-kit/enums";
 import { AxiosError, isCancel } from "axios";
+import { ZodError } from "zod";
 
 import { i18n } from "~shared/i18n";
 
@@ -68,6 +69,7 @@ class Manager implements Notifications.Manager.Contract {
         const message = this.getMessage({ cause });
         const id = ToastQueue.add({
             ...options,
+            id: options.id ?? (cause instanceof ZodError ? "response-validation-error" : undefined),
             timeout: options.timeout ?? 8e3,
             title: title ?? message,
             description: options.description ?? (title && title !== message ? message : undefined),
@@ -89,6 +91,9 @@ class Manager implements Notifications.Manager.Contract {
 
     public getMessage(props: Notifications.Manager.GetMessage.Props): Notifications.Manager.GetMessage.Result {
         const { cause } = props;
+        if (cause instanceof ZodError) {
+            return i18n.t("errors.responseFormat");
+        }
         if (cause instanceof AxiosError) {
             const message = this.getResponseMessage({ data: cause.response?.data });
             if (message) {
@@ -106,7 +111,15 @@ class Manager implements Notifications.Manager.Contract {
 
     public log(props: Notifications.Manager.Log.Props): Notifications.Manager.Log.Result {
         const { cause } = props;
-        if (cause instanceof AxiosError) {
+        if (cause instanceof ZodError) {
+            console.error(
+                cause.name,
+                cause.issues
+                    .map(({ path, code, message }) => `${path.join(".") || "response"} [${code}]: ${message}`)
+                    .join("\n"),
+                cause.stack,
+            );
+        } else if (cause instanceof AxiosError) {
             console.error({
                 status: cause.response?.status,
                 message: cause.message,

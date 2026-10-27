@@ -1,58 +1,37 @@
-import { ButtonVariant, FlexJustification, TextTone } from "@monadiam/ui-kit/enums";
-import { Button, Container, Field, Flex, Form, Text } from "@monadiam/ui-kit";
+import { Button, Section, Text } from "@monadiam/ui-kit";
+import { ButtonVariant, TextTone } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
-import { JSX } from "react";
 
-import { useLogout } from "~features/authentication";
+import { useAccount } from "~shared/auth";
 
-import { pageStyles } from "./styles";
-import { useProfileForm } from "../model/use-profile.form";
+import { ProfileDetails } from "./profile-details";
+import { ProfileLayout } from "./profile-layout";
 
-export function Profile(): JSX.Element {
+export function Profile() {
     const { t } = useTranslation();
-    const { form, permissions } = useProfileForm();
-    const { pending, logout } = useLogout();
+    const account = useAccount();
 
     return (
-        <section className={pageStyles.root}>
-            <header className={pageStyles.profileHeader}>
-                <title>{t("profile.title")}</title>
-                <Text.H1>{t("profile.title")}</Text.H1>
-                <Text.P tone={TextTone.MUTED}>{t("profile.description")}</Text.P>
-            </header>
-            <Container render={<Flex.Col gap="1.25rem" />}>
-                <Form form={form} aria-label={t("profile.title")}>
-                    <Form.Fields>
-                        <Field.Text
-                            form={form}
-                            name="account"
-                            className={pageStyles.identifier}
-                            label={t("profile.account")}
-                            readOnly
-                        />
-                        <Field.Text
-                            form={form}
-                            name="session"
-                            className={pageStyles.identifier}
-                            label={t("profile.session")}
-                            readOnly
-                        />
-                        <Field.Text form={form} name="context" label={t("profile.context")} readOnly />
-                        <Field.Text
-                            form={form}
-                            name="permissions"
-                            label={t("profile.permissions")}
-                            aria-busy={permissions.isPending}
-                            readOnly
-                        />
-                    </Form.Fields>
-                </Form>
-                <Flex.Row justify={FlexJustification.END} className={pageStyles.profileActions}>
-                    <Button variant={ButtonVariant.OUTLINE} loading={pending} onClick={() => void logout()}>
-                        {t("auth.signout")}
+        <ProfileLayout title={t("profile.title")} description={t("profile.description")}>
+            {account.data && <ProfileDetails key={account.data.id} account={account.data} />}
+            {!account.data && account.isError && (
+                <Section title={t("profile.loadError")}>
+                    <Text.P role="alert" tone={TextTone.MUTED}>
+                        {t("profile.loadErrorDescription")}
+                    </Text.P>
+                    <Button
+                        variant={ButtonVariant.OUTLINE}
+                        loading={account.isFetching}
+                        onClick={() => void account.refetch()}>
+                        {t("common.retry")}
                     </Button>
-                </Flex.Row>
-            </Container>
-        </section>
+                </Section>
+            )}
+            {!account.data && !account.isError && (
+                <Text.P role="status" aria-busy="true" tone={TextTone.MUTED}>
+                    {t("common.loading")}
+                </Text.P>
+            )}
+        </ProfileLayout>
     );
 }

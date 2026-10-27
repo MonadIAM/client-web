@@ -1,25 +1,65 @@
+import { useForm, useSelector } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
-import { useForm } from "@monadiam/ui-kit";
+import { useState } from "react";
 
-import { usePermission, useSession } from "~shared/auth";
+import { getValidationErrors } from "~shared/api/validation";
+import { NotificationManager } from "~shared/notifications";
+import { Language } from "~shared/i18n";
 
-export function useProfileForm() {
-    const { t } = useTranslation();
-    const session = useSession();
-    const permissions = usePermission();
+import { useProfileQuery } from "./use-profile.query";
+
+export function useProfileForm(account: Auth.Account.Details) {
+    const { t, i18n } = useTranslation();
+    const request = useProfileQuery();
+
+    const [savedValues, setSavedValues] = useState(() => ({
+        displayName: account.profile?.displayName ?? "",
+        timeZone: account.profile?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
+        locale: account.profile?.locale ?? i18n.resolvedLanguage ?? Language.EN,
+    }));
+
+    const hasChanges = (value: typeof savedValues) =>
+        value.displayName.trim() !== savedValues.displayName.trim() ||
+        value.timeZone.trim() !== savedValues.timeZone.trim() ||
+        value.locale !== savedValues.locale;
 
     const form = useForm({
-        defaultValues: {
-            account: session.claims?.sub ?? "—",
-            session: session.claims?.sid ?? "—",
-            context: session.claims?.acr ?? "—",
-            permissions: permissions.isSuccess
-                ? String(Object.keys(permissions.data.data).length)
-                : permissions.isError
-                  ? "—"
-                  : t("common.loading"),
+        defaultValues: savedValues,
+
+        onSubmit: async ({ value, formApi }) => {
+            const body = {
+                ...value,
+                displayName: value.displayName.trim(),
+                timeZone: value.timeZone.trim(),
+            };
+
+            try {
+                await request.mutateAsync(body);
+
+                setSavedValues(body);
+                formApi.reset(body);
+
+                NotificationManager.success({ title: t("profile.saved") });
+            } catch (cause) {
+                const fields = getValidationErrors({
+                    cause,
+                    fields: ["displayName", "timeZone", "locale"],
+                });
+
+                if (fields && !fields.locale) {
+                    formApi.setErrorMap({ onSubmit: { fields } });
+                } else {
+                    NotificationManager.error({ cause });
+                }
+            }
         },
     });
 
-    return { form, permissions };
+    const isSubmitting = useSelector(form.store, (state) => state.isSubmitting);
+    const canSubmit = useSelector(
+        form.store,
+        (state) => state.canSubmit && !state.isSubmitting && hasChanges(state.values),
+    );
+
+    return { form, isSubmitting, canSubmit };
 }

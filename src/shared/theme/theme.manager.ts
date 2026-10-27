@@ -75,10 +75,28 @@ class Manager implements Theme.Contract {
     }
 
     public toggle(): Theme.Toggle.Result {
-        this.preference = this.current === ThemeMode.DARK ? ThemeMode.LIGHT : ThemeMode.DARK;
-        this.apply({ mode: this.preference });
+        this.setPreference({
+            mode: this.current === ThemeMode.DARK ? ThemeMode.LIGHT : ThemeMode.DARK,
+        });
+    }
+
+    public getPreference(): Theme.GetPreference.Result {
+        return this.preference;
+    }
+
+    public setPreference({ mode }: Theme.SetPreference.Props): Theme.SetPreference.Result {
+        this.preference = mode;
+
+        this.apply({
+            mode: mode ?? (this.system.matches ? ThemeMode.DARK : ThemeMode.LIGHT),
+        });
+
         try {
-            localStorage.setItem(this.storageKey, this.preference);
+            if (mode) {
+                localStorage.setItem(this.storageKey, mode);
+            } else {
+                localStorage.removeItem(this.storageKey);
+            }
         } catch (cause) {
             NotificationManager.error({ cause });
         }

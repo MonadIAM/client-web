@@ -27,6 +27,8 @@ export const envSchema = z.object({
 
     OTP_COOLDOWN: timeout,
 
+    COPY_FEEDBACK_DURATION_MS: timeout,
+
     TOAST_VISIBLE_LIMIT: z.string().pipe(z.coerce.number<string>().int().positive()).transform(String),
 
     API_REQUEST_TIMEOUT_MS: timeout,
@@ -37,6 +39,7 @@ export const envSchema = z.object({
     AUTH_TRANSACTION_TTL_MS: timeout,
     AUTH_IAT_TOLERANCE_MS: duration,
     AUTH_PERMISSION_STALE_TIME_MS: duration,
+    AUTH_ACCOUNT_STALE_TIME_MS: duration,
 });
 
 export const env = envSchema.parse(process.env);

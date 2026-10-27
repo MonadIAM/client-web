@@ -6,5 +6,10 @@ export const layoutStyles = {
     brand: "inline-flex items-center gap-2 rounded-sm font-display text-xl font-semibold tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-ring",
     markLight: "block size-9 dark:hidden",
     markDark: "hidden size-9 dark:block",
-    profile: "rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+    profile:
+        "cursor-pointer rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+    accountSummary: "px-2 py-1",
+    accountAvatar: "size-8 text-xs/none",
+    accountName: "min-w-0",
+    accountDisplayName: "truncate",
 };
