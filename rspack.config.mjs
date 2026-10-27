@@ -1,19 +1,22 @@
 import { ReactRefreshRspackPlugin } from "@rspack/plugin-react-refresh";
 import tailwindcss from "@tailwindcss/postcss";
+import { getCACertificates } from "node:tls";
 import { fileURLToPath } from "node:url";
 import { tsImport } from "tsx/esm/api";
 import { rspack } from "@rspack/core";
+import { Agent } from "node:https";
 
 const { env } = await tsImport("./env.schema.ts", import.meta.url);
+const { Environment } = await tsImport("./src/shared/config/enums.ts", import.meta.url);
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 
 export default (_environment, argv) => {
-    const development = argv.mode === "development";
+    const development = argv.mode === Environment.DEVELOPMENT;
 
     return {
         context: root,
-        mode: development ? "development" : "production",
+        mode: development ? Environment.DEVELOPMENT : Environment.PRODUCTION,
         entry: "./src/main.tsx",
         output: {
             path: fileURLToPath(new URL("dist", import.meta.url)),
@@ -103,9 +106,19 @@ export default (_environment, argv) => {
             ...(development ? [new ReactRefreshRspackPlugin()] : []),
         ],
         devServer: {
+            historyApiFallback: true,
             host: "localhost",
             port: 3e3,
-            historyApiFallback: true,
+            proxy: [
+                {
+                    agent: new Agent({
+                        ca: [...getCACertificates("default"), ...getCACertificates("system")],
+                    }),
+                    target: env.IDENTITY_ORIGIN,
+                    context: ["/api/v1"],
+                    changeOrigin: true,
+                },
+            ],
         },
     };
 };

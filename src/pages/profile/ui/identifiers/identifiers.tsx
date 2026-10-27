@@ -3,16 +3,14 @@ import { Badge, Button, Flex, List, Section, Text } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 
-import { IdentifierType } from "~shared/api/generated/identity";
-
 import { useIdentifiersQuery } from "../../model/identifiers/use-identifiers.query";
 import { IdentifierDialogMode } from "../../model/identifiers/enums";
-import { SecurityDate } from "../security/security-date";
 import { IdentifierContent } from "./identifier-content";
 import { IdentifierActions } from "./identifier-actions";
 import { IdentifierPublic } from "./identifier-public";
 import { IdentifierDialog } from "./identifier-dialog";
 import { securityStyles } from "../security/styles";
+import { ProfileDate } from "../profile-date";
 
 export function Identifiers() {
     const { t } = useTranslation();
@@ -20,10 +18,7 @@ export function Identifiers() {
 
     const [dialog, setDialog] = useState<Nullable<Identifiers.DialogState>>(null);
 
-    const identifiers =
-        query.data?.filter(
-            (identifier) => identifier.type === IdentifierType.EMAIL || identifier.type === IdentifierType.PHONE,
-        ) ?? [];
+    const identifiers = query.data ?? [];
 
     return (
         <Section
@@ -81,8 +76,8 @@ export function Identifiers() {
                                 </Badge>
                             ),
                             public: <IdentifierPublic identifier={identifier} />,
-                            createdAt: <SecurityDate value={identifier.createdAt} />,
-                            verifiedAt: <SecurityDate value={identifier.verifiedAt} />,
+                            createdAt: <ProfileDate value={identifier.createdAt} />,
+                            verifiedAt: <ProfileDate value={identifier.verifiedAt} />,
                             actions: (
                                 <IdentifierActions
                                     identifier={identifier}

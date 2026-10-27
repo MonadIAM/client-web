@@ -48,10 +48,10 @@ class WorkerClient implements Auth.WorkerClient.Contract {
         this.authorization ??= this.send({ command: WorkerCommand.AUTHORIZE })
             .then((response) => WorkerSchema.authorizeResult.parse(response).value)
             .then(
-                (url) => ({ url, error: undefined }),
+                (url) => ({ url }),
                 (cause: unknown) => {
                     NotificationManager.error({ cause, title: i18n.t("errors.authorization") });
-                    return { url: undefined, error: cause instanceof Error ? cause.message : "Authorization failed" };
+                    return { error: cause instanceof Error ? cause.message : "Authorization failed" };
                 },
             );
         return this.authorization;

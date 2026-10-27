@@ -69,8 +69,8 @@ declare global {
 
         namespace WorkerClient {
             type Authorization = {
-                error: Optional<string>;
-                url: Optional<string>;
+                error?: string;
+                url?: string;
             };
 
             type Pending = {

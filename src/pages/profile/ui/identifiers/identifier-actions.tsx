@@ -3,6 +3,8 @@ import { Button, DropdownMenu } from "@monadiam/ui-kit";
 import { MoreIcon } from "@monadiam/ui-kit/icons";
 import { useTranslation } from "react-i18next";
 
+import { IdentifierType } from "~shared/api/generated/identity";
+
 import { securityStyles } from "../security/styles";
 
 export function IdentifierActions({ identifier, onVerify, onRemove }: Identifiers.Actions.Props) {
@@ -16,7 +18,9 @@ export function IdentifierActions({ identifier, onVerify, onRemove }: Identifier
                 <MoreIcon aria-hidden="true" />
             </DropdownMenu.Trigger>
             <DropdownMenu.Content className={securityStyles.menu}>
-                <DropdownMenu.Item disabled={identifier.isVerified} onClick={onVerify}>
+                <DropdownMenu.Item
+                    disabled={identifier.isVerified || identifier.type === IdentifierType.OAUTH}
+                    onClick={onVerify}>
                     {t("identifiers.verify")}
                 </DropdownMenu.Item>
                 <DropdownMenu.Item destructive onClick={onRemove}>

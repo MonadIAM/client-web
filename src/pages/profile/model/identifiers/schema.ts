@@ -10,12 +10,14 @@ export abstract class IdentifierSchema {
             id: true,
             type: true,
             identity: true,
+            provider: true,
             isVerified: true,
             isPublicContact: true,
             createdAt: true,
             verifiedAt: true,
         })
         .extend({
+            provider: IdentitySchemas.zIdentifier.shape.provider.nullish().transform((value) => value ?? undefined),
             verifiedAt: IdentitySchemas.zIdentifier.shape.verifiedAt
                 .unwrap()
                 .nullable()
@@ -23,8 +25,9 @@ export abstract class IdentifierSchema {
                 .optional(),
         });
 
-    public static readonly account = z.object({
-        identifiers: z.array(IdentifierSchema.identifier),
+    public static readonly list = z.object({
+        data: z.array(IdentifierSchema.identifier),
+        meta: IdentitySchemas.zListMeta,
     });
 
     public static readonly email = z.email();

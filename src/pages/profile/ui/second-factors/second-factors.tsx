@@ -3,12 +3,12 @@ import { Badge, Button, Flex, List, Section, Text } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 
-import { SecondFactorDialogMode } from "../../model/second-factors/enums";
 import { useSecondFactorsQuery } from "../../model/second-factors/use-second-factors.query";
-import { SecurityDate } from "../security/security-date";
-import { securityStyles } from "../security/styles";
+import { SecondFactorDialogMode } from "../../model/second-factors/enums";
 import { SecondFactorActions } from "./second-factor-actions";
 import { SecondFactorDialog } from "./second-factor-dialog";
+import { securityStyles } from "../security/styles";
+import { ProfileDate } from "../profile-date";
 
 export function SecondFactors() {
     const { t } = useTranslation();
@@ -67,8 +67,8 @@ export function SecondFactors() {
                                 </Badge>
                             ),
                             type: <Text.Span>{factor.type.toUpperCase()}</Text.Span>,
-                            createdAt: <SecurityDate value={factor.createdAt} />,
-                            confirmedAt: <SecurityDate value={factor.confirmedAt} />,
+                            createdAt: <ProfileDate value={factor.createdAt} />,
+                            confirmedAt: <ProfileDate value={factor.confirmedAt} />,
                             actions: (
                                 <SecondFactorActions
                                     factor={factor}

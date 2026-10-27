@@ -2,7 +2,7 @@ import { TextSize, TextTone } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
 import { Flex, Text } from "@monadiam/ui-kit";
 
-export function SecurityDate({ value }: Security.Date.Props) {
+export function ProfileDate({ value }: ProfileDate.Props) {
     const { i18n } = useTranslation();
 
     const date = value ? new Date(value) : undefined;

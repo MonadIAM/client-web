@@ -173,6 +173,11 @@
         "type": "Identifier type",
         "email": "Email",
         "phone": "Phone",
+        "oauth": "OAuth",
+        "providers": {
+            "github": "GitHub",
+            "google": "Google"
+        },
         "send": "Send code",
         "verify": "Verify",
         "verifyTitle": "Verify identifier",
@@ -185,7 +190,7 @@
         "removeDescription": "You will no longer be able to sign in with this identifier.",
         "removed": "Identifier removed",
         "loadError": "Could not load identifiers. Please try again.",
-        "empty": "You have no email addresses or phone numbers linked yet.",
+        "empty": "You have no identifiers yet.",
         "codeDescription": "Code sent to",
         "codeSent": "Verification code sent",
         "verifiedMessage": "Identifier verified",
@@ -200,7 +205,8 @@
         "createdAt": "Created",
         "verifiedAt": "Verified",
         "actionsTitle": "Actions",
-        "publicUnavailable": "Available after verification"
+        "publicUnavailable": "Available after verification",
+        "publicNotApplicable": "OAuth identifiers cannot be public contacts"
     },
     "security": {
         "title": "Security",
@@ -236,5 +242,31 @@
         "copyRecovery": "Copy code",
         "savedRecovery": "I have saved the code",
         "saveRecovery": "Save this code"
+    },
+    "sessions": {
+        "title": "Sessions",
+        "active": "Active sessions",
+        "device": "Browser / platform",
+        "ip": "IP address",
+        "createdAt": "Created",
+        "updatedAt": "Refreshed",
+        "actions": "Actions",
+        "current": "Current",
+        "revoke": "End session",
+        "revokeAll": "End all sessions",
+        "revokeTitle": "End this session?",
+        "revokeAllTitle": "End all sessions?",
+        "signInRequired": "Sign-in will be required",
+        "revokeDescription": "This device will need to sign in again. Your current session will stay active.",
+        "revokeAllDescription": "All sessions, including your current session, will end. You will need to sign in again on every device.",
+        "revokedAll": "All sessions ended",
+        "revoked_one": "Session ended",
+        "revoked_other": "Sessions ended",
+        "loadError": "Could not load sessions. Please try again.",
+        "empty": "No active sessions.",
+        "unknownBrowser": "Unknown browser",
+        "unknownPlatform": "Unknown platform",
+        "revokeLabel": "End session: {{agent}}, {{ip}}",
+        "revokeCurrentDescription": "You will be signed out of your account in this browser."
     }
 }

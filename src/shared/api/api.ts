@@ -3,6 +3,7 @@ import axios, { AxiosError, CanceledError } from "axios";
 import { AuthWorkerClient } from "~shared/auth/worker.client";
 import { SessionStatus } from "~shared/auth/session";
 import { i18n } from "~shared/i18n";
+import { Environment } from "~shared/config/enums";
 
 import { client as accessControl } from "./generated/access-control/client.gen";
 import { client as notification } from "./generated/notification/client.gen";
@@ -26,7 +27,17 @@ class ApiTransport implements API.Transport.Contract {
         if (this.initialized === false) {
             this.initialized = true;
             this.identityPublic.interceptors.request.use((config) => {
+                if (process.env.NODE_ENV === Environment.DEVELOPMENT) {
+                    const url = new URL(config.url ?? "", process.env.IDENTITY_ORIGIN);
+
+                    if (url.origin === new URL(process.env.IDENTITY_ORIGIN).origin) {
+                        config.baseURL = location.origin;
+                        config.url = `${url.pathname}${url.search}`;
+                    }
+                }
+
                 config.headers.set("Accept-Language", i18n.resolvedLanguage ?? "en");
+
                 return config;
             });
             accessControl.setConfig({

@@ -64,6 +64,12 @@ declare global {
         }
 
         namespace Manager {
+            interface Contract extends PublicContract, PrivateContract {}
+
+            interface PrivateContract {
+                load: Load.Signature;
+            }
+
             interface PublicContract {
                 list: List.Signature;
                 create: Create.Signature;
@@ -76,6 +82,17 @@ declare global {
             namespace List {
                 type Props = {
                     signal: AbortSignal;
+                };
+
+                type Result = Promise<Identifier[]>;
+
+                type Signature = (props: Props) => Result;
+            }
+
+            namespace Load {
+                type Props = {
+                    signal: AbortSignal;
+                    currentPage: number;
                 };
 
                 type Result = Promise<Identifier[]>;

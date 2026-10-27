@@ -8,7 +8,7 @@ declare global {
             type Props = Manager.Match.Props["options"];
 
             type Result = UseQueryResult<API.AccessControl.Privileges, Error> & {
-                allowed: Optional<boolean>;
+                allowed?: boolean;
             };
 
             type Signature = (props?: Props) => Result;

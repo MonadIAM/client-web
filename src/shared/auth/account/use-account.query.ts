@@ -20,10 +20,10 @@ export function useAccount(): Auth.Account.UseAccount.Result {
             const response = await IdentitySDK.accountControllerFindMe({
                 signal,
                 throwOnError: true,
-                responseTransformer: undefined,
+                responseTransformer: AccountSchema.details.parseAsync,
             });
 
-            return AccountSchema.details.parse(response.data);
+            return response.data;
         },
     });
 }

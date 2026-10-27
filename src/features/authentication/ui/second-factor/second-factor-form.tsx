@@ -2,8 +2,7 @@ import { Button, Field, Form } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
-import { IdentitySchemas } from "~shared/api/schemas";
-
+import { SecondFactorSchema } from "../../model/second-factor/schema";
 import { useSecondFactorForm } from "../../model/second-factor";
 
 export function SecondFactorForm({ authorizationRequest }: Authentication.Form.Props) {
@@ -18,9 +17,9 @@ export function SecondFactorForm({ authorizationRequest }: Authentication.Form.P
                     form={form}
                     name="code"
                     length={6}
-                    validators={{ onChange: IdentitySchemas.zAuthnVerifySecondFactorBody.shape.code }}
+                    validators={{ onChange: SecondFactorSchema.code }}
                     label={t("auth.code")}
-                    invalidMessage={t("validation.invalid")}
+                    invalidMessage={t("security.invalidCode")}
                     autoComplete="one-time-code"
                     required
                 />

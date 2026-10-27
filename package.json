@@ -25,6 +25,7 @@
     "@monadiam/ui-kit": "file:../ui-kit",
     "@tanstack/react-query": "5.104.5",
     "axios": "1.20.0",
+    "bowser": "2.15.0",
     "i18next": "26.4.2",
     "i18next-browser-languagedetector": "8.2.0",
     "jose": "6.2.13",

@@ -29,6 +29,9 @@ export function ProfileLayout({ title, children }: ProfileLayout.Props) {
                 <NavLink to="/profile/security" className={profileLayoutStyles.link}>
                     {t("security.title")}
                 </NavLink>
+                <NavLink to="/profile/sessions" className={profileLayoutStyles.link}>
+                    {t("sessions.title")}
+                </NavLink>
                 <Button.Link
                     ref={trigger}
                     onClick={() => setAppearanceOpen(true)}

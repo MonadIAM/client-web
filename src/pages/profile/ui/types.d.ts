@@ -2,6 +2,12 @@ import type { BadgeTone } from "@monadiam/ui-kit/enums";
 import type { ReactNode } from "react";
 
 declare global {
+    namespace ProfileDate {
+        type Props = {
+            value?: string;
+        };
+    }
+
     namespace ProfileLayout {
         type Props = {
             title: string;

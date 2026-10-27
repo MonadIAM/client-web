@@ -15,6 +15,6 @@ export function usePermission(options: Auth.Permission.UsePermission.Props = {})
             allowed: PermissionManager.matches({ permissions: query.data.data, options }),
         };
     } else {
-        return { ...query, allowed: undefined };
+        return query;
     }
 }
