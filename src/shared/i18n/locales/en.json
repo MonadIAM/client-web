@@ -1,4 +1,18 @@
 {
+    "notificationPreview": {
+        "title": "Notifications",
+        "unreadCount": "Notifications, unread: {{count}}",
+        "unread": "Unread",
+        "countError": "Could not load the unread count.",
+        "empty": "No notifications yet",
+        "error": "Could not load notifications.",
+        "categories": {
+            "SECURITY": "Security",
+            "INVITES": "Invitation",
+            "SYSTEM": "System notification",
+            "OTHER": "Notification"
+        }
+    },
     "common": {
         "home": "Home",
         "language": "Language",
@@ -268,5 +282,36 @@
         "unknownPlatform": "Unknown platform",
         "revokeLabel": "End session: {{agent}}, {{ip}}",
         "revokeCurrentDescription": "You will be signed out of your account in this browser."
+    },
+    "notificationSettings": {
+        "tab": "Notifications",
+        "title": "Notification settings",
+        "inApp": "In app",
+        "sound": "Notification sound",
+        "soundDescription": "Play a sound when a new notification arrives.",
+        "noInApp": "The in-app notification channel is not available yet.",
+        "email": "Email copies",
+        "noEmail": "Add an email in Security to receive email notifications.",
+        "categories": {
+            "INVITES": {
+                "label": "Invitations",
+                "description": "Invitations to organizations and shared resources."
+            },
+            "SYSTEM": {
+                "label": "System",
+                "description": "Service updates and events."
+            },
+            "OTHER": {
+                "label": "Other",
+                "description": "Notifications from other categories."
+            }
+        },
+        "security": "Security",
+        "securityDescription": "Security notifications are sent by email.",
+        "alwaysEnabled": "Always enabled",
+        "region": "Notification region",
+        "locale": "Notification language",
+        "saved": "Notification settings saved",
+        "loadError": "Could not load notification settings. Please try again."
     }
 }

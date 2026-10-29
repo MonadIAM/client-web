@@ -3,7 +3,6 @@ import { BrowserRouter } from "react-router";
 import { JSX, Suspense } from "react";
 
 import { queryClient } from "~app/providers/query";
-import { Layout } from "~app/layout";
 
 import { ErrorBoundary } from "./components/error-boundary";
 import { RouteResolver } from "./components/router-content";
@@ -15,11 +14,9 @@ export function Router({ initialization }: Router.Props): JSX.Element {
         <ErrorBoundary fallback={<LoadError />}>
             <QueryClientProvider client={queryClient}>
                 <BrowserRouter>
-                    <Layout>
-                        <Suspense fallback={<Loading />}>
-                            <RouteResolver initialization={initialization} />
-                        </Suspense>
-                    </Layout>
+                    <Suspense fallback={<Loading />}>
+                        <RouteResolver initialization={initialization} />
+                    </Suspense>
                 </BrowserRouter>
             </QueryClientProvider>
         </ErrorBoundary>

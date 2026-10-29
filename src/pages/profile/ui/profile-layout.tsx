@@ -26,6 +26,9 @@ export function ProfileLayout({ title, children }: ProfileLayout.Props) {
                 <NavLink to="/profile" end className={profileLayoutStyles.link}>
                     {t("profile.title")}
                 </NavLink>
+                <NavLink to="/profile/notifications" className={profileLayoutStyles.link}>
+                    {t("notificationSettings.tab")}
+                </NavLink>
                 <NavLink to="/profile/security" className={profileLayoutStyles.link}>
                     {t("security.title")}
                 </NavLink>

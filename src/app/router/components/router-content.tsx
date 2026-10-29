@@ -1,8 +1,9 @@
 import { useRoutes } from "react-router";
-import { JSX, use } from "react";
+import { JSX, Suspense, use } from "react";
 
 import { SessionStatus } from "~shared/auth/session";
 import { useSession } from "~shared/auth";
+import { Layout } from "~app/layout";
 
 import { privateRoutes } from "../private.routes";
 import { publicRoutes } from "../public.routes";
@@ -19,8 +20,16 @@ export function RouteResolver({ initialization }: Router.Props): JSX.Element {
     if (status === SessionStatus.INITIALIZING) {
         return <Loading />;
     } else if (route) {
-        return route;
+        return (
+            <Layout>
+                <Suspense fallback={<Loading />}>{route}</Suspense>
+            </Layout>
+        );
     } else {
-        return <NotFound rootPath={status === SessionStatus.AUTHENTICATED ? "/" : "/signin"} />;
+        return (
+            <Layout>
+                <NotFound rootPath={status === SessionStatus.AUTHENTICATED ? "/" : "/signin"} />
+            </Layout>
+        );
     }
 }

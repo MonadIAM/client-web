@@ -3,6 +3,7 @@ import { Flex, Navbar } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 import { Fragment } from "react";
 
+import { NotificationPreview } from "~features/notification-preview";
 import { NotificationHost } from "~shared/notifications";
 import { SessionStatus } from "~shared/auth/session";
 import { useSession } from "~shared/auth";
@@ -30,7 +31,10 @@ export function Layout({ children }: Layout.Props) {
                 brand={<Brand />}
                 actions={
                     session.status === SessionStatus.AUTHENTICATED ? (
-                        <AccountNavigation />
+                        <Fragment>
+                            <NotificationPreview />
+                            <AccountNavigation />
+                        </Fragment>
                     ) : (
                         <Fragment>
                             <LanguageSwitcher />

@@ -9,8 +9,8 @@ export function useRegistrationQuery() {
     return useMutation({
         mutationFn: async (body: API.Identity.AccountSignupBody) => {
             const response = await IdentitySDK.accountControllerSignup({
+                body: { ...body, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone },
                 axios: API.identityPublic,
-                body,
                 throwOnError: true,
             });
             return response.data;

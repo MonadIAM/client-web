@@ -62,8 +62,14 @@ class WorkerClient implements Auth.WorkerClient.Contract {
     }
 
     public async getToken(props: Auth.WorkerClient.GetToken.Props): Auth.WorkerClient.GetToken.Result {
-        const response = await this.send({ command: WorkerCommand.TOKEN, props });
-        return WorkerSchema.tokenResult.parse(response).value;
+        await this.initialize();
+
+        if (this.current.status === SessionStatus.AUTHENTICATED) {
+            const response = await this.send({ command: WorkerCommand.TOKEN, props });
+            return WorkerSchema.tokenResult.parse(response).value;
+        } else {
+            throw new CanceledError("The session is not authenticated");
+        }
     }
 
     public async logout(): Auth.WorkerClient.Logout.Result {

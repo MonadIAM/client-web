@@ -14,8 +14,8 @@ class Manager implements Auth.Federated.Contract {
 
     public async authorize(props: Auth.Federated.Authorize.Props): Auth.Federated.Authorize.Result {
         const response = await IdentitySDK.federatedAuthnControllerAuthorize({
+            query: { ...props, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone },
             axios: API.identityPublic,
-            query: props,
             throwOnError: true,
         });
         const url = new URL(FederatedSchema.authorization.parse(response.data).url);
