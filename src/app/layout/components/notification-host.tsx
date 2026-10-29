@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { ToastHost } from "@monadiam/ui-kit";
 import { JSX, useEffect } from "react";
 
-import { NotificationManager } from "./notification.manager";
+import { NotificationManager } from "~shared/notifications";
 
 export function NotificationHost(): JSX.Element {
     const { t } = useTranslation();

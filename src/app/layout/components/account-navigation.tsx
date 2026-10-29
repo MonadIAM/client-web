@@ -20,16 +20,22 @@ export function AccountNavigation() {
     const [menuOpen, setMenuOpen] = useState(false);
     const trigger = useRef<HTMLButtonElement>(null);
     const name = account.data?.profile?.displayName ?? profile.data?.name;
+    const pictureUrl = account.data?.profile?.pictureUrl;
 
     return (
         <Fragment>
             <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
                 <DropdownMenu.Trigger ref={trigger} className={layoutStyles.profile} aria-label={t("nav.account")}>
-                    <Avatar name={name} label={name ? t("nav.profile", { name }) : t("nav.account")} />
+                    <Avatar src={pictureUrl} name={name} label={name ? t("nav.profile", { name }) : t("nav.account")} />
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content finalFocus={appearanceOpen ? false : trigger}>
                     <Flex.Row align={FlexAlignment.CENTER} gap="0.5rem" className={layoutStyles.accountSummary}>
-                        <Avatar name={name} label={name ?? t("nav.account")} className={layoutStyles.accountAvatar} />
+                        <Avatar
+                            src={pictureUrl}
+                            name={name}
+                            label={name ?? t("nav.account")}
+                            className={layoutStyles.accountAvatar}
+                        />
                         <Flex.Col className={layoutStyles.accountName}>
                             <Text.Span
                                 size={TextSize.SM}

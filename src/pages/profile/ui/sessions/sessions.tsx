@@ -57,6 +57,8 @@ export function Sessions() {
                 )}
                 {query.data && (
                     <List.Columns
+                        maxHeight={584}
+                        estimateSize={73}
                         label={t("sessions.active")}
                         empty={t("sessions.empty")}
                         columns={[

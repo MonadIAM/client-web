@@ -27,13 +27,14 @@ export function SecondFactorDialog({ state, onChange, onClose }: SecondFactors.D
         <Dialog
             open
             onOpenChange={(open) => {
-                if (!open && !pending) {
+                if (!open && !pending && !recoveryCode) {
                     onClose();
                 }
             }}>
             <Dialog.Content
                 title={recoveryCode ? t("secondFactors.recoveryTitle") : titles[state.mode]}
                 closeLabel={t("common.close")}
+                showClose={!recoveryCode}
                 className={securityStyles.dialog}>
                 {recoveryCode && <SecondFactorRecovery code={recoveryCode} onComplete={onClose} />}
                 {!recoveryCode && state.mode === SecondFactorDialogMode.ADD && (

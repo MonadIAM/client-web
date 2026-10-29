@@ -42,6 +42,8 @@ export function SecondFactors() {
             )}
             {query.data && (
                 <List.Columns
+                    maxHeight={365}
+                    estimateSize={73}
                     label={t("secondFactors.title")}
                     empty={t("secondFactors.empty")}
                     columns={[

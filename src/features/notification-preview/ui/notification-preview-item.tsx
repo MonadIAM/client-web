@@ -1,31 +1,30 @@
-import { GearIcon, PeopleIcon, ShieldLockIcon, FileIcon } from "@monadiam/ui-kit/icons";
 import { TextSize, TextTone, TextWeight, TextHyphens } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
 import { Flex, Text } from "@monadiam/ui-kit";
 
-import { NotificationCategory } from "~shared/api/generated/notification";
-
+import { useMarkNotificationRead } from "../model/use-notification-preview";
+import { NotificationCategoryIcon } from "./category-icon";
 import { previewStyles } from "./styles";
-
-const categoryIcons = {
-    [NotificationCategory.SECURITY]: ShieldLockIcon,
-    [NotificationCategory.INVITES]: PeopleIcon,
-    [NotificationCategory.SYSTEM]: GearIcon,
-    [NotificationCategory.OTHER]: FileIcon,
-};
 
 export function NotificationPreviewItem({ item, date }: NotificationPreviewView.Item.Props) {
     const { t, i18n } = useTranslation();
-    const Icon = categoryIcons[item.category];
+    const markRead = useMarkNotificationRead();
     const unread = Boolean(item.message && !item.message.readAt);
     const title = item.title?.trim() ? item.title : t(`notificationPreview.categories.${item.category}`);
 
     return (
         <Flex.Col gap="0.5rem" className={previewStyles.item}>
             <Flex.Row gap="0.75rem">
-                <Flex.Row className={previewStyles.icon} data-unread={unread}>
-                    <Icon aria-hidden="true" />
-                </Flex.Row>
+                <NotificationCategoryIcon
+                    category={item.category}
+                    active={unread}
+                    disabled={markRead.isPending}
+                    onRead={() => {
+                        if (item.message && unread && !markRead.isPending) {
+                            markRead.mutate(item.message.id);
+                        }
+                    }}
+                />
                 <Flex.Col className={previewStyles.content}>
                     <Text.H3
                         size={TextSize.SM}

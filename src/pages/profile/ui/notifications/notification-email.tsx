@@ -1,9 +1,9 @@
 import { Badge, Flex, List, Section, Switch, Text } from "@monadiam/ui-kit";
 import { TextSize, TextTone } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
-import { Fragment } from "react";
 
 import { ChannelType, NotificationCategory } from "~shared/api/generated/notification";
+import { NotificationCategoryIcon } from "~features/notification-preview";
 
 import { notificationStyles } from "./styles";
 
@@ -26,12 +26,15 @@ export function NotificationEmail({ preferences, hasEmail, disabled, onToggle }:
                         label: t(`notificationSettings.categories.${category}.label`),
                         showLabel: false,
                         content: (
-                            <Fragment>
-                                <Text.Span>{t(`notificationSettings.categories.${category}.label`)}</Text.Span>
-                                <Text.P tone={TextTone.MUTED} size={TextSize.SM}>
-                                    {t(`notificationSettings.categories.${category}.description`)}
-                                </Text.P>
-                            </Fragment>
+                            <Flex.Row className="items-center" gap="0.75rem">
+                                <NotificationCategoryIcon category={category} />
+                                <Flex.Col>
+                                    <Text.Span>{t(`notificationSettings.categories.${category}.label`)}</Text.Span>
+                                    <Text.P tone={TextTone.MUTED} size={TextSize.SM}>
+                                        {t(`notificationSettings.categories.${category}.description`)}
+                                    </Text.P>
+                                </Flex.Col>
+                            </Flex.Row>
                         ),
                         action: (
                             <Flex.Row className={notificationStyles.action}>
@@ -54,12 +57,15 @@ export function NotificationEmail({ preferences, hasEmail, disabled, onToggle }:
                         label: t("notificationSettings.security"),
                         showLabel: false,
                         content: (
-                            <Fragment>
-                                <Text.Span>{t("notificationSettings.security")}</Text.Span>
-                                <Text.P tone={TextTone.MUTED} size={TextSize.SM}>
-                                    {t("notificationSettings.securityDescription")}
-                                </Text.P>
-                            </Fragment>
+                            <Flex.Row className="items-center" gap="0.75rem">
+                                <NotificationCategoryIcon category={NotificationCategory.SECURITY} />
+                                <Flex.Col>
+                                    <Text.Span>{t("notificationSettings.security")}</Text.Span>
+                                    <Text.P tone={TextTone.MUTED} size={TextSize.SM}>
+                                        {t("notificationSettings.securityDescription")}
+                                    </Text.P>
+                                </Flex.Col>
+                            </Flex.Row>
                         ),
                         action: (
                             <Badge className={notificationStyles.action}>{t("notificationSettings.alwaysEnabled")}</Badge>

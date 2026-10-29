@@ -1,5 +1,5 @@
 import { List, Section, Avatar, Button, Dialog, Badge, Field, Flex, Form, Text } from "@monadiam/ui-kit";
-import { CameraIcon, CopyIcon, CheckIcon } from "@monadiam/ui-kit/icons";
+import { PencilIcon, CopyIcon, CheckIcon } from "@monadiam/ui-kit/icons";
 import { useTranslation } from "react-i18next";
 import { Fragment, useMemo } from "react";
 import {
@@ -68,8 +68,10 @@ export function ProfileDetails({ account }: ProfileDetails.Props) {
                             <Dialog.Trigger
                                 type="button"
                                 className={pageStyles.avatarFrame}
+                                title={t("profile.changePhoto")}
                                 aria-label={t("profile.changePhoto")}>
                                 <Avatar
+                                    src={account.profile?.pictureUrl}
                                     name={account.profile?.displayName}
                                     label={account.profile?.displayName ?? t("profile.title")}
                                     className={pageStyles.avatar}
@@ -80,8 +82,7 @@ export function ProfileDetails({ account }: ProfileDetails.Props) {
                                     align={FlexAlignment.CENTER}
                                     justify={FlexJustification.CENTER}
                                     className={pageStyles.avatarOverlay}>
-                                    <CameraIcon className={pageStyles.avatarIcon} />
-                                    <Text.Span>{t("profile.changePhoto")}</Text.Span>
+                                    <PencilIcon className={pageStyles.avatarIcon} />
                                 </Flex.Col>
                             </Dialog.Trigger>
                             <Dialog.Content

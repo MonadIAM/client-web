@@ -51,6 +51,8 @@ export function Identifiers() {
             )}
             {query.data && (
                 <List.Columns
+                    maxHeight={365}
+                    estimateSize={73}
                     label={t("identifiers.title")}
                     empty={t("identifiers.empty")}
                     columns={[

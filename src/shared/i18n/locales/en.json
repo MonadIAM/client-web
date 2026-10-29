@@ -1,5 +1,7 @@
 {
     "notificationPreview": {
+        "markRead": "Mark as read",
+        "all": "All notifications",
         "title": "Notifications",
         "unreadCount": "Notifications, unread: {{count}}",
         "unread": "Unread",
@@ -288,6 +290,8 @@
         "title": "Notification settings",
         "inApp": "In app",
         "sound": "Notification sound",
+        "previewSound": "Preview sound",
+        "soundPreviewError": "Could not play the notification sound.",
         "soundDescription": "Play a sound when a new notification arrives.",
         "noInApp": "The in-app notification channel is not available yet.",
         "email": "Email copies",

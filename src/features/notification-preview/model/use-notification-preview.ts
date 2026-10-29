@@ -1,6 +1,7 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient, skipToken } from "@tanstack/react-query";
 
 import { QueryOrder } from "~shared/api/generated/notification";
+import { NotificationManager } from "~shared/notifications";
 import { SessionStatus } from "~shared/auth/session";
 import { NotificationSDK } from "~shared/api/sdk";
 import { useSession } from "~shared/auth";
@@ -10,15 +11,10 @@ import { NotificationPreviewSchema } from "./schema";
 export function useUnreadNotificationCount() {
     const session = useSession();
 
-    return useQuery({
+    return useQuery<number>({
         queryKey: ["notification-unread-count", session.revision],
-        enabled: session.status === SessionStatus.AUTHENTICATED,
-        queryFn: async ({ signal }) => {
-            const response = await NotificationSDK.notificationControllerCountUnread({ signal, throwOnError: true });
-            return NotificationPreviewSchema.count.parse(response.data).count;
-        },
-        refetchInterval: 30_000,
-        staleTime: 30_000,
+        queryFn: skipToken,
+        staleTime: Infinity,
     });
 }
 
@@ -36,8 +32,10 @@ export function useNotificationPreview(open: boolean) {
                         currentPage: pageParam,
                         elementsPerPage: 10,
                     },
+                    sort: {
+                        createdAt: QueryOrder.DESC,
+                    },
                     filters: {},
-                    sort: { createdAt: QueryOrder.DESC },
                 },
                 signal,
                 throwOnError: true,
@@ -48,6 +46,24 @@ export function useNotificationPreview(open: boolean) {
         getNextPageParam: (lastPage, _pages, lastPageParam) =>
             lastPageParam < lastPage.meta.totalPages ? lastPageParam + 1 : undefined,
         staleTime: 0,
-        refetchInterval: open ? 30_000 : false,
+    });
+}
+
+export function useMarkNotificationRead() {
+    const session = useSession();
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (message: string) => {
+            await NotificationSDK.messageControllerMarkRead({
+                body: { message },
+                throwOnError: true,
+            });
+        },
+        onSuccess: () =>
+            queryClient.invalidateQueries({
+                queryKey: ["notification-preview", session.revision],
+            }),
+        onError: (cause) => NotificationManager.error({ cause }),
     });
 }

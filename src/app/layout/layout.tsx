@@ -4,11 +4,11 @@ import { useTranslation } from "react-i18next";
 import { Fragment } from "react";
 
 import { NotificationPreview } from "~features/notification-preview";
-import { NotificationHost } from "~shared/notifications";
 import { SessionStatus } from "~shared/auth/session";
 import { useSession } from "~shared/auth";
 
 import { AccountNavigation } from "./components/account-navigation";
+import { NotificationHost } from "./components/notification-host";
 import { LanguageSwitcher } from "./components/language-switcher";
 import { ThemeSwitcher } from "./components/theme-switcher";
 import { Brand } from "./components/brand";

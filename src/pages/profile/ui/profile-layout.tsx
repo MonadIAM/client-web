@@ -3,18 +3,20 @@ import { useTranslation } from "react-i18next";
 import { useRef, useState } from "react";
 import { NavLink } from "react-router";
 
+import { useNotificationTitle } from "~features/notification-preview";
 import { AppearanceDialog } from "~features/appearance";
 
 import { profileLayoutStyles } from "./styles";
 
 export function ProfileLayout({ title, children }: ProfileLayout.Props) {
     const { t } = useTranslation();
+    const pageTitle = useNotificationTitle(title);
     const [appearanceOpen, setAppearanceOpen] = useState(false);
     const trigger = useRef<HTMLButtonElement>(null);
 
     return (
         <Flex.Col gap="1.5rem" className={profileLayoutStyles.root}>
-            <title>{title}</title>
+            <title>{pageTitle}</title>
             <Flex.Col render={<header />}>
                 <Text.H1>{title}</Text.H1>
             </Flex.Col>

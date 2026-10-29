@@ -5,7 +5,8 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { useState } from "react";
 
-import { useNotificationPreview, useUnreadNotificationCount } from "./use-notification-preview";
+import { useNotificationPreview, useUnreadNotificationCount } from "../model/use-notification-preview";
+import { useNotificationStream } from "../model/use-notification-stream";
 import { NotificationPreviewItem } from "./notification-preview-item";
 import { previewStyles } from "./styles";
 
@@ -14,6 +15,7 @@ export function NotificationPreview() {
     const [open, setOpen] = useState(false);
     const query = useNotificationPreview(open);
     const unreadQuery = useUnreadNotificationCount();
+    const stream = useNotificationStream();
     const unreadCount = unreadQuery.data;
     const items = query.data?.pages.flatMap((page) => page.data) ?? [];
     const dateFormat = new Intl.DateTimeFormat(i18n.resolvedLanguage, {
@@ -22,14 +24,7 @@ export function NotificationPreview() {
     });
 
     return (
-        <Popover
-            open={open}
-            onOpenChange={(nextOpen) => {
-                setOpen(nextOpen);
-                if (nextOpen) {
-                    void unreadQuery.refetch();
-                }
-            }}>
+        <Popover open={open} onOpenChange={setOpen}>
             <Popover.Trigger
                 render={<Button variant={ButtonVariant.GHOST} size={ButtonSize.ICON} />}
                 className={previewStyles.trigger}
@@ -60,14 +55,10 @@ export function NotificationPreview() {
                         <GearIcon aria-hidden="true" />
                     </Button>
                 </Flex.Row>
-                {unreadQuery.isError && (
+                {stream.isError && (
                     <Flex.Row role="alert" className={previewStyles.countError}>
                         <Text.Span>{t("notificationPreview.countError")}</Text.Span>
-                        <Button
-                            variant={ButtonVariant.OUTLINE}
-                            size={ButtonSize.SMALL}
-                            disabled={unreadQuery.isFetching}
-                            onClick={() => void unreadQuery.refetch()}>
+                        <Button variant={ButtonVariant.OUTLINE} size={ButtonSize.SMALL} onClick={stream.retry}>
                             {t("common.retry")}
                         </Button>
                     </Flex.Row>
@@ -81,7 +72,7 @@ export function NotificationPreview() {
                     <List.Custom
                         aria-label={t("notificationPreview.title")}
                         items={items}
-                        height={384}
+                        maxHeight={384}
                         estimateSize={128}
                         hasMore={query.hasNextPage && !query.isError}
                         loading={query.isFetching}
@@ -103,6 +94,11 @@ export function NotificationPreview() {
                         </Button>
                     </Flex.Col>
                 )}
+                <Flex.Row className={previewStyles.footer}>
+                    <Button variant={ButtonVariant.OUTLINE} className="w-full" disabled>
+                        {t("notificationPreview.all")}
+                    </Button>
+                </Flex.Row>
             </Popover.Content>
         </Popover>
     );

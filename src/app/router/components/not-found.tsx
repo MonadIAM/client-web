@@ -4,16 +4,19 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { JSX } from "react";
 
+import { useNotificationTitle } from "~features/notification-preview";
+
 import { routerStyles } from "../styles";
 
 export function NotFound({ rootPath }: Router.NotFoundProps): JSX.Element {
     const { t } = useTranslation();
+    const title = useNotificationTitle(t("errors.notFound"));
     const navigate = useNavigate();
 
     return (
         <section className={routerStyles.centered}>
             <Flex.Col align={FlexAlignment.CENTER} gap="1.25rem" className={routerStyles.error}>
-                <title>{t("errors.notFound")}</title>
+                <title>{title}</title>
                 <Text.H1>{t("errors.notFound")}</Text.H1>
                 <Text.P size={TextSize.MD} role="status">
                     {t("errors.notFoundDescription")}

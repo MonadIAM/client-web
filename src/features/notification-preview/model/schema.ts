@@ -25,6 +25,4 @@ export abstract class NotificationPreviewSchema {
         ),
         meta: z.object({ totalPages: z.number().int().nonnegative() }),
     });
-
-    public static readonly count = z.object({ count: z.number().int().nonnegative() });
 }
