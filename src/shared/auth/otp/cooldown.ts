@@ -37,9 +37,17 @@ class Cooldown implements Auth.OTP.Cooldown.Contract {
 
     public recover({ flow, cause }: Auth.OTP.Cooldown.Recover.Props): Auth.OTP.Cooldown.Recover.Result {
         if (cause instanceof AxiosError && cause.response?.status === 429) {
-            const retryAfter = cause.response.headers["retry-after"];
-            const seconds = Number(retryAfter);
-            const delay = Number.isFinite(seconds) && seconds > 0 ? seconds * 1e3 : this.duration;
+            let seconds = 0;
+
+            for (const header of ["retry-after", "retry-after-account"]) {
+                const value = Number(cause.response.headers[header]);
+
+                if (Number.isFinite(value) && value > seconds) {
+                    seconds = value;
+                }
+            }
+
+            const delay = seconds > 0 ? seconds * 1e3 : this.duration;
             this.start({ flow, delay });
         }
     }

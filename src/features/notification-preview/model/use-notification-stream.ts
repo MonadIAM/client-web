@@ -31,7 +31,9 @@ export function useNotificationStream(): NotificationPreviewView.UseStream.Resul
                         queryClient.setQueryData(["notification-unread-count", session.revision], update.count);
                     }
                     if (update.status === NotificationStreamStatus.CONNECTED) {
-                        void queryClient.invalidateQueries({ queryKey: ["notification-preview", session.revision] });
+                        void queryClient.invalidateQueries({
+                            queryKey: ["notification-preview", session.revision],
+                        });
                     }
                 } else if (response.kind === NotificationStreamMessage.SOUND && response.revision === session.revision) {
                     notify();
@@ -50,6 +52,10 @@ export function useNotificationStream(): NotificationPreviewView.UseStream.Resul
 
     return {
         isError: state?.revision === session.revision && state?.status === NotificationStreamStatus.ERROR,
+        isConnecting:
+            state?.revision === session.revision &&
+            (state.status === NotificationStreamStatus.CONNECTING ||
+                state.status === NotificationStreamStatus.RECONNECTING),
         retry: () => NotificationStreamClient.retry(),
     };
 }

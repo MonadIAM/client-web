@@ -11,11 +11,16 @@ declare namespace NotificationSettingsView {
     namespace Email {
         type Props = {
             preferences: NotificationSettings.Preference[];
+            channel?: NotificationSettings.Channel;
+            emails: Identifiers.Identifier[];
             hasEmail: boolean;
             disabled: boolean;
 
+            onSelect(identifier: string): Promise<void>;
             onToggle(category: NotificationSettings.Category): void;
         };
+
+        type AddressProps = Pick<Props, "channel" | "emails" | "disabled" | "onSelect">;
     }
 
     namespace Region {

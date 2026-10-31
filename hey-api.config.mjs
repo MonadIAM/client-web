@@ -40,18 +40,13 @@ export default defineConfig({
                 && symbol.meta.resourceId.split("/").length === 4,
         },
         {
-            name: "@hey-api/transformers",
-            dates: true,
-        },
-        {
             name: "@hey-api/client-axios",
             includeInEntry: false,
         },
         {
             name: "@hey-api/sdk",
-            auth: false,
-            transformer: true,
             includeInEntry: false,
+            auth: false,
         },
         "@tanstack/react-query",
         "zod",

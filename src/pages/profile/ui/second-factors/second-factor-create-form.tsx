@@ -3,6 +3,7 @@ import { FormSpacing } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
 
 import { useSecondFactorCreateForm } from "../../model/second-factors/use-second-factor-create.form";
+import { SecondFactorType } from "../../model/second-factors/enums";
 import { securityStyles } from "../security/styles";
 
 export function SecondFactorCreateForm(props: SecondFactors.Create.Props) {
@@ -11,7 +12,14 @@ export function SecondFactorCreateForm(props: SecondFactors.Create.Props) {
 
     return (
         <Form form={form} aria-label={t("secondFactors.add")}>
-            <Form.Fields className={securityStyles.fields}>
+            <Form.Fields disabled={pending} className={securityStyles.fields}>
+                <Field.Select
+                    form={form}
+                    name="type"
+                    label={t("secondFactors.type")}
+                    options={[{ value: SecondFactorType.TOTP, label: "TOTP" }]}
+                    reserveErrorSpace={false}
+                />
                 <Field.Text
                     form={form}
                     name="name"

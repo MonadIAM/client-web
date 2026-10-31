@@ -1,19 +1,35 @@
-import { Badge, Flex, List, Section, Switch, Text } from "@monadiam/ui-kit";
+import { Badge, Flex, List, Switch, Text } from "@monadiam/ui-kit";
 import { TextSize, TextTone } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
 
 import { ChannelType, NotificationCategory } from "~shared/api/generated/notification";
 import { NotificationCategoryIcon } from "~features/notification-preview";
 
+import { NotificationEmailAddress } from "./notification-email-address";
 import { notificationStyles } from "./styles";
 
 const categories = [NotificationCategory.INVITES, NotificationCategory.SYSTEM, NotificationCategory.OTHER] as const;
 
-export function NotificationEmail({ preferences, hasEmail, disabled, onToggle }: NotificationSettingsView.Email.Props) {
+export function NotificationEmail({
+    preferences,
+    channel,
+    emails,
+    hasEmail,
+    disabled,
+    onSelect,
+    onToggle,
+}: NotificationSettingsView.Email.Props) {
     const { t } = useTranslation();
 
     return (
-        <Section title={t("notificationSettings.email")}>
+        <Flex.Col gap="1rem">
+            <NotificationEmailAddress
+                key={channel?.sourceIdentifier ?? "unassigned"}
+                channel={channel}
+                emails={emails}
+                disabled={disabled}
+                onSelect={onSelect}
+            />
             {!hasEmail && (
                 <Text.P tone={TextTone.MUTED} size={TextSize.SM}>
                     {t("notificationSettings.noEmail")}
@@ -42,11 +58,13 @@ export function NotificationEmail({ preferences, hasEmail, disabled, onToggle }:
                                     label={t(`notificationSettings.categories.${category}.label`)}
                                     showLabel={false}
                                     checked={
-                                        preferences.find(
+                                        hasEmail &&
+                                        (preferences.find(
                                             (item) => item.channelType === ChannelType.EMAIL && item.category === category,
-                                        )?.isDuplicationEnabled ?? true
+                                        )?.isDuplicationEnabled ??
+                                            false)
                                     }
-                                    disabled={disabled}
+                                    disabled={disabled || !hasEmail}
                                     onCheckedChange={() => onToggle(category)}
                                 />
                             </Flex.Row>
@@ -68,11 +86,13 @@ export function NotificationEmail({ preferences, hasEmail, disabled, onToggle }:
                             </Flex.Row>
                         ),
                         action: (
-                            <Badge className={notificationStyles.action}>{t("notificationSettings.alwaysEnabled")}</Badge>
+                            <Badge className={notificationStyles.action}>
+                                {t(hasEmail ? "notificationSettings.alwaysEnabled" : "notificationSettings.unavailable")}
+                            </Badge>
                         ),
                     },
                 ]}
             />
-        </Section>
+        </Flex.Col>
     );
 }

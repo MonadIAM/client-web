@@ -1,8 +1,10 @@
 import { ButtonSize, ButtonVariant, TextTone } from "@monadiam/ui-kit/enums";
-import { Button, Flex, List, Section, Text } from "@monadiam/ui-kit";
+import { Button, List, Section, Text } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
+import { QueryError } from "~shared/ui/query-error";
+import { RetryButton } from "~shared/ui/retry-button";
 import { useSession } from "~shared/auth";
 
 import { useSessionsQuery } from "../../model/sessions/use-sessions.query";
@@ -22,7 +24,7 @@ export function Sessions() {
     const [selected, setSelected] = useState<Nullable<Sessions.Revoke.Target>>(null);
 
     const currentId = session.claims?.sid ?? "";
-    const sessions = query.data ?? [];
+    const sessions = query.isError ? [] : (query.data ?? []);
 
     return (
         <ProfileLayout title={t("sessions.title")}>
@@ -30,73 +32,87 @@ export function Sessions() {
                 className={securityStyles.section}
                 title={t("sessions.active")}
                 actions={
-                    <Button
-                        size={ButtonSize.SMALL}
-                        disabled={!currentId || query.isPending}
-                        onClick={() => setSelected({ mode: SessionRevokeMode.ALL })}>
-                        {t("sessions.revokeAll")}
-                    </Button>
-                }>
-                {query.isPending && (
-                    <Text.P role="status" tone={TextTone.MUTED}>
-                        {t("common.loading")}
-                    </Text.P>
-                )}
-                {query.isError && (
-                    <Flex.Col gap="0.75rem">
-                        <Text.P role="alert" tone={TextTone.DANGER}>
-                            {t("sessions.loadError")}
-                        </Text.P>
+                    <Fragment>
                         <Button
-                            variant={ButtonVariant.OUTLINE}
-                            onClick={() => void query.refetch()}
-                            loading={query.isFetching}>
-                            {t("common.retry")}
+                            size={ButtonSize.SMALL}
+                            disabled={!currentId || query.isPending || query.isError}
+                            onClick={() => setSelected({ mode: SessionRevokeMode.ALL })}>
+                            {t("sessions.revokeAll")}
                         </Button>
-                    </Flex.Col>
-                )}
-                {query.data && (
-                    <List.Columns
-                        maxHeight={584}
-                        estimateSize={73}
-                        label={t("sessions.active")}
-                        empty={t("sessions.empty")}
-                        columns={[
-                            { id: "device", label: t("sessions.device"), width: "minmax(0, 1fr)" },
-                            { id: "ip", label: t("sessions.ip"), width: "9rem" },
-                            { id: "createdAt", label: t("sessions.createdAt"), width: "6rem" },
-                            { id: "updatedAt", label: t("sessions.updatedAt"), width: "6rem" },
-                            {
-                                id: "actions",
-                                label: t("sessions.actions"),
-                                width: "7rem",
-                                className: securityStyles.actions,
-                            },
-                        ]}
-                        items={sessions.map((item) => ({
-                            id: item.id,
-                            cells: {
-                                device: <SessionContent session={item} current={item.id === currentId} />,
-                                ip: <Text.Span className={sessionStyles.ip}>{item.ip ?? "—"}</Text.Span>,
-                                createdAt: <ProfileDate value={item.createdAt} />,
-                                updatedAt: <ProfileDate value={item.lastRefreshedAt ?? undefined} />,
-                                actions: (
-                                    <Button
-                                        size={ButtonSize.SMALL}
-                                        variant={ButtonVariant.DESTRUCTIVE}
-                                        disabled={!currentId || query.isError}
-                                        aria-label={t("sessions.revokeLabel", {
-                                            agent: item.userAgent || t("sessions.unknownBrowser"),
-                                            ip: item.ip ?? "—",
-                                        })}
-                                        onClick={() => setSelected({ mode: SessionRevokeMode.SINGLE, session: item })}>
-                                        {t("sessions.revoke")}
-                                    </Button>
-                                ),
-                            },
-                        }))}
-                    />
-                )}
+                        {query.isError && <RetryButton loading={query.isFetching} onClick={() => void query.refetch()} />}
+                    </Fragment>
+                }>
+                <List.Columns
+                    maxHeight={584}
+                    estimateSize={73}
+                    label={t("sessions.active")}
+                    empty={
+                        <Fragment>
+                            {query.isError && <QueryError cause={query.error} fallback={t("sessions.loadError")} />}
+                            {query.isPending && (
+                                <Text.Span role="status" tone={TextTone.MUTED}>
+                                    {t("common.loading")}
+                                </Text.Span>
+                            )}
+                            {query.isSuccess && t("sessions.empty")}
+                        </Fragment>
+                    }
+                    columns={[
+                        {
+                            id: "device",
+                            label: t("sessions.device"),
+                            width: "minmax(0, 1fr)",
+                        },
+                        {
+                            id: "ip",
+                            label: t("sessions.ip"),
+                            width: "9rem",
+                        },
+                        {
+                            id: "createdAt",
+                            label: t("sessions.createdAt"),
+                            width: "6rem",
+                        },
+                        {
+                            id: "updatedAt",
+                            label: t("sessions.updatedAt"),
+                            width: "6rem",
+                        },
+                        {
+                            id: "actions",
+                            label: t("sessions.actions"),
+                            width: "7rem",
+                            className: securityStyles.actions,
+                        },
+                    ]}
+                    items={sessions.map((item) => ({
+                        id: item.id,
+                        cells: {
+                            device: <SessionContent session={item} current={item.id === currentId} />,
+                            ip: <Text.Span className={sessionStyles.ip}>{item.ip ?? "—"}</Text.Span>,
+                            createdAt: <ProfileDate value={item.createdAt} />,
+                            updatedAt: <ProfileDate value={item.lastRefreshedAt ?? undefined} />,
+                            actions: (
+                                <Button
+                                    size={ButtonSize.SMALL}
+                                    variant={ButtonVariant.DESTRUCTIVE}
+                                    disabled={!currentId || query.isError}
+                                    aria-label={t("sessions.revokeLabel", {
+                                        agent: item.userAgent || t("sessions.unknownBrowser"),
+                                        ip: item.ip ?? "—",
+                                    })}
+                                    onClick={() =>
+                                        setSelected({
+                                            mode: SessionRevokeMode.SINGLE,
+                                            session: item,
+                                        })
+                                    }>
+                                    {t("sessions.revoke")}
+                                </Button>
+                            ),
+                        },
+                    }))}
+                />
                 {selected && (
                     <SessionRevokeDialog target={selected} currentId={currentId} onClose={() => setSelected(null)} />
                 )}

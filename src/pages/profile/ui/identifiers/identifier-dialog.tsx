@@ -49,7 +49,12 @@ export function IdentifierDialog({ state, onClose, onChange }: Identifiers.Dialo
                     <IdentifierVerifyForm identity={state.identity} onVerified={onClose} />
                 )}
                 {state.mode === IdentifierDialogMode.REMOVE && (
-                    <IdentifierRemoveForm id={state.id} identity={state.identity} onRemoved={onClose} />
+                    <IdentifierRemoveForm
+                        id={state.id}
+                        identity={state.identity}
+                        isVerified={state.isVerified}
+                        onRemoved={onClose}
+                    />
                 )}
             </Dialog.Content>
         </Dialog>

@@ -5,6 +5,9 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { useState } from "react";
 
+import { QueryError } from "~shared/ui/query-error";
+import { RetryButton } from "~shared/ui/retry-button";
+
 import { useNotificationPreview, useUnreadNotificationCount } from "../model/use-notification-preview";
 import { useNotificationStream } from "../model/use-notification-stream";
 import { NotificationPreviewItem } from "./notification-preview-item";
@@ -45,25 +48,41 @@ export function NotificationPreview() {
             <Popover.Content className={previewStyles.panel}>
                 <Flex.Row className={previewStyles.header}>
                     <Popover.Title className={previewStyles.title}>{t("notificationPreview.title")}</Popover.Title>
-                    <Button
-                        render={<Link to="/profile/notifications" />}
-                        nativeButton={false}
-                        variant={ButtonVariant.GHOST}
-                        size={ButtonSize.ICON_SMALL}
-                        aria-label={t("notificationSettings.title")}
-                        onClick={() => setOpen(false)}>
-                        <GearIcon aria-hidden="true" />
-                    </Button>
+                    <Flex.Row gap="0.5rem">
+                        <Button
+                            render={<Link to="/profile/notifications" />}
+                            nativeButton={false}
+                            variant={ButtonVariant.GHOST}
+                            size={ButtonSize.ICON_SMALL}
+                            aria-label={t("notificationSettings.title")}
+                            disabled={query.isError || stream.isError}
+                            onClick={() => setOpen(false)}>
+                            <GearIcon aria-hidden="true" />
+                        </Button>
+                        {(query.isError || stream.isError) && (
+                            <RetryButton
+                                loading={query.isFetching || stream.isConnecting}
+                                onClick={() => {
+                                    if (stream.isError) {
+                                        stream.retry();
+                                    } else if (query.isError) {
+                                        void (query.isFetchNextPageError ? query.fetchNextPage() : query.refetch());
+                                    }
+                                }}
+                            />
+                        )}
+                    </Flex.Row>
                 </Flex.Row>
                 {stream.isError && (
                     <Flex.Row role="alert" className={previewStyles.countError}>
                         <Text.Span>{t("notificationPreview.countError")}</Text.Span>
-                        <Button variant={ButtonVariant.OUTLINE} size={ButtonSize.SMALL} onClick={stream.retry}>
-                            {t("common.retry")}
-                        </Button>
                     </Flex.Row>
                 )}
-                {items.length === 0 && !query.isPending && !query.isError ? (
+                {query.isError ? (
+                    <Flex.Col className={previewStyles.state}>
+                        <QueryError cause={query.error} fallback={t("notificationPreview.error")} />
+                    </Flex.Col>
+                ) : items.length === 0 && !query.isPending ? (
                     <Flex.Col className={previewStyles.state}>
                         <BellIcon className="size-6" aria-hidden="true" />
                         <Text.Span>{t("notificationPreview.empty")}</Text.Span>
@@ -81,18 +100,6 @@ export function NotificationPreview() {
                             <NotificationPreviewItem item={item} date={dateFormat.format(new Date(item.createdAt))} />
                         )}
                     />
-                )}
-                {query.isError && (
-                    <Flex.Col role="alert" className={previewStyles.state}>
-                        <Text.Span>{t("notificationPreview.error")}</Text.Span>
-                        <Button
-                            variant={ButtonVariant.OUTLINE}
-                            size={ButtonSize.SMALL}
-                            disabled={query.isFetching}
-                            onClick={() => void (query.isFetchNextPageError ? query.fetchNextPage() : query.refetch())}>
-                            {t("common.retry")}
-                        </Button>
-                    </Flex.Col>
                 )}
                 <Flex.Row className={previewStyles.footer}>
                     <Button variant={ButtonVariant.OUTLINE} className="w-full" disabled>

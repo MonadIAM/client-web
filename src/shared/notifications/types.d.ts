@@ -96,6 +96,7 @@ declare namespace Notifications {
         interface PublicContract {
             readonly limit: number;
 
+            getResponseMessage: GetResponseMessage.Signature;
             connect: Connect.Signature;
             success: Success.Signature;
             response: Response.Signature;
@@ -179,7 +180,6 @@ declare namespace Notifications {
         interface PrivateContract {
             reported: WeakMap<object, string>;
 
-            getResponseMessage: GetResponseMessage.Signature;
             getMessage: GetMessage.Signature;
             log: Log.Signature;
         }

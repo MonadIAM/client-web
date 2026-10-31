@@ -36,6 +36,7 @@ declare global {
               }
             | {
                   mode: IdentifierDialogMode.REMOVE;
+                  isVerified: boolean;
                   identity: string;
                   id: string;
               };
@@ -58,6 +59,7 @@ declare global {
             type Props = {
                 id: string;
                 identity: string;
+                isVerified: boolean;
 
                 onRemoved: Complete.Signature;
             };
@@ -135,6 +137,7 @@ declare global {
             namespace Remove {
                 type Props = {
                     identifier: string;
+                    isVerified: boolean;
                 };
 
                 type Result = Promise<void>;

@@ -7,6 +7,7 @@ import { secondFactorMutationKey } from "../../model/second-factors/use-second-f
 import { SecondFactorDialogMode } from "../../model/second-factors/enums";
 import { SecondFactorCreateForm } from "./second-factor-create-form";
 import { SecondFactorRemoveForm } from "./second-factor-remove-form";
+import { SecondFactorResetForm } from "./second-factor-reset-form";
 import { SecondFactorRecovery } from "./second-factor-recovery";
 import { SecondFactorSetup } from "./second-factor-setup";
 import { securityStyles } from "../security/styles";
@@ -18,6 +19,7 @@ export function SecondFactorDialog({ state, onChange, onClose }: SecondFactors.D
     const [recoveryCode, setRecoveryCode] = useState<string>();
 
     const titles = {
+        [SecondFactorDialogMode.RESET]: t("secondFactors.reset"),
         [SecondFactorDialogMode.ADD]: t("secondFactors.add"),
         [SecondFactorDialogMode.VERIFY]: t("secondFactors.verifyTitle"),
         [SecondFactorDialogMode.REMOVE]: t("secondFactors.remove"),
@@ -37,6 +39,9 @@ export function SecondFactorDialog({ state, onChange, onClose }: SecondFactors.D
                 showClose={!recoveryCode}
                 className={securityStyles.dialog}>
                 {recoveryCode && <SecondFactorRecovery code={recoveryCode} onComplete={onClose} />}
+                {!recoveryCode && state.mode === SecondFactorDialogMode.RESET && (
+                    <SecondFactorResetForm onReset={onClose} />
+                )}
                 {!recoveryCode && state.mode === SecondFactorDialogMode.ADD && (
                     <SecondFactorCreateForm
                         onCreated={(setup) => onChange({ mode: SecondFactorDialogMode.VERIFY, setup })}

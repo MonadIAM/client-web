@@ -1,10 +1,9 @@
-import { ButtonVariant, FormSpacing, TextTone } from "@monadiam/ui-kit/enums";
-import { Button, Field, Flex, Form, Text } from "@monadiam/ui-kit";
+import { ButtonVariant, FormSpacing } from "@monadiam/ui-kit/enums";
+import { Button, Field, Form } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 
 import { useIdentifierVerifyForm } from "../../model/identifiers/use-identifier-verify.form";
 import { securityStyles } from "../security/styles";
-import { identifierStyles } from "./styles";
 
 export function IdentifierVerifyForm(props: Identifiers.Verify.Props) {
     const { t } = useTranslation();
@@ -13,10 +12,6 @@ export function IdentifierVerifyForm(props: Identifiers.Verify.Props) {
     return (
         <Form form={form} aria-label={t("identifiers.verifyTitle")}>
             <Form.Fields disabled={resendRequest.isPending} className={securityStyles.fields}>
-                <Flex.Col gap="0.25rem">
-                    <Text.P tone={TextTone.MUTED}>{t("identifiers.codeDescription")}</Text.P>
-                    <Text.P className={identifierStyles.identity}>{props.identity}</Text.P>
-                </Flex.Col>
                 <Field.Code
                     reserveErrorSpace={false}
                     form={form}

@@ -9,6 +9,9 @@ export abstract class NotificationSettingsSchema {
         id: z.uuid(),
         type: z.enum(ChannelType),
         soundEnabled: z.boolean().nullish(),
+        sourceIdentifier: z.uuid().nullish(),
+        address: z.string().nullish(),
+        isVerified: z.boolean(),
     });
 
     public static readonly preference = z.object({

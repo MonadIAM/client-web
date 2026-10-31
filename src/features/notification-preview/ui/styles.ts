@@ -9,7 +9,8 @@ export const previewStyles = {
     item: "px-5 py-4",
     content: "min-w-0 flex-1",
     name: "truncate leading-5 tracking-normal",
-    countError: "flex items-center justify-between gap-3 border-b border-border px-5 py-3 text-sm text-muted-foreground",
+    countError:
+        "flex items-center justify-center text-center gap-3 border-b border-border px-5 py-3 text-sm text-muted-foreground",
     date: "mt-1 block",
     body: "line-clamp-2 whitespace-pre-wrap break-words leading-5",
     state: "flex flex-col items-center gap-3 px-6 py-10 text-center text-sm text-muted-foreground",

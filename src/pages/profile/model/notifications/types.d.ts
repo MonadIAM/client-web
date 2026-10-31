@@ -19,6 +19,15 @@ declare global {
             recipient: Recipient;
         };
 
+        namespace EmailForm {
+            type Props = {
+                channel?: Channel;
+                emails: Identifiers.Identifier[];
+
+                onSelect(identifier: string): Promise<void>;
+            };
+        }
+
         namespace Manager {
             interface Contract extends PublicContract, PrivateContract {}
 
@@ -26,6 +35,7 @@ declare global {
                 updateRegion: UpdateRegion.Signature;
                 toggleSound: ToggleSound.Signature;
                 toggleEmail: ToggleEmail.Signature;
+                selectEmail: SelectEmail.Signature;
                 get: Get.Signature;
             }
 
@@ -66,6 +76,14 @@ declare global {
                 type Result = Promise<void>;
 
                 type Signature = () => Result;
+            }
+
+            namespace SelectEmail {
+                type Props = { identifier: string };
+
+                type Result = Promise<void>;
+
+                type Signature = (props: Props) => Result;
             }
 
             namespace ToggleEmail {

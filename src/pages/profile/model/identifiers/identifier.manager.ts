@@ -73,11 +73,10 @@ class Manager implements Identifiers.Manager.Contract {
         });
     }
 
-    public async remove(query: Identifiers.Manager.Remove.Props): Identifiers.Manager.Remove.Result {
-        await IdentitySDK.identifierControllerPurge({
-            query,
-            throwOnError: true,
-        });
+    public async remove({ identifier, isVerified }: Identifiers.Manager.Remove.Props): Identifiers.Manager.Remove.Result {
+        const purge = isVerified ? IdentitySDK.identifierControllerPurge : IdentitySDK.identifierControllerPurgeUnverified;
+
+        await purge({ query: { identifier }, throwOnError: true });
     }
 }
 

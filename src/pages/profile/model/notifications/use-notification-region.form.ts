@@ -34,6 +34,7 @@ export function useNotificationRegionForm(recipient: NotificationSettings.Recipi
             }
 
             try {
+                await queryClient.cancelQueries({ queryKey: [...notificationSettingsQueryKey, session.revision] });
                 await NotificationSettingsManager.updateRegion(body);
 
                 setSavedValues(value);
@@ -41,7 +42,19 @@ export function useNotificationRegionForm(recipient: NotificationSettings.Recipi
 
                 NotificationManager.success({ title: t("notificationSettings.saved") });
 
-                void queryClient.invalidateQueries({ queryKey: [...notificationSettingsQueryKey, session.revision] });
+                queryClient.setQueryData<NotificationSettings.Data>(
+                    [...notificationSettingsQueryKey, session.revision],
+                    (current) => {
+                        if (!current) {
+                            return current;
+                        }
+
+                        return {
+                            ...current,
+                            recipient: { ...current.recipient, ...value },
+                        };
+                    },
+                );
             } catch (cause) {
                 const fields = getValidationErrors({ cause, fields: ["locale", "timezone"] });
 

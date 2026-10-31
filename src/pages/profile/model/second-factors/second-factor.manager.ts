@@ -35,8 +35,16 @@ class Manager implements SecondFactors.Manager.PublicContract {
         return SecondFactorSchema.verification.parse(response.data);
     }
 
-    public async remove(query: SecondFactors.Manager.Remove.Props): SecondFactors.Manager.Remove.Result {
-        await IdentitySDK.secondFactorControllerPurge({ query, throwOnError: true });
+    public async remove({ factor, confirmed }: SecondFactors.Manager.Remove.Props): SecondFactors.Manager.Remove.Result {
+        const purge = confirmed
+            ? IdentitySDK.secondFactorControllerPurge
+            : IdentitySDK.secondFactorControllerPurgeUnconfirmed;
+
+        await purge({ query: { factor }, throwOnError: true });
+    }
+
+    public async reset(body: SecondFactors.Manager.Reset.Props): SecondFactors.Manager.Reset.Result {
+        await IdentitySDK.secondFactorControllerResetCurrent({ body, throwOnError: true });
     }
 
     public secret({ uri }: SecondFactors.Manager.Secret.Props): SecondFactors.Manager.Secret.Result {

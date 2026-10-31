@@ -39,6 +39,12 @@ declare global {
             };
         }
 
+        namespace Reset {
+            type Props = {
+                onReset: Complete.Signature;
+            };
+        }
+
         namespace Verify {
             type Props = {
                 setup: Setup;
@@ -54,6 +60,7 @@ declare global {
                 setup: Setup.Signature;
                 verify: Verify.Signature;
                 remove: Remove.Signature;
+                reset: Reset.Signature;
                 secret: Secret.Signature;
             }
 
@@ -97,7 +104,16 @@ declare global {
             namespace Remove {
                 type Props = {
                     factor: string;
+                    confirmed: boolean;
                 };
+
+                type Result = Promise<void>;
+
+                type Signature = (props: Props) => Result;
+            }
+
+            namespace Reset {
+                type Props = API.Identity.SecondFactorResetCurrentBody;
 
                 type Result = Promise<void>;
 

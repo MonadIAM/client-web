@@ -1,5 +1,5 @@
 import { ChannelType, PublicStringOperator, QueryOrder } from "~shared/api/generated/notification";
-import { NotificationSDK } from "~shared/api/sdk";
+import { IdentitySDK, NotificationSDK } from "~shared/api/sdk";
 
 import { NotificationSettingsSchema } from "./schema";
 
@@ -74,6 +74,12 @@ class Manager implements NotificationSettings.Manager.Contract {
         }
 
         return data;
+    }
+
+    public async selectEmail(
+        body: NotificationSettings.Manager.SelectEmail.Props,
+    ): NotificationSettings.Manager.SelectEmail.Result {
+        await IdentitySDK.identifierControllerSelectNotificationEmail({ body, throwOnError: true });
     }
 
     public async toggleSound(): NotificationSettings.Manager.ToggleSound.Result {

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 
+import { SecurityDangerZone } from "../danger-zone/security-danger-zone";
 import { SecondFactors } from "../second-factors/second-factors";
 import { Identifiers } from "../identifiers/identifiers";
 import { ProfileLayout } from "../profile-layout";
@@ -11,6 +12,7 @@ export function Security() {
         <ProfileLayout title={t("security.title")}>
             <Identifiers />
             <SecondFactors />
+            <SecurityDangerZone />
         </ProfileLayout>
     );
 }

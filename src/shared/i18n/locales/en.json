@@ -20,6 +20,7 @@
         "language": "Language",
         "loading": "Loading",
         "retry": "Retry",
+        "retryLoading": "Retry loading",
         "back": "Go back",
         "skip": "Skip to content",
         "notifications": "Notifications",
@@ -207,7 +208,6 @@
         "removed": "Identifier removed",
         "loadError": "Could not load identifiers. Please try again.",
         "empty": "You have no identifiers yet.",
-        "codeDescription": "Code sent to",
         "codeSent": "Verification code sent",
         "verifiedMessage": "Identifier verified",
         "invalid": {
@@ -225,13 +225,17 @@
         "publicNotApplicable": "OAuth identifiers cannot be public contacts"
     },
     "security": {
+        "loadError": "Could not load verification methods.",
         "title": "Security",
-        "authentication": "Verify your identity",
-        "authenticate": "Verify identity",
+        "authentication": "Verification method",
+        "authenticate": "Confirm",
         "invalidPassword": "Enter your password.",
         "invalidCode": "Enter the 6-digit code."
     },
     "secondFactors": {
+        "reset": "Reset 2FA",
+        "resetDescription": "All factors will be removed and two-factor authentication disabled. Enter the 2FA recovery code saved during setup.",
+        "resetSuccess": "Two-factor authentication reset",
         "title": "Two-factor authentication",
         "add": "Add 2FA",
         "name": "Name",
@@ -295,7 +299,7 @@
         "soundDescription": "Play a sound when a new notification arrives.",
         "noInApp": "The in-app notification channel is not available yet.",
         "email": "Email copies",
-        "noEmail": "Add an email in Security to receive email notifications.",
+        "noEmail": "Email delivery is unavailable until a confirmed email is assigned to the channel.",
         "categories": {
             "INVITES": {
                 "label": "Invitations",
@@ -316,6 +320,40 @@
         "region": "Notification region",
         "locale": "Notification language",
         "saved": "Notification settings saved",
-        "loadError": "Could not load notification settings. Please try again."
+        "loadError": "Could not load notification settings. Please try again.",
+        "deliveryEmail": "Delivery email",
+        "unavailable": "Unavailable"
+    },
+    "dangerZone": {
+        "title": "Danger zone",
+        "emailConfirmation": "Email confirmation",
+        "noConfirmationMethod": "Add and verify an email address to continue.",
+        "sendCode": "Send code",
+        "passwordMismatch": "Passwords do not match.",
+        "passwordSaved": "Password saved.",
+        "currentPassword": "Current password",
+        "newPassword": "New password",
+        "confirmPassword": "Confirm new password",
+        "saveCodesDescription": "Save the new codes. They replace the old ones and are shown only once.",
+        "codesSaved": "I have saved the codes",
+        "changePassword": "Change password",
+        "passwordDescription": "Manage the password used to sign in to your account.",
+        "passwordAction": "Configure",
+        "changePasswordAction": "Change",
+        "setPassword": "Set password",
+        "setPasswordAction": "Set",
+        "changePasswordDescription": "Choose a new password for your account.",
+        "setPasswordDescription": "Sign in with a password without an external provider.",
+        "recoveryCodes": "Recovery codes",
+        "recoveryCodesDescription": "Replace your password recovery codes with a new set.",
+        "regenerateCodes": "Generate new codes",
+        "regenerateCodesAction": "Regenerate",
+        "regenerateWarning": "Your old codes will stop working. Save the new set.",
+        "deactivate": "Deactivate account",
+        "deactivateAction": "Deactivate",
+        "deactivateDescription": "Sign out everywhere. Sign in within 180 days to prevent permanent account deletion.",
+        "deactivateWarning": "All sessions will end",
+        "deactivated": "Account deactivated.",
+        "deactivateConfirmation": "Sign in within 180 days to prevent permanent deletion."
     }
 }

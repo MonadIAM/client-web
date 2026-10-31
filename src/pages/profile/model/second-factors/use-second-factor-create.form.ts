@@ -9,6 +9,7 @@ import { secondFactorMutationKey } from "./use-second-factors.query";
 import { useSecondFactorRefresh } from "./use-second-factor-refresh";
 import { SecondFactorManager } from "./second-factor.manager";
 import { SecondFactorSchema } from "./schema";
+import { SecondFactorType } from "./enums";
 
 export function useSecondFactorCreateForm({ onCreated }: SecondFactors.Create.Props) {
     const { t } = useTranslation();
@@ -21,7 +22,7 @@ export function useSecondFactorCreateForm({ onCreated }: SecondFactors.Create.Pr
     });
 
     const form = useForm({
-        defaultValues: { name: "" },
+        defaultValues: { name: "", type: SecondFactorType.TOTP },
 
         validators: {
             onSubmit: ({ value }) => {

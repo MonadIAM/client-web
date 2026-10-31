@@ -2,6 +2,7 @@ declare namespace NotificationPreviewView {
     namespace UseStream {
         type Result = {
             isError: boolean;
+            isConnecting: boolean;
 
             retry: Notifications.Stream.WorkerClient.Retry.Signature;
         };
