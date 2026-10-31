@@ -1,7 +1,6 @@
 import { useForm, useSelector } from "@monadiam/ui-kit";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
 
 import { CooldownOTP, OTPFlow, useCooldownOTP } from "~shared/auth/otp";
 import { getValidationErrors } from "~shared/api/validation";
@@ -11,29 +10,14 @@ import { SecurityManager } from "./security.manager";
 import { SecurityAuthentication } from "./enums";
 import { SecuritySchema } from "./schema";
 
-export function useSecurityActionForm({
-    action,
-    onComplete,
-    mutationKey,
-    successMessage,
-    security,
-    authenticateOnly,
-    method: requiredMethod,
-}: Security.Action.FieldsProps) {
+export function useSecurityActionForm({ onComplete, mutationKey, methods }: Security.Action.FieldsProps) {
     const { t } = useTranslation();
 
-    const [authenticated, setAuthenticated] = useState(false);
     const remaining = useCooldownOTP({ flow: OTPFlow.REAUTHENTICATION });
 
     const authentication = useMutation({
         mutationKey,
         mutationFn: SecurityManager.authenticate,
-        gcTime: 0,
-    });
-
-    const operation = useMutation({
-        mutationKey,
-        mutationFn: action,
         gcTime: 0,
     });
 
@@ -43,15 +27,8 @@ export function useSecurityActionForm({
         gcTime: 0,
     });
 
-    let defaultMethod = SecurityAuthentication.EMAIL;
-    if (security.hasPassword) {
-        defaultMethod = SecurityAuthentication.PASSWORD;
-    } else if (security.hasSecondFactor) {
-        defaultMethod = SecurityAuthentication.SECOND_FACTOR;
-    }
-
     const defaultValues: Security.Action.Values = {
-        method: requiredMethod ?? defaultMethod,
+        method: methods[0]?.value ?? SecurityAuthentication.EMAIL,
         password: "",
         code: "",
     };
@@ -61,9 +38,7 @@ export function useSecurityActionForm({
 
         validators: {
             onSubmit: ({ value }) => {
-                if (authenticated) {
-                    return undefined;
-                } else if (
+                if (
                     value.method === SecurityAuthentication.PASSWORD &&
                     !SecuritySchema.password.safeParse(value.password).success
                 ) {
@@ -83,25 +58,10 @@ export function useSecurityActionForm({
 
         onSubmit: async ({ value, formApi }) => {
             try {
-                if (authenticated) {
-                    await operation.mutateAsync();
-
-                    if (successMessage) {
-                        NotificationManager.success({ title: successMessage });
-                    }
-
-                    onComplete();
-                } else {
-                    await authentication.mutateAsync(value);
-
-                    if (authenticateOnly) {
-                        onComplete();
-                    } else {
-                        setAuthenticated(true);
-                    }
-                }
+                await authentication.mutateAsync(value);
+                formApi.reset();
+                await onComplete();
             } catch (cause) {
-                setAuthenticated(false);
                 const fields = getValidationErrors({
                     cause,
                     fields: ["password", "code"],
@@ -138,7 +98,6 @@ export function useSecurityActionForm({
         form,
         method,
         pending,
-        authenticated,
         remaining,
         sendCode,
         sendingCode: requestCode.isPending,

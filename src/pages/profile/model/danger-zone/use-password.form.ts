@@ -1,17 +1,20 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, useSelector } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 import { getValidationErrors } from "~shared/api/validation";
 import { NotificationManager } from "~shared/notifications";
 
 import { securityQueryKey } from "../security/use-security.query";
+import { SecurityManager } from "../security/security.manager";
 import { DangerZoneManager } from "./danger-zone.manager";
 import { dangerZoneMutationKey } from "./constants";
 
 export function usePasswordForm({ hasPassword, onComplete }: AccountDangerZone.Password.Props) {
     const { t } = useTranslation();
     const client = useQueryClient();
+    const [authenticationRequired, setAuthenticationRequired] = useState(false);
 
     const operation = useMutation({
         mutationKey: dangerZoneMutationKey,
@@ -19,7 +22,6 @@ export function usePasswordForm({ hasPassword, onComplete }: AccountDangerZone.P
         mutationFn: async (value: AccountDangerZone.Password.Values) => {
             if (hasPassword) {
                 await DangerZoneManager.changePassword({
-                    currentPassword: value.currentPassword,
                     newPassword: value.password,
                 });
             } else {
@@ -31,7 +33,6 @@ export function usePasswordForm({ hasPassword, onComplete }: AccountDangerZone.P
     });
 
     const defaultValues: AccountDangerZone.Password.Values = {
-        currentPassword: "",
         confirmation: "",
         password: "",
     };
@@ -42,18 +43,10 @@ export function usePasswordForm({ hasPassword, onComplete }: AccountDangerZone.P
             onSubmit: ({ value }) => {
                 if (!value.password) {
                     return { fields: { password: t("validation.required") } };
-                } else if (value.password !== value.confirmation) {
-                    return {
-                        fields: {
-                            confirmation: t("dangerZone.passwordMismatch"),
-                        },
-                    };
-                } else if (hasPassword && !value.currentPassword) {
-                    return {
-                        fields: { currentPassword: t("validation.required") },
-                    };
-                } else {
+                } else if (value.password === value.confirmation) {
                     return undefined;
+                } else {
+                    return { fields: { confirmation: t("dangerZone.passwordMismatch") } };
                 }
             },
         },
@@ -67,21 +60,24 @@ export function usePasswordForm({ hasPassword, onComplete }: AccountDangerZone.P
                 });
                 onComplete();
             } catch (cause) {
-                const fields = getValidationErrors({
-                    cause,
-                    fields: ["currentPassword", "password", "newPassword"],
-                });
-                if (fields) {
-                    formApi.setErrorMap({
-                        onSubmit: {
-                            fields: {
-                                currentPassword: fields.currentPassword,
-                                password: fields.password ?? fields.newPassword,
-                            },
-                        },
-                    });
+                if (SecurityManager.requiresReauthentication({ cause })) {
+                    setAuthenticationRequired(true);
                 } else {
-                    NotificationManager.error({ cause });
+                    const fields = getValidationErrors({
+                        cause,
+                        fields: ["password", "newPassword"],
+                    });
+                    if (fields) {
+                        formApi.setErrorMap({
+                            onSubmit: {
+                                fields: {
+                                    password: fields.password ?? fields.newPassword,
+                                },
+                            },
+                        });
+                    } else {
+                        NotificationManager.error({ cause });
+                    }
                 }
             }
         },
@@ -89,5 +85,10 @@ export function usePasswordForm({ hasPassword, onComplete }: AccountDangerZone.P
 
     const pending = useSelector(form.store, (state) => state.isSubmitting);
 
-    return { form, pending };
+    const authenticate = async () => {
+        setAuthenticationRequired(false);
+        await form.handleSubmit();
+    };
+
+    return { form, pending, authenticationRequired, authenticate };
 }

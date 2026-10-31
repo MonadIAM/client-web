@@ -338,6 +338,8 @@
         "confirmPassword": "Повторите новый пароль",
         "saveCodesDescription": "Сохраните новые коды. Они заменяют старые и показываются только один раз.",
         "codesSaved": "Я сохранил коды",
+        "resetPassword": "Сбросить пароль",
+        "resetPasswordAction": "Сбросить",
         "changePassword": "Изменить пароль",
         "passwordDescription": "Управление паролем для входа в учётную запись.",
         "passwordAction": "Настроить",

@@ -1,5 +1,6 @@
 import { IdentitySDK } from "~shared/api/sdk";
 
+import { PasswordResetMethod } from "./enums";
 import { DangerZoneSchema } from "./schema";
 
 class Manager implements AccountDangerZone.Manager.PublicContract {
@@ -23,6 +24,21 @@ class Manager implements AccountDangerZone.Manager.PublicContract {
             body,
             throwOnError: true,
         });
+    }
+
+    public async requestPasswordReset(): AccountDangerZone.Manager.RequestPasswordReset.Result {
+        await IdentitySDK.passwordControllerRequestCurrentOtp({ throwOnError: true });
+    }
+
+    public async resetPassword({
+        method,
+        ...body
+    }: AccountDangerZone.Manager.ResetPassword.Props): AccountDangerZone.Manager.ResetPassword.Result {
+        if (method === PasswordResetMethod.OTP) {
+            await IdentitySDK.passwordControllerResetCurrentByOtp({ body, throwOnError: true });
+        } else {
+            await IdentitySDK.passwordControllerResetCurrentByRecoveryCode({ body, throwOnError: true });
+        }
     }
 
     public async regenerateCodes(): AccountDangerZone.Manager.RegenerateCodes.Result {

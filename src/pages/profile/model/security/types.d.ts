@@ -1,5 +1,6 @@
 import type { z } from "zod";
 
+import type { useSecurityConfirmationForm } from "./use-security-confirmation.form";
 import type { SecurityAuthentication } from "./enums";
 import type { SecuritySchema } from "./schema";
 
@@ -22,28 +23,23 @@ declare global {
                 mutationKey: string[];
                 method?: SecurityAuthentication;
 
-                onComplete: Complete.Signature;
-            } & (Confirmation | Operation);
-
-            type Confirmation = {
-                authenticateOnly: true;
-                action?: never;
-            };
-
-            type Operation = {
-                authenticateOnly?: false;
-                reauthenticate?: boolean;
-
+                onComplete?: Complete.Signature;
                 action: Submit.Signature;
             };
+
+            type AuthenticationProps = Pick<Props, "title" | "subject" | "description" | "mutationKey" | "method"> & {
+                onComplete(): void | Promise<void>;
+            };
+
+            type ConfirmationProps = Props & Pick<ReturnType<typeof useSecurityConfirmationForm>, "form" | "pending">;
 
             type MethodOption = {
                 value: SecurityAuthentication;
                 label: string;
             };
 
-            type FieldsProps = Props & {
-                security: Status;
+            type FieldsProps = AuthenticationProps & {
+                methods: MethodOption[];
             };
 
             namespace SendCode {
@@ -63,9 +59,20 @@ declare global {
 
         namespace Manager {
             interface PublicContract {
-                status: Status.Signature;
-                requestCode: RequestCode.Signature;
+                requiresReauthentication: RequiresReauthentication.Signature;
                 authenticate: Authenticate.Signature;
+                requestCode: RequestCode.Signature;
+                status: Status.Signature;
+            }
+
+            namespace RequiresReauthentication {
+                type Props = {
+                    cause: unknown;
+                };
+
+                type Result = boolean;
+
+                type Signature = (props: Props) => Result;
             }
 
             namespace Status {

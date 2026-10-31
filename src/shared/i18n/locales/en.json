@@ -336,6 +336,8 @@
         "confirmPassword": "Confirm new password",
         "saveCodesDescription": "Save the new codes. They replace the old ones and are shown only once.",
         "codesSaved": "I have saved the codes",
+        "resetPassword": "Reset password",
+        "resetPasswordAction": "Reset",
         "changePassword": "Change password",
         "passwordDescription": "Manage the password used to sign in to your account.",
         "passwordAction": "Configure",

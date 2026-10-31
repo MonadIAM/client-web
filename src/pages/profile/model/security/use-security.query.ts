@@ -11,6 +11,7 @@ export function useSecurityQuery() {
     const session = useSession();
 
     return useQuery({
+        staleTime: Infinity,
         queryKey: [...securityQueryKey, session.revision],
         enabled: session.status === SessionStatus.AUTHENTICATED,
         queryFn: ({ signal }) => SecurityManager.status({ signal }),

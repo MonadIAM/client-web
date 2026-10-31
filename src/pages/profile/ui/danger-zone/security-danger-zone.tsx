@@ -1,4 +1,4 @@
-import { Button, DangerZone, Text } from "@monadiam/ui-kit";
+import { Button, DangerZone, Text, Flex } from "@monadiam/ui-kit";
 import { ButtonVariant } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
 import { Fragment, useState } from "react";
@@ -42,12 +42,22 @@ export function SecurityDangerZone() {
                         title: passwordTitle,
                         description: passwordDescription,
                         action: (
-                            <Button
-                                variant={ButtonVariant.DESTRUCTIVE}
-                                disabled={disabled}
-                                onClick={() => setAction(DangerZoneAction.PASSWORD)}>
-                                {passwordAction}
-                            </Button>
+                            <Flex.Row gap="0.5rem">
+                                {security.data?.hasPassword && (
+                                    <Button
+                                        variant={ButtonVariant.DESTRUCTIVE}
+                                        disabled={disabled}
+                                        onClick={() => setAction(DangerZoneAction.RESET_PASSWORD)}>
+                                        {t("dangerZone.resetPasswordAction")}
+                                    </Button>
+                                )}
+                                <Button
+                                    variant={ButtonVariant.DESTRUCTIVE}
+                                    disabled={disabled}
+                                    onClick={() => setAction(DangerZoneAction.PASSWORD)}>
+                                    {passwordAction}
+                                </Button>
+                            </Flex.Row>
                         ),
                     },
                     {

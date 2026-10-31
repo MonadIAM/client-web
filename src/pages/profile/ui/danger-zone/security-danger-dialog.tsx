@@ -7,6 +7,7 @@ import { DangerZoneManager } from "../../model/danger-zone/danger-zone.manager";
 import { dangerZoneMutationKey } from "../../model/danger-zone/constants";
 import { SecurityActionForm } from "../security/security-action-form";
 import { DangerZoneAction } from "../../model/danger-zone/enums";
+import { PasswordResetForm } from "./password-reset-form";
 import { RecoveryCodesResult } from "./recovery-codes";
 import { securityStyles } from "../security/styles";
 import { PasswordForm } from "./password-form";
@@ -14,12 +15,13 @@ import { PasswordForm } from "./password-form";
 export function SecurityDangerDialog({ action, hasPassword, onClose }: AccountDangerZone.Dialog.Props) {
     const { t } = useTranslation();
     const pending = useIsMutating({ mutationKey: dangerZoneMutationKey }) > 0;
-    const [confirmed, setConfirmed] = useState(false);
     const [codes, setCodes] = useState<string[]>();
     const isPassword = action === DangerZoneAction.PASSWORD;
     let title = t("dangerZone.regenerateCodes");
     if (isPassword) {
         title = hasPassword ? t("dangerZone.changePassword") : t("dangerZone.setPassword");
+    } else if (action === DangerZoneAction.RESET_PASSWORD) {
+        title = t("dangerZone.resetPassword");
     }
 
     return (
@@ -36,20 +38,9 @@ export function SecurityDangerDialog({ action, hasPassword, onClose }: AccountDa
                 showClose={!codes && !pending}
                 className={securityStyles.dialog}>
                 {codes && <RecoveryCodesResult codes={codes} onComplete={onClose} />}
-                {!codes && isPassword && (hasPassword || confirmed) && (
-                    <PasswordForm hasPassword={hasPassword} onComplete={onClose} />
-                )}
-                {!codes && isPassword && !hasPassword && !confirmed && (
-                    <SecurityActionForm
-                        authenticateOnly
-                        title={title}
-                        subject={title}
-                        description={t("dangerZone.setPasswordDescription")}
-                        mutationKey={dangerZoneMutationKey}
-                        onComplete={() => setConfirmed(true)}
-                    />
-                )}
-                {!codes && !isPassword && (
+                {!codes && isPassword && <PasswordForm hasPassword={hasPassword} onComplete={onClose} />}
+                {action === DangerZoneAction.RESET_PASSWORD && <PasswordResetForm onComplete={onClose} />}
+                {!codes && action === DangerZoneAction.RECOVERY_CODES && (
                     <SecurityActionForm
                         title={title}
                         subject={t("dangerZone.recoveryCodes")}
@@ -58,7 +49,6 @@ export function SecurityDangerDialog({ action, hasPassword, onClose }: AccountDa
                         action={async () => {
                             setCodes(await DangerZoneManager.regenerateCodes());
                         }}
-                        onComplete={() => setConfirmed(true)}
                     />
                 )}
             </Dialog.Content>

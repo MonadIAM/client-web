@@ -18,7 +18,6 @@ export function SecondFactorRemoveForm({ factor, onRemoved }: SecondFactors.Remo
             successMessage={t("secondFactors.removed")}
             mutationKey={secondFactorMutationKey}
             method={SecurityAuthentication.SECOND_FACTOR}
-            reauthenticate={Boolean(factor.confirmedAt)}
             action={() => SecondFactorManager.remove({ factor: factor.id, confirmed: Boolean(factor.confirmedAt) })}
             onComplete={() => {
                 void refresh();

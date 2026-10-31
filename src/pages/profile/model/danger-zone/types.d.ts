@@ -1,56 +1,88 @@
-declare namespace AccountDangerZone {
-    namespace Complete {
-        type Signature = () => void;
-    }
+import type { PasswordResetMethod } from "./enums";
 
-    namespace Manager {
-        interface PublicContract {
-            regenerateCodes: RegenerateCodes.Signature;
-            changePassword: ChangePassword.Signature;
-            setPassword: SetPassword.Signature;
-            deactivate: Deactivate.Signature;
+declare global {
+    namespace AccountDangerZone {
+        namespace Complete {
+            type Signature = () => void;
         }
 
-        namespace SetPassword {
-            type Props = API.Identity.PasswordSetBody;
+        namespace Manager {
+            interface PublicContract {
+                requestPasswordReset: RequestPasswordReset.Signature;
+                regenerateCodes: RegenerateCodes.Signature;
+                changePassword: ChangePassword.Signature;
+                resetPassword: ResetPassword.Signature;
+                setPassword: SetPassword.Signature;
+                deactivate: Deactivate.Signature;
+            }
 
-            type Result = Promise<void>;
+            namespace RequestPasswordReset {
+                type Result = Promise<void>;
 
-            type Signature = (props: Props) => Result;
+                type Signature = () => Result;
+            }
+
+            namespace ResetPassword {
+                type Props = API.Identity.PasswordResetCurrentByOTPBody & {
+                    method: PasswordResetMethod;
+                };
+
+                type Result = Promise<void>;
+
+                type Signature = (props: Props) => Result;
+            }
+
+            namespace SetPassword {
+                type Props = API.Identity.PasswordSetBody;
+
+                type Result = Promise<void>;
+
+                type Signature = (props: Props) => Result;
+            }
+
+            namespace ChangePassword {
+                type Props = API.Identity.PasswordChangeBody;
+
+                type Result = Promise<void>;
+
+                type Signature = (props: Props) => Result;
+            }
+
+            namespace RegenerateCodes {
+                type Result = Promise<string[]>;
+
+                type Signature = () => Result;
+            }
+
+            namespace Deactivate {
+                type Result = Promise<void>;
+
+                type Signature = () => Result;
+            }
         }
 
-        namespace ChangePassword {
-            type Props = API.Identity.PasswordChangeBody;
+        namespace PasswordReset {
+            type Props = {
+                onComplete: Complete.Signature;
+            };
 
-            type Result = Promise<void>;
-
-            type Signature = (props: Props) => Result;
+            type Values = Password.Values & {
+                method: PasswordResetMethod;
+                code: string;
+            };
         }
 
-        namespace RegenerateCodes {
-            type Result = Promise<string[]>;
+        namespace Password {
+            type Props = {
+                hasPassword: boolean;
 
-            type Signature = () => Result;
+                onComplete: Complete.Signature;
+            };
+
+            type Values = {
+                confirmation: string;
+                password: string;
+            };
         }
-
-        namespace Deactivate {
-            type Result = Promise<void>;
-
-            type Signature = () => Result;
-        }
-    }
-
-    namespace Password {
-        type Props = {
-            hasPassword: boolean;
-
-            onComplete: Complete.Signature;
-        };
-
-        type Values = {
-            currentPassword: string;
-            confirmation: string;
-            password: string;
-        };
     }
 }

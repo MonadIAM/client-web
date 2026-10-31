@@ -2,12 +2,10 @@ import { ButtonVariant, FormAlignment, FormDirection, FormSpacing } from "@monad
 import { Button, Dialog, Form, Warning } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 
-import { useSecurityConfirmationForm } from "../../model/security/use-security-confirmation.form";
 import { securityStyles } from "./styles";
 
-export function SecurityActionConfirmation(props: Security.Action.Props & Security.Action.Operation) {
+export function SecurityActionConfirmation({ form, pending, ...props }: Security.Action.ConfirmationProps) {
     const { t } = useTranslation();
-    const { form, pending } = useSecurityConfirmationForm(props);
 
     return (
         <Form form={form} aria-label={props.title}>

@@ -16,7 +16,6 @@ export function IdentifierRemoveForm({ id, identity, isVerified, onRemoved }: Id
             description={t("identifiers.removeDescription")}
             successMessage={t("identifiers.removed")}
             mutationKey={identifierMutationKey}
-            reauthenticate={isVerified}
             action={() => IdentifierManager.remove({ identifier: id, isVerified })}
             onComplete={() => {
                 void refresh();

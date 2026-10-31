@@ -1,3 +1,6 @@
+import { AxiosError } from "axios";
+
+import { IdentitySchemas } from "~shared/api/schemas";
 import { IdentitySDK } from "~shared/api/sdk";
 
 import { SecurityAuthentication } from "./enums";
@@ -7,6 +10,17 @@ class Manager implements Security.Manager.PublicContract {
     public static readonly instance = new Manager();
 
     private constructor() {}
+
+    public requiresReauthentication({
+        cause,
+    }: Security.Manager.RequiresReauthentication.Props): Security.Manager.RequiresReauthentication.Result {
+        if (cause instanceof AxiosError && cause.response?.status === 403) {
+            const parsed = IdentitySchemas.zErrorResponseBody.safeParse(cause.response.data);
+            return parsed.success && parsed.data.code === "reauthentication_required";
+        } else {
+            return false;
+        }
+    }
 
     public async status({ signal }: Security.Manager.Status.Props): Security.Manager.Status.Result {
         const response = await IdentitySDK.accountControllerGetSecurity({
