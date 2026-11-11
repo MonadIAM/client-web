@@ -2,3 +2,11 @@ title = "client-web gitleaks config"
 
 [extend]
 useDefault = true
+
+[[allowlists]]
+description = "Allow public OAuth client UUID in environment example"
+targetRules = ["generic-api-key"]
+condition = "AND"
+regexTarget = "line"
+paths = ['''^\.env\.example$''']
+regexes = ['''^OAUTH_CLIENT_ID="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"\s*$''']

@@ -23,9 +23,13 @@ export function ResetSecondFactorForm({ search }: Authentication.ResetSecondFact
                     spellCheck={false}
                     required
                 />
-                <Field.Text
+                <Field.Code
                     form={form}
                     name="code"
+                    length={8}
+                    groupSize={4}
+                    validationType="alphanumeric"
+                    normalizeValue={(value) => value.toUpperCase().replace(/[^0-9A-F]/g, "")}
                     validators={{ onChange: IdentitySchemas.zSecondFactorResetBody.shape.code }}
                     label={t("resetSecondFactor.masterCode")}
                     invalidMessage={t("validation.invalid")}

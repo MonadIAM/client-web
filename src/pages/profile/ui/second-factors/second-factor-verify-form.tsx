@@ -1,5 +1,5 @@
-import { ButtonVariant, FlexAlignment, FormSpacing, TextTone } from "@monadiam/ui-kit/enums";
-import { Button, Field, Flex, Form, QRCode, Text } from "@monadiam/ui-kit";
+import { ButtonVariant, FlexAlignment, TextTone } from "@monadiam/ui-kit/enums";
+import { Dialog, Button, Field, Flex, Form, QRCode, Text } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 
 import { useProfileCopy } from "../../model/use-profile-copy";
@@ -32,16 +32,15 @@ export function SecondFactorVerifyForm(props: SecondFactors.Verify.Props) {
                     label={t("auth.code")}
                     length={6}
                     reserveErrorSpace={false}
-                    className={securityStyles.code}
                     autoComplete="one-time-code"
                     required
                 />
             </Form.Fields>
-            <Form.Actions spacing={FormSpacing.LARGE}>
+            <Dialog.Actions leading={t("secondFactors.step", { step: 2 })}>
                 <Button type="submit" loading={pending}>
                     {t("identifiers.verify")}
                 </Button>
-            </Form.Actions>
+            </Dialog.Actions>
         </Form>
     );
 }

@@ -17,6 +17,7 @@ declare global {
 
             type Props = {
                 title: string;
+                actionLabel: string;
                 subject: string;
                 description: string;
                 successMessage?: string;

@@ -1,6 +1,8 @@
 import { useForm, useSelector } from "@monadiam/ui-kit";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import { AxiosError } from "axios";
 
 import { CooldownOTP, OTPFlow, useCooldownOTP } from "~shared/auth/otp";
 import { getValidationErrors } from "~shared/api/validation";
@@ -8,10 +10,11 @@ import { NotificationManager } from "~shared/notifications";
 
 import { DangerZoneManager } from "./danger-zone.manager";
 import { dangerZoneMutationKey } from "./constants";
-import { PasswordResetMethod } from "./enums";
+import { PasswordResetMethod, PasswordResetStep } from "./enums";
 
 export function usePasswordResetForm({ onComplete }: AccountDangerZone.PasswordReset.Props) {
     const { t } = useTranslation();
+    const [step, setStep] = useState(PasswordResetStep.VERIFICATION);
     const remaining = useCooldownOTP({ flow: OTPFlow.PASSWORD });
     const operation = useMutation({
         mutationKey: dangerZoneMutationKey,
@@ -31,12 +34,22 @@ export function usePasswordResetForm({ onComplete }: AccountDangerZone.PasswordR
     };
     const form = useForm({
         defaultValues,
+        listeners: {
+            onChange: ({ fieldApi, formApi }) => {
+                if (fieldApi.name === "method") {
+                    formApi.resetField("code");
+                }
+            },
+        },
         validators: {
             onSubmit: ({ value }) => {
-                if (!value.password) {
+                const codePattern = value.method === PasswordResetMethod.OTP ? /^\d{6}$/ : /^[0-9A-F]{4}-[0-9A-F]{4}$/;
+                if (!codePattern.test(value.code)) {
+                    return { fields: { code: t("validation.invalid") } };
+                } else if (step === PasswordResetStep.VERIFICATION) {
+                    return undefined;
+                } else if (!value.password) {
                     return { fields: { password: t("validation.required") } };
-                } else if (!value.code) {
-                    return { fields: { code: t("validation.required") } };
                 } else if (value.password === value.confirmation) {
                     return undefined;
                 } else {
@@ -45,17 +58,27 @@ export function usePasswordResetForm({ onComplete }: AccountDangerZone.PasswordR
             },
         },
         onSubmit: async ({ value, formApi }) => {
-            try {
-                await operation.mutateAsync({ method: value.method, password: value.password, code: value.code });
-                formApi.reset();
-                NotificationManager.success({ title: t("dangerZone.passwordSaved") });
-                onComplete();
-            } catch (cause) {
-                const fields = getValidationErrors({ cause, fields: ["password", "code"] });
-                if (fields) {
-                    formApi.setErrorMap({ onSubmit: { fields } });
-                } else {
-                    NotificationManager.error({ cause });
+            if (step === PasswordResetStep.VERIFICATION) {
+                setStep(PasswordResetStep.PASSWORD);
+            } else {
+                try {
+                    await operation.mutateAsync({ method: value.method, password: value.password, code: value.code });
+                    formApi.reset();
+                    NotificationManager.success({ title: t("dangerZone.passwordSaved") });
+                    onComplete();
+                } catch (cause) {
+                    const fields = getValidationErrors({ cause, fields: ["password", "code"] });
+                    if (fields) {
+                        if (fields.code) {
+                            setStep(PasswordResetStep.VERIFICATION);
+                        }
+                        formApi.setErrorMap({ onSubmit: { fields } });
+                    } else {
+                        if (cause instanceof AxiosError && cause.response?.status === 400) {
+                            setStep(PasswordResetStep.VERIFICATION);
+                        }
+                        NotificationManager.error({ cause });
+                    }
                 }
             }
         },
@@ -77,5 +100,16 @@ export function usePasswordResetForm({ onComplete }: AccountDangerZone.PasswordR
         }
     };
 
-    return { form, method, pending, remaining, sendCode, sendingCode: requestCode.isPending };
+    const goBack = () => setStep(PasswordResetStep.VERIFICATION);
+
+    return {
+        form,
+        method,
+        step,
+        pending,
+        remaining,
+        sendCode,
+        goBack,
+        sendingCode: requestCode.isPending,
+    };
 }

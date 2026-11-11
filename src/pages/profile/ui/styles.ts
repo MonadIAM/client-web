@@ -1,13 +1,12 @@
 export const pageStyles = {
     section: "border-0 bg-transparent p-0 sm:p-0",
     panel: "rounded-lg border border-border bg-card p-4 text-card-foreground sm:p-6",
-    details: "grid gap-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-stretch",
-    avatarFrame:
-        "group/avatar relative row-start-1 size-20 cursor-pointer overflow-hidden rounded-full outline-none transition-shadow hover:ring-2 hover:ring-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card motion-reduce:transition-none sm:col-start-2 sm:row-start-1 sm:mt-6.5 sm:mb-6.5 sm:aspect-square sm:size-auto",
-    avatar: "absolute inset-0 size-full text-2xl sm:text-4xl",
-    avatarOverlay:
-        "absolute inset-px rounded-full bg-black/25 text-white opacity-0 transition-opacity group-hover/avatar:opacity-100 group-focus-visible/avatar:opacity-100 motion-reduce:transition-none [@media(hover:none)]:opacity-100",
-    avatarIcon: "size-5 sm:size-6",
+    details: "grid gap-6 sm:grid-cols-[13.5rem_minmax(0,1fr)]",
+    detailsForm: "flex min-w-0 flex-col justify-between gap-4",
+    detailsGrid: "grid min-w-0 gap-x-5 gap-y-1 md:grid-cols-2",
+    avatarPanel:
+        "flex flex-col items-center justify-center gap-6 border-b border-border pb-6 sm:border-r sm:border-b-0 sm:pr-6 sm:pb-0",
+    avatar: "size-32 shrink-0 text-4xl sm:size-40 sm:text-5xl",
     identifier: "font-mono",
     copyIcon: "size-3.5",
     copyStatus: "sr-only",

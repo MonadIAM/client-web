@@ -26,11 +26,14 @@ export function Profile() {
     return (
         <ProfileLayout title={t("profile.title")}>
             <Section title={t("profile.details")} actions={retry} className={pageStyles.section}>
-                <Flex.Col className={pageStyles.panel}>
-                    {error}
-                    {loading}
-                    {!account.isError && account.data && <ProfileDetails key={account.data.id} account={account.data} />}
-                </Flex.Col>
+                {account.isError || !account.data ? (
+                    <Flex.Col className={pageStyles.panel}>
+                        {error}
+                        {loading}
+                    </Flex.Col>
+                ) : (
+                    <ProfileDetails key={account.data.id} account={account.data} />
+                )}
             </Section>
             <Section title={t("profile.account")} actions={retry} className={pageStyles.section}>
                 <Flex.Col className={pageStyles.panel}>

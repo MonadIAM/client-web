@@ -1,10 +1,11 @@
 import { Button, Dialog, Field, Form, Radio } from "@monadiam/ui-kit";
-import { ButtonVariant, FormAlignment, FormDirection, FormSpacing, ThemeMode } from "@monadiam/ui-kit/enums";
+import { ThemeMode } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
 
 import { Language } from "~shared/i18n";
 
 import { useAppearanceForm } from "../model/use-appearance.form";
+import { ThemePreview } from "./theme-preview";
 import { appearanceStyles } from "./styles";
 
 export function AppearanceForm({ onClose }: Appearance.FormProps) {
@@ -31,25 +32,26 @@ export function AppearanceForm({ onClose }: Appearance.FormProps) {
                     value={theme.state.value}
                     onValueChange={theme.handleChange}
                     onBlur={theme.handleBlur}
-                    disabled={isSubmitting}>
-                    <Radio value={ThemeMode.LIGHT} label={t("appearance.light")} />
-                    <Radio value={ThemeMode.DARK} label={t("appearance.dark")} />
-                    <Radio value="system" label={t("appearance.system")} />
+                    disabled={isSubmitting}
+                    className={appearanceStyles.themes}>
+                    <Radio
+                        value={ThemeMode.LIGHT}
+                        label={t("appearance.light")}
+                        preview={<ThemePreview mode={ThemeMode.LIGHT} />}
+                    />
+                    <Radio
+                        value={ThemeMode.DARK}
+                        label={t("appearance.dark")}
+                        preview={<ThemePreview mode={ThemeMode.DARK} />}
+                    />
+                    <Radio value="system" label={t("appearance.system")} preview={<ThemePreview mode="system" />} />
                 </Radio.Group>
             </Form.Fields>
-            <Form.Actions
-                direction={FormDirection.HORIZONTAL}
-                align={FormAlignment.END}
-                spacing={FormSpacing.LARGE}
-                gap={FormSpacing.SMALL}
-                className={appearanceStyles.actions}>
-                <Dialog.Close render={<Button variant={ButtonVariant.OUTLINE} />} disabled={isSubmitting}>
-                    {t("common.cancel")}
-                </Dialog.Close>
+            <Dialog.Actions>
                 <Button type="submit" loading={isSubmitting} disabled={!canSubmit}>
                     {t("common.save")}
                 </Button>
-            </Form.Actions>
+            </Dialog.Actions>
         </Form>
     );
 }

@@ -9,7 +9,6 @@ import { SecurityActionForm } from "../security/security-action-form";
 import { DangerZoneAction } from "../../model/danger-zone/enums";
 import { PasswordResetForm } from "./password-reset-form";
 import { RecoveryCodesResult } from "./recovery-codes";
-import { securityStyles } from "../security/styles";
 import { PasswordForm } from "./password-form";
 
 export function SecurityDangerDialog({ action, hasPassword, onClose }: AccountDangerZone.Dialog.Props) {
@@ -33,17 +32,17 @@ export function SecurityDangerDialog({ action, hasPassword, onClose }: AccountDa
                 }
             }}>
             <Dialog.Content
-                title={title}
+                title={codes ? t("auth.saveCodesTitle") : title}
                 closeLabel={t("common.close")}
-                showClose={!codes && !pending}
-                className={securityStyles.dialog}>
+                showClose={!codes && !pending}>
                 {codes && <RecoveryCodesResult codes={codes} onComplete={onClose} />}
                 {!codes && isPassword && <PasswordForm hasPassword={hasPassword} onComplete={onClose} />}
                 {action === DangerZoneAction.RESET_PASSWORD && <PasswordResetForm onComplete={onClose} />}
                 {!codes && action === DangerZoneAction.RECOVERY_CODES && (
                     <SecurityActionForm
+                        actionLabel={t("dangerZone.regenerateCodesAction")}
                         title={title}
-                        subject={t("dangerZone.recoveryCodes")}
+                        subject={t("dangerZone.regenerateWarningTitle")}
                         description={t("dangerZone.regenerateWarning")}
                         mutationKey={dangerZoneMutationKey}
                         action={async () => {

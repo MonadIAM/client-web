@@ -12,6 +12,7 @@ export function SecondFactorRemoveForm({ factor, onRemoved }: SecondFactors.Remo
 
     return (
         <SecurityActionForm
+            actionLabel={t("common.delete")}
             title={t("secondFactors.remove")}
             subject={factor.name ?? t("secondFactors.unnamed")}
             description={t("secondFactors.removeDescription")}

@@ -28,7 +28,7 @@ export function NotificationPreviewItem({ item, date }: NotificationPreviewView.
                 <Flex.Col className={previewStyles.content}>
                     <Text.H3
                         size={TextSize.SM}
-                        weight={unread ? TextWeight.SEMIBOLD : TextWeight.REGULAR}
+                        weight={TextWeight.REGULAR}
                         className={previewStyles.name}
                         lang={item.title?.trim() ? (item.locale ?? "") : i18n.resolvedLanguage}
                         title={title}>

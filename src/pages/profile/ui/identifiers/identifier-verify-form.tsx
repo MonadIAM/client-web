@@ -1,5 +1,5 @@
-import { ButtonVariant, FormSpacing } from "@monadiam/ui-kit/enums";
-import { Button, Field, Form } from "@monadiam/ui-kit";
+import { ButtonVariant } from "@monadiam/ui-kit/enums";
+import { Dialog, Button, Field, Form } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 
 import { useIdentifierVerifyForm } from "../../model/identifiers/use-identifier-verify.form";
@@ -19,22 +19,22 @@ export function IdentifierVerifyForm(props: Identifiers.Verify.Props) {
                     length={6}
                     label={t("auth.code")}
                     autoComplete="one-time-code"
-                    className={securityStyles.code}
                     required
                 />
             </Form.Fields>
-            <Form.Actions spacing={FormSpacing.LARGE} gap={FormSpacing.SMALL}>
-                <Button type="submit" loading={pending} disabled={resendRequest.isPending}>
-                    {t("identifiers.verify")}
-                </Button>
+            <Dialog.Actions leading={t("identifiers.step", { step: 2 })}>
                 <Button
+                    type="button"
                     variant={ButtonVariant.OUTLINE}
                     disabled={remaining > 0 || pending}
                     loading={resendRequest.isPending}
                     onClick={() => resendRequest.mutate()}>
                     {remaining > 0 ? t("otp.retryIn", { seconds: remaining }) : t("auth.resend")}
                 </Button>
-            </Form.Actions>
+                <Button type="submit" loading={pending} disabled={resendRequest.isPending}>
+                    {t("identifiers.verify")}
+                </Button>
+            </Dialog.Actions>
         </Form>
     );
 }

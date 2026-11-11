@@ -16,6 +16,8 @@ export function useProfileForm(account: Auth.Account.Details) {
         displayName: account.profile?.displayName ?? "",
         timeZone: account.profile?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
         locale: account.profile?.locale ?? i18n.resolvedLanguage ?? Language.EN,
+        gender: "",
+        birthDate: "",
     }));
 
     const hasChanges = (value: typeof savedValues) =>
@@ -28,16 +30,16 @@ export function useProfileForm(account: Auth.Account.Details) {
 
         onSubmit: async ({ value, formApi }) => {
             const body = {
-                ...value,
                 displayName: value.displayName.trim(),
                 timeZone: value.timeZone.trim(),
+                locale: value.locale,
             };
 
             try {
                 await request.mutateAsync(body);
 
-                setSavedValues(body);
-                formApi.reset(body);
+                setSavedValues({ ...value, ...body });
+                formApi.reset({ ...value, ...body });
 
                 NotificationManager.success({ title: t("profile.saved") });
             } catch (cause) {

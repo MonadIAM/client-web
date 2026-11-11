@@ -1,5 +1,5 @@
-import { FieldType, FormSpacing } from "@monadiam/ui-kit/enums";
-import { Button, Field, Form, Radio } from "@monadiam/ui-kit";
+import { FieldType } from "@monadiam/ui-kit/enums";
+import { Dialog, Button, Field, Form, Radio } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 
 import { IdentifierType } from "~shared/api/generated/identity";
@@ -38,11 +38,11 @@ export function IdentifierCreateForm(props: Identifiers.Create.Props) {
                     required
                 />
             </Form.Fields>
-            <Form.Actions spacing={FormSpacing.LARGE}>
+            <Dialog.Actions leading={t("identifiers.step", { step: 1 })}>
                 <Button type="submit" loading={pending}>
                     {t("identifiers.send")}
                 </Button>
-            </Form.Actions>
+            </Dialog.Actions>
         </Form>
     );
 }

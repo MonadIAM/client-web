@@ -1,8 +1,8 @@
 import { Avatar, Button, Dialog, Field, Flex, Form } from "@monadiam/ui-kit";
-import { PencilIcon } from "@monadiam/ui-kit/icons";
+import { TrashIcon } from "@monadiam/ui-kit/icons";
 import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
-import { FlexJustification, FormDirection, ButtonVariant, FlexAlignment } from "@monadiam/ui-kit/enums";
+import { FlexJustification, FormDirection, FormAlignment, ButtonVariant, ButtonSize } from "@monadiam/ui-kit/enums";
 
 import { Language } from "~shared/i18n";
 
@@ -17,70 +17,97 @@ export function ProfileDetails({ account }: ProfileDetails.Props) {
     const locale = i18n.resolvedLanguage ?? Language.EN;
     const currentZone = account.profile?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
     const zones = useMemo(() => TimeZoneManager.getOptions({ locale, current: currentZone }), [locale, currentZone]);
+    const today = new Date();
 
     return (
-        <Form form={form} aria-label={t("profile.details")}>
-            <div className={pageStyles.details}>
-                <Form.Fields>
-                    <Field.Text
-                        form={form}
-                        name="displayName"
-                        label={t("profile.displayName")}
-                        autoComplete="name"
-                        disabled={isSubmitting}
-                        validators={{
-                            onBlur: ({ value }) => (value.trim() ? undefined : t("validation.required")),
-                        }}
-                    />
-                    <Field.Select
-                        form={form}
-                        name="timeZone"
-                        label={t("profile.timeZone")}
-                        options={zones}
-                        searchable
-                        searchLabel={t("profile.searchTimeZone")}
-                        emptyLabel={t("profile.noTimeZones")}
-                        disabled={isSubmitting}
-                    />
-                </Form.Fields>
-                <Dialog>
-                    <Dialog.Trigger
-                        type="button"
-                        className={pageStyles.avatarFrame}
-                        title={t("profile.changePhoto")}
-                        aria-label={t("profile.changePhoto")}>
-                        <Avatar
-                            src={account.profile?.pictureUrl}
-                            name={account.profile?.displayName}
-                            label={account.profile?.displayName ?? t("profile.title")}
-                            className={pageStyles.avatar}
+        <div className={`${pageStyles.panel} ${pageStyles.details}`}>
+            <div className={pageStyles.avatarPanel}>
+                <Avatar
+                    src={account.profile?.pictureUrl}
+                    name={account.profile?.displayName}
+                    label={account.profile?.displayName ?? t("profile.title")}
+                    className={pageStyles.avatar}
+                />
+                <Flex.Row gap="0.5rem" justify={FlexJustification.CENTER}>
+                    <Dialog>
+                        <Dialog.Trigger
+                            render={<Button type="button" variant={ButtonVariant.OUTLINE} disabled={isSubmitting} />}>
+                            {t("profile.changePhoto")}
+                        </Dialog.Trigger>
+                        <Dialog.Content
+                            title={t("profile.changePhoto")}
+                            description={t("profile.photoNotImplemented")}
+                            closeLabel={t("common.close")}
                         />
-                        <Flex.Col
-                            render={<span />}
-                            aria-hidden="true"
-                            align={FlexAlignment.CENTER}
-                            justify={FlexJustification.CENTER}
-                            className={pageStyles.avatarOverlay}>
-                            <PencilIcon className={pageStyles.avatarIcon} />
-                        </Flex.Col>
-                    </Dialog.Trigger>
-                    <Dialog.Content
-                        title={t("profile.changePhoto")}
-                        description={t("profile.photoNotImplemented")}
-                        closeLabel={t("common.close")}>
-                        <Flex.Row justify={FlexJustification.END}>
-                            <Dialog.Close render={<Button variant={ButtonVariant.OUTLINE} />}>
-                                {t("common.close")}
-                            </Dialog.Close>
-                        </Flex.Row>
-                    </Dialog.Content>
-                </Dialog>
+                    </Dialog>
+                    <Button
+                        type="button"
+                        variant={ButtonVariant.DESTRUCTIVE}
+                        size={ButtonSize.ICON_LARGE}
+                        aria-label={t("profile.removePhoto")}
+                        title={t("profile.removePhoto")}
+                        disabled>
+                        <TrashIcon />
+                    </Button>
+                </Flex.Row>
             </div>
-            <Form.Actions direction={FormDirection.HORIZONTAL}>
-                <Button type="submit" loading={isSubmitting} disabled={!canSubmit}>
-                    {t("common.save")}
-                </Button>
-            </Form.Actions>
-        </Form>
+            <Form form={form} aria-label={t("profile.details")} className={pageStyles.detailsForm}>
+                <Form.Fields>
+                    <div className={pageStyles.detailsGrid}>
+                        <Field.Text
+                            form={form}
+                            name="displayName"
+                            label={t("profile.displayName")}
+                            autoComplete="name"
+                            disabled={isSubmitting}
+                            validators={{
+                                onBlur: ({ value }) => (value.trim() ? undefined : t("validation.required")),
+                            }}
+                        />
+                        <Field.Select
+                            form={form}
+                            name="timeZone"
+                            label={t("profile.timeZone")}
+                            options={zones}
+                            searchable
+                            searchLabel={t("profile.searchTimeZone")}
+                            emptyLabel={t("profile.noTimeZones")}
+                            disabled={isSubmitting}
+                        />
+                        <Field.Select
+                            form={form}
+                            name="gender"
+                            label={t("profile.gender.label")}
+                            options={[
+                                { value: "", label: t("profile.gender.unspecified") },
+                                { value: "male", label: t("profile.gender.male") },
+                                { value: "female", label: t("profile.gender.female") },
+                                { value: "nonbinary", label: t("profile.gender.nonbinary") },
+                            ]}
+                            searchable
+                            searchLabel={t("profile.gender.search")}
+                            emptyLabel={t("profile.gender.empty")}
+                            customValueLabel={t("profile.gender.custom")}
+                            disabled={isSubmitting}
+                        />
+                        <Field.Date
+                            form={form}
+                            name="birthDate"
+                            label={t("profile.birthDate")}
+                            locale={locale}
+                            placeholder={t("profile.chooseDate")}
+                            clearLabel={t("profile.clearDate")}
+                            max={today}
+                            disabled={isSubmitting}
+                        />
+                    </div>
+                </Form.Fields>
+                <Form.Actions direction={FormDirection.HORIZONTAL} align={FormAlignment.END}>
+                    <Button type="submit" loading={isSubmitting} disabled={!canSubmit}>
+                        {t("common.save")}
+                    </Button>
+                </Form.Actions>
+            </Form>
+        </div>
     );
 }

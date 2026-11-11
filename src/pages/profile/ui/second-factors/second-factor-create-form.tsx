@@ -1,5 +1,4 @@
-import { Button, Field, Form } from "@monadiam/ui-kit";
-import { FormSpacing } from "@monadiam/ui-kit/enums";
+import { Dialog, Button, Field, Form } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 
 import { useSecondFactorCreateForm } from "../../model/second-factors/use-second-factor-create.form";
@@ -30,11 +29,11 @@ export function SecondFactorCreateForm(props: SecondFactors.Create.Props) {
                     required
                 />
             </Form.Fields>
-            <Form.Actions spacing={FormSpacing.LARGE}>
+            <Dialog.Actions leading={t("secondFactors.step", { step: 1 })}>
                 <Button type="submit" loading={pending}>
                     {t("secondFactors.continue")}
                 </Button>
-            </Form.Actions>
+            </Dialog.Actions>
         </Form>
     );
 }

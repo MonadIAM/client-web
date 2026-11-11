@@ -11,6 +11,7 @@ export function IdentifierRemoveForm({ id, identity, isVerified, onRemoved }: Id
 
     return (
         <SecurityActionForm
+            actionLabel={t("common.delete")}
             title={t("identifiers.remove")}
             subject={identity}
             description={t("identifiers.removeDescription")}

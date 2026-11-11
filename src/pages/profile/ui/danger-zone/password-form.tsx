@@ -1,7 +1,8 @@
-import { ButtonVariant, FieldType, FormDirection } from "@monadiam/ui-kit/enums";
+import { FieldType } from "@monadiam/ui-kit/enums";
 import { Button, Dialog, Field, Form } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
 
+import { securityStyles } from "../security/styles";
 import { SecurityActionAuthentication } from "../security/security-action-authentication";
 import { usePasswordForm } from "../../model/danger-zone/use-password.form";
 import { dangerZoneMutationKey } from "../../model/danger-zone/constants";
@@ -17,8 +18,8 @@ export function PasswordForm(props: AccountDangerZone.Password.Props) {
         return (
             <SecurityActionAuthentication
                 title={title}
-                subject={title}
-                description={t("dangerZone.passwordDescription")}
+                subject={t("security.confirmationRequired")}
+                description={t(props.hasPassword ? "security.confirmWithPassword" : "security.confirmToContinue")}
                 mutationKey={dangerZoneMutationKey}
                 method={props.hasPassword ? SecurityAuthentication.PASSWORD : undefined}
                 onComplete={authenticate}
@@ -28,8 +29,9 @@ export function PasswordForm(props: AccountDangerZone.Password.Props) {
 
     return (
         <Form form={form}>
-            <Form.Fields disabled={pending}>
+            <Form.Fields disabled={pending} className={securityStyles.fields}>
                 <Field.Text
+                    reserveErrorSpace={false}
                     form={form}
                     name="password"
                     type={FieldType.PASSWORD}
@@ -40,6 +42,7 @@ export function PasswordForm(props: AccountDangerZone.Password.Props) {
                     required
                 />
                 <Field.Text
+                    reserveErrorSpace={false}
                     form={form}
                     name="confirmation"
                     type={FieldType.PASSWORD}
@@ -50,14 +53,11 @@ export function PasswordForm(props: AccountDangerZone.Password.Props) {
                     required
                 />
             </Form.Fields>
-            <Form.Actions direction={FormDirection.HORIZONTAL}>
-                <Dialog.Close render={<Button variant={ButtonVariant.OUTLINE} />} disabled={pending}>
-                    {t("common.cancel")}
-                </Dialog.Close>
+            <Dialog.Actions>
                 <Button type="submit" loading={pending}>
                     {t("common.save")}
                 </Button>
-            </Form.Actions>
+            </Dialog.Actions>
         </Form>
     );
 }

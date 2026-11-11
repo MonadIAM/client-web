@@ -30,8 +30,10 @@ export function ResetPassword({ identifier, method, onComplete, onBack }: Passwo
                 <Field.Code
                     form={form}
                     name="code"
-                    length={method === PasswordRecoveryStep.OTP ? 6 : 9}
-                    validationType={method === PasswordRecoveryStep.OTP ? "numeric" : "none"}
+                    length={method === PasswordRecoveryStep.OTP ? 6 : 8}
+                    groupSize={method === PasswordRecoveryStep.OTP ? undefined : 4}
+                    normalizeValue={(value) => value.toUpperCase().replace(/[^0-9A-F]/g, "")}
+                    validationType={method === PasswordRecoveryStep.OTP ? "numeric" : "alphanumeric"}
                     validators={{ onChange: schema.shape.code }}
                     label={t(method === PasswordRecoveryStep.OTP ? "auth.code" : "passwordRecovery.recoveryCode")}
                     invalidMessage={t("validation.invalid")}

@@ -1,5 +1,5 @@
 import { Badge, Flex, List, Switch, Text } from "@monadiam/ui-kit";
-import { TextSize, TextTone } from "@monadiam/ui-kit/enums";
+import { BadgeTone, TextSize, TextTone } from "@monadiam/ui-kit/enums";
 import { useTranslation } from "react-i18next";
 
 import { ChannelType, NotificationCategory } from "~shared/api/generated/notification";
@@ -86,7 +86,9 @@ export function NotificationEmail({
                             </Flex.Row>
                         ),
                         action: (
-                            <Badge className={notificationStyles.action}>
+                            <Badge
+                                tone={hasEmail ? BadgeTone.SUCCESS : BadgeTone.NEUTRAL}
+                                className={notificationStyles.action}>
                                 {t(hasEmail ? "notificationSettings.alwaysEnabled" : "notificationSettings.unavailable")}
                             </Badge>
                         ),

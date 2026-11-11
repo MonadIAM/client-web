@@ -1,13 +1,6 @@
 import { Button, Dialog, Field, Form, Warning, Text, Flex } from "@monadiam/ui-kit";
 import { useTranslation } from "react-i18next";
-import {
-    FlexJustification,
-    ButtonVariant,
-    FormAlignment,
-    FormDirection,
-    FormSpacing,
-    FieldType,
-} from "@monadiam/ui-kit/enums";
+import { ButtonVariant, FieldType } from "@monadiam/ui-kit/enums";
 
 import { QueryError } from "~shared/ui/query-error";
 import { RetryButton } from "~shared/ui/retry-button";
@@ -58,16 +51,11 @@ function SecurityActionMethods(props: Security.Action.AuthenticationProps) {
     const retry = query.isError && <RetryButton loading={query.isFetching} onClick={() => void query.refetch()} />;
 
     return (
-        <Flex.Col gap="0.75rem">
+        <Flex.Col>
             {query.isError && <QueryError cause={query.error} fallback={t("security.loadError")} />}
             {!query.isError && query.data && <SecurityActionFields {...props} methods={methods} />}
             {!query.data && !query.isError && <Text.P role="status">{t("common.loading")}</Text.P>}
-            {query.isError && (
-                <Flex.Row justify={FlexJustification.END} gap="0.5rem" className={securityStyles.footer}>
-                    <Dialog.Close render={<Button variant={ButtonVariant.OUTLINE} />}>{t("common.cancel")}</Dialog.Close>
-                    {retry}
-                </Flex.Row>
-            )}
+            {query.isError && <Dialog.Actions>{retry}</Dialog.Actions>}
         </Flex.Col>
     );
 }
@@ -98,22 +86,12 @@ function SecurityActionFields(props: Security.Action.FieldsProps) {
                         form={form}
                         name="password"
                         type={FieldType.PASSWORD}
-                        label={t("auth.password")}
+                        label={t("dangerZone.currentPassword")}
                         showPasswordLabel={t("auth.showPassword")}
                         hidePasswordLabel={t("auth.hidePassword")}
                         autoComplete="current-password"
                         required
                     />
-                )}
-                {method === SecurityAuthentication.EMAIL && (
-                    <Button
-                        type="button"
-                        variant={ButtonVariant.OUTLINE}
-                        disabled={remaining > 0}
-                        loading={sendingCode}
-                        onClick={() => void sendCode()}>
-                        {remaining > 0 ? t("otp.retryIn", { seconds: remaining }) : t("dangerZone.sendCode")}
-                    </Button>
                 )}
                 {method !== SecurityAuthentication.PASSWORD && (
                     <Field.Code
@@ -123,24 +101,25 @@ function SecurityActionFields(props: Security.Action.FieldsProps) {
                         length={6}
                         label={t("auth.code")}
                         autoComplete="one-time-code"
-                        className={securityStyles.code}
                         required
                     />
                 )}
             </Form.Fields>
-            <Form.Actions
-                direction={FormDirection.HORIZONTAL}
-                align={FormAlignment.END}
-                spacing={FormSpacing.LARGE}
-                gap={FormSpacing.SMALL}
-                className={securityStyles.footer}>
-                <Dialog.Close render={<Button variant={ButtonVariant.OUTLINE} />} disabled={pending || sendingCode}>
-                    {t("common.cancel")}
-                </Dialog.Close>
+            <Dialog.Actions>
+                {method === SecurityAuthentication.EMAIL && (
+                    <Button
+                        type="button"
+                        variant={ButtonVariant.OUTLINE}
+                        disabled={remaining > 0 || pending}
+                        loading={sendingCode}
+                        onClick={() => void sendCode()}>
+                        {remaining > 0 ? t("otp.retryIn", { seconds: remaining }) : t("dangerZone.sendCode")}
+                    </Button>
+                )}
                 <Button type="submit" disabled={sendingCode} loading={pending} variant={ButtonVariant.DEFAULT}>
                     {t("security.authenticate")}
                 </Button>
-            </Form.Actions>
+            </Dialog.Actions>
         </Form>
     );
 }

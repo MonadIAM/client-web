@@ -8,3 +8,8 @@ export enum PasswordResetMethod {
     RECOVERY_CODE = "recovery-code",
     OTP = "otp",
 }
+
+export enum PasswordResetStep {
+    VERIFICATION = "verification",
+    PASSWORD = "password",
+}

@@ -10,7 +10,6 @@ import { SecondFactorRemoveForm } from "./second-factor-remove-form";
 import { SecondFactorResetForm } from "./second-factor-reset-form";
 import { SecondFactorRecovery } from "./second-factor-recovery";
 import { SecondFactorSetup } from "./second-factor-setup";
-import { securityStyles } from "../security/styles";
 
 export function SecondFactorDialog({ state, onChange, onClose }: SecondFactors.Dialog.Props) {
     const { t } = useTranslation();
@@ -36,8 +35,7 @@ export function SecondFactorDialog({ state, onChange, onClose }: SecondFactors.D
             <Dialog.Content
                 title={recoveryCode ? t("secondFactors.recoveryTitle") : titles[state.mode]}
                 closeLabel={t("common.close")}
-                showClose={!recoveryCode}
-                className={securityStyles.dialog}>
+                showClose={!recoveryCode}>
                 {recoveryCode && <SecondFactorRecovery code={recoveryCode} onComplete={onClose} />}
                 {!recoveryCode && state.mode === SecondFactorDialogMode.RESET && (
                     <SecondFactorResetForm onReset={onClose} />

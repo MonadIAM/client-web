@@ -11,7 +11,6 @@ import { AuthWorkerClient } from "~shared/auth";
 import { DangerZoneManager } from "../../model/danger-zone/danger-zone.manager";
 import { dangerZoneMutationKey } from "../../model/danger-zone/constants";
 import { SecurityActionForm } from "../security/security-action-form";
-import { securityStyles } from "../security/styles";
 
 export function ProfileDangerZone({ disabled }: ProfileDangerZone.Props) {
     const { t } = useTranslation();
@@ -49,12 +48,9 @@ export function ProfileDangerZone({ disabled }: ProfileDangerZone.Props) {
                             setOpen(value);
                         }
                     }}>
-                    <Dialog.Content
-                        title={t("dangerZone.deactivate")}
-                        closeLabel={t("common.close")}
-                        showClose={!pending}
-                        className={securityStyles.dialog}>
+                    <Dialog.Content title={t("dangerZone.deactivate")} closeLabel={t("common.close")} showClose={!pending}>
                         <SecurityActionForm
+                            actionLabel={t("dangerZone.deactivateAction")}
                             title={t("dangerZone.deactivate")}
                             subject={t("dangerZone.deactivateWarning")}
                             description={t("dangerZone.deactivateConfirmation")}

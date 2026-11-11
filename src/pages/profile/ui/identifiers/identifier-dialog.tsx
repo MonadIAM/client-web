@@ -7,14 +7,10 @@ import { IdentifierDialogMode } from "../../model/identifiers/enums";
 import { IdentifierCreateForm } from "./identifier-create-form";
 import { IdentifierVerifyForm } from "./identifier-verify-form";
 import { IdentifierRemoveForm } from "./identifier-remove-form";
-import { securityStyles } from "../security/styles";
 
 export function IdentifierDialog({ state, onClose, onChange }: Identifiers.Dialog.Props) {
     const { t } = useTranslation();
     const pending = useIsMutating({ mutationKey: identifierMutationKey }) > 0;
-
-    const step = state.mode === IdentifierDialogMode.ADD ? 1 : 2;
-    const description = state.mode === IdentifierDialogMode.REMOVE ? undefined : t("identifiers.step", { step });
 
     const titles = {
         [IdentifierDialogMode.ADD]: t("identifiers.add"),
@@ -30,11 +26,7 @@ export function IdentifierDialog({ state, onClose, onChange }: Identifiers.Dialo
                     onClose();
                 }
             }}>
-            <Dialog.Content
-                className={securityStyles.dialog}
-                title={titles[state.mode]}
-                description={description}
-                closeLabel={t("common.close")}>
+            <Dialog.Content title={titles[state.mode]} closeLabel={t("common.close")}>
                 {state.mode === IdentifierDialogMode.ADD && (
                     <IdentifierCreateForm
                         onCreated={(identity) =>
